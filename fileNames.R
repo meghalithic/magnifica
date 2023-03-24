@@ -148,6 +148,16 @@ setdiff(bryo.meta$SPECIMEN.NR, tots$specimenNR) #e.g., bryo.meta has 204CV, df.l
 #568CC in bryo.meta is 568CV in df.list
 #717iCV does not exist in df.list, but 717CV does
 
+extra.df <- setdiff(tots$specimenNR, bryo.meta$SPECIMEN.NR)
+extra.bryo <- setdiff(bryo.meta$SPECIMEN.NR, tots$specimenNR)
+fromDataset <- c(rep("imageFiles", length(extra.df)), rep("metadata", length(extra.bryo)))
+imageDiff <- c(extra.df, extra.bryo)
+errors.df <- cbind(fromDataset, imageDiff)
+
+write.csv(errors.df,
+          "errors.csv",
+          row.names = FALSE)
+
 #NR OF PICS in bryo.meta don't match the total number of images taken
 max(bryo.meta$NR.OF.PICS) #4
 max(tots$N) #5
@@ -162,6 +172,14 @@ df.list[df.list$specimenNR == "237CC",]
 bryo.forms <- unique(bryo.meta$FORMATION)
 image.forms <- unique(df.list$formation)
 #non-standardized names
+inDataset <- c(rep("imageFiles", length(image.forms)), rep("metadata", length(bryo.forms)))
+formations <- c(image.forms, bryo.forms)
+
+formations.df <- cbind(inDataset, formations)
+
+write.csv(formations.df,
+          "formations.csv",
+          row.names = FALSE)
 
 ## NEED META DATA FOR FORMATION
 #include locality, age range
