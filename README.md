@@ -13,7 +13,7 @@ Images are stored...
 ## Imaging metadata
 
 The metadata file "[Imaged Steginoporella magnifica specimens.csv](https://github.com/megbalk/magnifica/blob/main/Imaged%20Steginoporella%20magnifica%20specimens.csv)" contains information about:
-- Date of image (Date) in MM/DD/YYY format
+- date of image (Date) in MM/DD/YYY format
 - a unique specimen number (specimenNR)
 - number of pictures taken of the specimen (NR of pics)
 - AV
