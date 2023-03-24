@@ -43,7 +43,7 @@ There are a total of 23 landmarks, numbered 0 to 22.
 
 Linear measurements were extracted using the landmark coordinates.
 
-![linear]()
+![linear](stegs_linear.png)
 
 *Traits*
 
