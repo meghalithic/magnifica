@@ -47,14 +47,15 @@ Linear measurements were extracted using the landmark coordinates.
 
 *Traits*
 
-- Cryptocyst side length: average of 1 to 7 and 9 to 8
-- Cryptocyst height: average of 20 to 12 and 21 to 12
-- Individual length: 2 to 12
-- Condylar width: 21 to 20
-- Cryptocyst width: 10 to 11
-- Operculum height: average of 4 to 20 and 4 to 21
-- Operculum width: 19 to 0
-(averages are shown as dotted lines)
+- Zooid height (maximum height at centerline): 4 to 12
+- Operculum height of left side: 4 to 20
+- Operculum height of right side: 4 to 21
+- Operculum mid-width (maximum width at centerline): 19 to 0
+- Operculum base width: 21 to 20
+- Polypide tube base width: 5 to 6
+- Cryptocyst mid-width: 10 to 11
+- Cryptocyst base width: 9 to 1
+- Cryptocyst distal width: 8 to 7
 
 # Automation
 
