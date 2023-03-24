@@ -1,28 +1,13 @@
-"inDataset","formations"
-"imageFiles","NONE"
-"imageFiles","KAH"
-"imageFiles","NKBS"
-"imageFiles","NKLS"
-"imageFiles","SHCSBSB"
-"imageFiles","TAINUI SB"
-"imageFiles","TEWKESBURY"
-"imageFiles","UPPER KAI-IWI SB"
-"imageFiles","Nukumaru Limestone"
-"imageFiles","Shakespeare Basal Cliffsand"
-"imageFiles","Tainui SB"
-"imageFiles","Tewkesbury"
-"imageFiles","Upper Kai-Iwi SB"
-"imageFiles","Waipuru SB"
-"imageFiles","Nukumaru Brown Sand"
-"imageFiles","Pukenni Limestone"
-"imageFiles","Upper Kai-iwi"
-"metadata","NKBS"
-"metadata","NKLS"
-"metadata","TEWKESBURY"
-"metadata","SHCSBSB (SHAKESPEARE BASAL CLIFF SAND"
-"metadata","TAINUI SB"
-"metadata","UPPER KAI-IWI SB"
-"metadata","WAIPURU SB"
-"metadata","PUNNEKI LIMESTONE"
-"metadata","KAH1750"
-"metadata","KAH1705"
+imageFileFormation,bryoMetadataFormation,formationName,formationAbbreviation,ageRange,reference,notes
+NONE,,,,,,likely poor fossil quality images
+Nukumaru Brown Sand | NKBS,NKBS,Nukumaru Brown Sand,NKBS,,,
+Nukumaru Limestone | NKLS,NKLS,Nukumaru Limestone,NKLS,,,
+Tewkesbury | TEWKESBURY,TEWKESBURY,Tewkesbury,,,,
+Shakespeare Basal Cliffsand | SHCSBSB,SHCSBSB (SHAKESPEARE BASAL CLIFF SAND,Shakespeare Basal Cliff Sand,SHCSBSB,,,
+Tainui SB | TAINUI SB,TAINUI SB,,,,,
+Upper Kai-Iwi SB | Upper Kai-iwi | UPPER KAI-IWI SB,UPPER KAI-IWI SB,,,,,
+Waipuru SB,WAIPURU SB,,,,,
+Pukenni Limestone,PUNNEKI LIMESTONE,Pukenni Limestone,,,,
+KAH,,,,,,
+,KAH1750,,,modern,,
+,KAH1705,,,modern,,
