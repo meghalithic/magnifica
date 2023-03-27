@@ -52,7 +52,7 @@ Linear measurements were extracted using the landmark coordinates.
 - Operculum height of right side: 4 to 21
 - Operculum mid-width (maximum width at centerline): 19 to 0
 - Operculum base width: 21 to 20
-- Polypide tube base width: 5 to 6
+- Median process base width: 5 to 6
 - Cryptocyst mid-width: 10 to 11
 - Cryptocyst base width: 9 to 1
 - Cryptocyst distal width: 8 to 7
