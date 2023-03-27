@@ -46,7 +46,6 @@ formation <- c()
 image <- c()
 ext <- c()
 
-
 for(i in 1:length(list.parse)){
   folder[i] <- list.parse[[i]][1]
   if(isTRUE(endsWith(list.parse[[i]][2], ".txt"))){
@@ -118,6 +117,9 @@ df.list <- data.frame(folder = folder,
                       backscatter = backscatter,
                       stringsAsFactors = FALSE)
 
+nrow(df.list) #3779
+nrow(df.list[df.list$ext == "tif",])
+
 write.csv(df.list,
           "imageList.csv",
           row.names = FALSE)
@@ -129,6 +131,8 @@ bryo.meta <- read.csv("Imaged Steginoporella magnifica specimens.csv", header = 
 bryo.meta$SPECIMEN.NR <- gsub(bryo.meta$SPECIMEN.NR,
                               pattern = " ", 
                               replacement = "")
+nrow(bryo.meta) #880
+nrow(bryo.meta[!duplicated(bryo.meta$SPECIMEN.NR),]) #777
 
 ##### COMPARE TOTALS -----
 
@@ -136,6 +140,9 @@ tots <- df.list %>%
   group_by(specimenNR, ext) %>%
   summarise(N = n()) %>%
   as.data.frame()
+
+nrow(tots) #1810
+#1033 more images
 
 length(setdiff(tots$specimenNR, bryo.meta$SPECIMEN.NR)) #136 in df.list that are not in bryo.meta
 length(setdiff(bryo.meta$SPECIMEN.NR, tots$specimenNR)) #8 in bryo.meta that are not in df.list
