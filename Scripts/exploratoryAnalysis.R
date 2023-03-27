@@ -12,8 +12,8 @@ require(lmodel2)
 require(tidyverse)
 
 #### LOAD DATA ----
-output <- read.csv("output.csv", header = TRUE)
-AP_images <- read.csv("images_from_AP.csv", header = TRUE)
+output <- read.csv("./Data/output.csv", header = TRUE)
+AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
 
 #### EXPLORE DATA ----
 
@@ -46,7 +46,7 @@ output$imageName <- id.imageName
 #output$id <- id.only
 
 #### MATCH WITH METADATA ----
-bryo.meta <- read.csv("Imaged Steginoporella magnifica specimens.csv",
+bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv",
                       header = TRUE)
 
 ##there are duplicated records, want to extract unique values
@@ -165,14 +165,32 @@ ggplot(traits.melt) +
   ggtitle("Distribution of traits, N = 16924") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Operculum Height Right Side (pixels)") +
-  scale_x_continuous(name = "Operculum Height Left Side (pixels)")
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "Trait measurement (pixels)")
   
 ##explore bimodality, using zooid height as an example then see if it generalizes
-ggplot(traits.df) +
+p <- ggplot(traits.df) +
+  geom_density(aes(x = zh)) +
+  ggtitle("Zooid height, N = 16924") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "Zooid Height (pixels)")
+
+ggsave(p, file = "./Results/zooid_height.png", width = 14, height = 10, units = "cm")
+
+p <- ggplot(traits.df) +
   geom_density(aes(x = zh,
                    group = formation,
-                   col = formation)) #all but Punneki Limestone are bimodal
+                   col = formation)) + #all but Punneki Limestone are bimodal
+  ggtitle("Zooid height by formation, N = 16924") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "Zooid Height (pixels)")
+
+ggsave(p, file = "./Results/zooid_height_by_formation.png", width = 14, height = 10, units = "cm")
+
 
 ##seems like first hump ends around 300 pixels
 sm.traits <- traits.df[traits.df$zh < 300,]
@@ -221,7 +239,7 @@ oh.model <- lmodel2(formula = oh.r ~ oh.l,
                     range.y = "relative")
 oh.model$regression.results #slope = 1, no asymmetry
 
-ggsave(p, file = "operculum_height.png", width = 14, height = 10, units = "cm")
+ggsave(p, file = "./Results/operculum_height.png", width = 14, height = 10, units = "cm")
 
 ##against zooid height
 

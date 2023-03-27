@@ -127,7 +127,7 @@ write.csv(df.list,
 #### COMPARE TO METADATA FILE ----
 
 ##### LOAD DATA -----
-bryo.meta <- read.csv("Imaged Steginoporella magnifica specimens.csv", header = TRUE)
+bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv", header = TRUE)
 bryo.meta$SPECIMEN.NR <- gsub(bryo.meta$SPECIMEN.NR,
                               pattern = " ", 
                               replacement = "")
