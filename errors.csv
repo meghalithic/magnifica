@@ -1,145 +1,145 @@
-"fromDataset","imageDiff"
-"imageFiles","004CC"
-"imageFiles","008CV"
-"imageFiles","009CC"
-"imageFiles","010F"
-"imageFiles","012CC"
-"imageFiles","015CV"
-"imageFiles","017CV"
-"imageFiles","018CC"
-"imageFiles","025CC"
-"imageFiles","030CC"
-"imageFiles","031CV"
-"imageFiles","032CC"
-"imageFiles","036CV"
-"imageFiles","037iCV"
-"imageFiles","039CV"
-"imageFiles","040CV"
-"imageFiles","041CV"
-"imageFiles","042CV"
-"imageFiles","044CV"
-"imageFiles","046CV"
-"imageFiles","047CC"
-"imageFiles","049CC"
-"imageFiles","050CV"
-"imageFiles","060CV"
-"imageFiles","061S"
-"imageFiles","064CV"
-"imageFiles","065CC"
-"imageFiles","076CV"
-"imageFiles","077CV"
-"imageFiles","078CV"
-"imageFiles","081CV"
-"imageFiles","082CV"
-"imageFiles","085CV"
-"imageFiles","091CV"
-"imageFiles","096CV"
-"imageFiles","097CV"
-"imageFiles","099CV"
-"imageFiles","100CV"
-"imageFiles","102CV"
-"imageFiles","104CV"
-"imageFiles","108CV"
-"imageFiles","109CC"
-"imageFiles","110CC"
-"imageFiles","196CV"
-"imageFiles","197CV"
-"imageFiles","198CV"
-"imageFiles","199CC"
-"imageFiles","200CV"
-"imageFiles","201CC"
-"imageFiles","204CC"
-"imageFiles","212CV"
-"imageFiles","214CV"
-"imageFiles","215CC"
-"imageFiles","217CV"
-"imageFiles","218CV"
-"imageFiles","220CV"
-"imageFiles","221CC"
-"imageFiles","222CV"
-"imageFiles","223CV"
-"imageFiles","227CV"
-"imageFiles","228CC"
-"imageFiles","231CV"
-"imageFiles","232CC"
-"imageFiles","237CC"
-"imageFiles","238CV"
-"imageFiles","250CC"
-"imageFiles","251CV"
-"imageFiles","252CC"
-"imageFiles","253P"
-"imageFiles","256CV"
-"imageFiles","260CV"
-"imageFiles","261CC"
-"imageFiles","264CV"
-"imageFiles","265CV"
-"imageFiles","266CV"
-"imageFiles","267CC"
-"imageFiles","268CV"
-"imageFiles","269CV"
-"imageFiles","273S"
-"imageFiles","274CV"
-"imageFiles","280CV"
-"imageFiles","282CC"
-"imageFiles","284CV"
-"imageFiles","291CV"
-"imageFiles","332CV"
-"imageFiles","335CV"
-"imageFiles","336CV"
-"imageFiles","337F"
-"imageFiles","338CV"
-"imageFiles","339F"
-"imageFiles","340CV"
-"imageFiles","341CV"
-"imageFiles","342CV"
-"imageFiles","343CV"
-"imageFiles","344CV"
-"imageFiles","345CV"
-"imageFiles","346CV"
-"imageFiles","349CV"
-"imageFiles","350F"
-"imageFiles","351CV"
-"imageFiles","352CV"
-"imageFiles","353F"
-"imageFiles","354CV"
-"imageFiles","355CV"
-"imageFiles","356F"
-"imageFiles","357CC"
-"imageFiles","357CV"
-"imageFiles","359CC"
-"imageFiles","360F"
-"imageFiles","361S"
-"imageFiles","364F"
-"imageFiles","365F"
-"imageFiles","366CV"
-"imageFiles","368F"
-"imageFiles","369F"
-"imageFiles","370CV"
-"imageFiles","371CC"
-"imageFiles","372CV"
-"imageFiles","373CC"
-"imageFiles","374CV"
-"imageFiles","375CV"
-"imageFiles","376F"
-"imageFiles","377CV"
-"imageFiles","378CV"
-"imageFiles","379CV"
-"imageFiles","380CC"
-"imageFiles","381F"
-"imageFiles","382CV"
-"imageFiles","385CV"
-"imageFiles","390CC"
-"imageFiles","394CV"
-"imageFiles","399F"
-"imageFiles","434CV"
-"imageFiles","449CV"
-"imageFiles","466CC"
-"imageFiles","599CV"
-"metadata","204CV"
-"metadata","435CC"
-"metadata","232CV"
-"metadata","466CV"
-"metadata","0367iCV"
-"metadata","717iCV"
-"metadata","568CC"
-"metadata","005CC"
+fromDataset,imageDiff,folder,formation,dates,notes
+imageFiles,004CC,Stegs,NONE,NA,004CV in bryoMeta
+imageFiles,008CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,009CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,010F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,012CC,Stegs,NONE,NA,012CV in bryoMeta
+imageFiles,015CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,017CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,018CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,025CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,030CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,031CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,032CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,036CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,037iCV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,039CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,040CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,041CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,042CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,044CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,046CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,047CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,049CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,050CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,060CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,061S,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,064CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,065CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,076CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,077CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,078CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,081CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,082CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,085CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,091CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,096CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,097CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,099CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,100CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,102CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,104CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,108CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,109CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,110CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,196CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,197CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,198CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,199CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,200CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,201CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,204CC,Stegs,NONE,NA,204CV in bryoMeta
+imageFiles,212CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,214CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,215CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,217CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,218CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,220CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,221CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,222CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,223CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,227CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,228CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,231CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,232CC,Stegs,NONE,NA,232CV in bryoMeta
+imageFiles,237CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,238CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,250CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,251CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,252CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,253P,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,256CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,260CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,261CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,264CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,265CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,266CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,267CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,268CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,269CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,273S,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,274CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,280CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,282CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,284CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,291CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,332CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,335CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,336CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,337F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,338CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,339F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,340CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,341CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,342CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,343CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,344CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,345CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,346CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,349CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,350F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,351CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,352CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,353F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,354CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,355CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,356F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,357CC,Stegs,NONE,NA,SAME NUMBER | NOT in bryoMeta
+imageFiles,357CV,Stegs,NONE,NA,SAME NUMBER | NOT in bryoMeta
+imageFiles,359CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,360F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,361S,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,364F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,365F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,366CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,368F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,369F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,370CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,371CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,372CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,373CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,374CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,375CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,376F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,377CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,378CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,379CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,380CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,381F,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,382CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,385CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,390CC,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,394CV,Stegs,NONE,NA,NOT in bryoMeta
+imageFiles,399F,Stegs,Nukumaru Limestone,NA,NOT in bryoMeta
+imageFiles,434CV,Stegs,Nukumaru Limestone,NA,NOT in bryoMeta
+imageFiles,449CV,Stegs2,Nukumaru Brown Sand,NA,449F in bryoMeta
+imageFiles,466CC,Stegs2,Nukumaru Limestone,NA,466CV in bryoMeta
+imageFiles,599CV,Stegs2,Nukumaru Limestone,NA,NOT in bryoMeta
+metadata,204CV,NA,NA,1/24/18,204CC in imageList
+metadata,435CC,NA,NA,2/19/18,NOT in imageList
+metadata,232CV,NA,NA,2/22/18,232CC in imageList
+metadata,466CV,NA,NA,3/26/18,466CC in imageList
+metadata,0367iCV,NA,NA,11/2/18,NOT in imageList
+metadata,717iCV,NA,NA,7/7/22,NOT in imageList
+metadata,568CC,NA,NA,7/22/22,568CV in imageList
+metadata,005CC,NA,NA,8/3/22,005CV in imageList
