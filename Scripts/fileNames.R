@@ -170,7 +170,7 @@ df.list[df.list$specimenNR == "237CC",]
 ## look at 136 in df.list that are not in bryo.meta
 setdiff(tots$specimenNR, bryo.meta$SPECIMEN.NR)
 
-
+##### CREATE CSV -----
 extra.df <- setdiff(tots$specimenNR, bryo.meta$SPECIMEN.NR)
 extra.bryo <- setdiff(bryo.meta$SPECIMEN.NR, tots$specimenNR)
 
@@ -185,23 +185,25 @@ fromDataset <- c(rep("imageFiles", length(extra.df)), rep("metadata", length(ext
 imageDiff <- c(extra.df, extra.bryo)
 errors.df <- cbind(fromDataset, imageDiff, folder, formation, dates)
 
-write.csv(errors.df,
-          "errors.csv",
-          row.names = FALSE)
+#write.csv(errors.df,
+#          "./Results/errors.csv",
+#          row.names = FALSE)
 
-##### COMPARE FORMATION NAMES -----
-#don't have the same formations
-bryo.forms <- unique(bryo.meta$FORMATION)
-image.forms <- unique(df.list$formation)
-#non-standardized names
-inDataset <- c(rep("imageFiles", length(image.forms)), rep("metadata", length(bryo.forms)))
-formations <- c(image.forms, bryo.forms)
+# ADD NOTES MANUALLY
 
-formations.df <- cbind(inDataset, formations)
+##### MATCH TO FORMATION -----
 
-write.csv(formations.df,
-          "formations.csv",
-          row.names = FALSE)
+errors.df <- read.csv("./Results/errors.csv", header = TRUE)
 
-## NEED META DATA FOR FORMATION
-#include locality, age range
+errors.df$newFormation <- ""
+errors.df$newFormation[grepl("^0", errors.df$imageDiff)] <- "NKBS"
+errors.df$newFormation[grepl("^1", errors.df$imageDiff)] <- "NKBS"
+errors.df$newFormation[grepl("^2", errors.df$imageDiff)] <- "NKBS"
+errors.df$newFormation[grepl("^3", errors.df$imageDiff)] <- "NKBS"
+errors.df$newFormation[grepl("^4", errors.df$imageDiff)] <- "NKLS"
+errors.df$newFormation[grepl("^6", errors.df$imageDiff)] <- "Tewkesbury"
+errors.df$newFormation[grepl("^7", errors.df$imageDiff)] <- "SHCSBSB"
+errors.df$newFormation[grepl("^8", errors.df$imageDiff)] <- "Tainui"
+errors.df$newFormation[grepl("^10", errors.df$imageDiff)] <- "Upper Kai-Iwi"
+errors.df$newFormation[grepl("^11", errors.df$imageDiff)] <- "Waipuru"
+

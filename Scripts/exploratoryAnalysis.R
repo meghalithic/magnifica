@@ -287,3 +287,5 @@ ggplot(data = traits.df) +
   scale_y_continuous(name = "Operculum mid-width (pixels)") +
   scale_x_continuous(name = "Zooid height (pixels)")
 
+## are they driven by differences in magnification? 
+# add magnification to traits.df
