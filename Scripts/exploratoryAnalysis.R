@@ -17,6 +17,7 @@ AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
 
 #### EXPLORE DATA ----
 
+##images from shared "JPG" folder
 nrow(AP_images) #1654
 imageName.parse_AP <- str_split(AP_images$imageName, fixed("_"))
 specimen.NR_AP <- c()
@@ -42,8 +43,25 @@ id.only <- unlist(lapply(id.parse, function (x) x[9]))
 id.imageName <- str_remove(id.only, "[^BSE]*$")
 output$imageName <- id.imageName
 
+imageName.parse <- str_split(id.imageName, fixed("_"))
+specimen.NR <- c()
+for(i in 1:length(imageName.parse)){
+  specimen.NR[i] <- paste0(imageName.parse[[i]][1], imageName.parse[[i]][2], "_",
+                           imageName.parse[[i]][])
+}
+output$SPECIMEN.NR <- specimen.NR
+nrow(output[!duplicated(output$SPECIMEN.NR),]) #777 #two less than in AP_images, same number as bryo metadata
+
 #names(output)[names(output)=="id"] <- "path"
 #output$id <- id.only
+
+## overlap between A. Porto images with output:
+output.spID <- unique(output$SPECIMEN.NR)
+jpg.ID <- unique(AP_images$SPECIMEN.NR)
+setdiff(output.spID, jpg.ID) #"NA"
+setdiff(jpg.ID, output.spID) #"3131.jpg" "492CC"    "494CC" not in output
+#there is an image named 313_1.jpg
+#492 and 494 look poor quality
 
 #### MATCH WITH METADATA ----
 bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv",
@@ -55,16 +73,6 @@ bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv",
 meta.trim <- bryo.meta[!duplicated(bryo.meta$SPECIMEN.NR), c("DATE", "SPECIMEN.NR", "FORMATION")]
 nrow(bryo.meta) #880
 nrow(meta.trim) #777; 103 rows removed
-
-imageName.parse <- str_split(id.imageName, fixed("_"))
-specimen.NR <- c()
-for(i in 1:length(imageName.parse)){
-  specimen.NR[i] <- paste0(imageName.parse[[i]][1], imageName.parse[[i]][2], "_",
-                           imageName.parse[[i]][])
-}
-output$SPECIMEN.NR <- specimen.NR
-nrow(output[!duplicated(output$SPECIMEN.NR),]) #777 #two less than in AP_images, same number as bryo metadata
-
 
 output.meta <- merge(output, meta.trim,
                      by = "SPECIMEN.NR",
