@@ -74,7 +74,11 @@ meta.errors.df <- cbind(fromDataset, imageDiff)
 #write.csv(AP.images.errors.df,
 #          "./Results/AP.images.errors.df.csv",
 #          row.names = FALSE)
+## AP images are a subset of the metadata file, so it makes sense that there is a discrepancy
+##
 
 #write.csv(meta.errors.df,
 #          "./Results/meta.errors.df.csv",
 #          row.names = FALSE)
+## AP metadata file is old, so makes sense there is a discrepancy
+## the two images "not" in AP metadata that are found in the bryo metadata are actually there
