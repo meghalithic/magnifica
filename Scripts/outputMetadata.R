@@ -44,8 +44,8 @@ length(setdiff(AP_images.trimmed$SPECIMEN.NR, AP_meta$specimen.nr.)) #137
 length(setdiff(AP_meta$specimen.nr., AP_images.trimmed$SPECIMEN.NR)) #6
 
 ## overlap between bryo metadata and metadata provide by AP:
-length(setdiff(bryo.meta$SPECIMEN.NR, AP_meta$specimen.nr.)) #131
-length(setdiff(AP_meta$specimen.nr., bryo.meta$SPECIMEN.NR)) #2
+length(setdiff(bryo.meta$SPECIMEN.NR, AP_meta$specimen.nr.)) #0
+##THIS IS GOOD! 
 
 ## overlap between A. Porto image list with output:
 output.spID <- unique(output$SPECIMEN.NR)
