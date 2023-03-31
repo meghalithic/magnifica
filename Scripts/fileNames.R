@@ -120,9 +120,22 @@ df.list <- data.frame(folder = folder,
 nrow(df.list) #3779
 nrow(df.list[df.list$ext == "tif",])
 
-write.csv(df.list,
-          "imageList.csv",
-          row.names = FALSE)
+df.list$newFormation <- ""
+df.list$newFormation[grepl("^0", df.list$specimenNR)] <- "NKBS"
+df.list$newFormation[grepl("^1", df.list$specimenNR)] <- "NKBS"
+df.list$newFormation[grepl("^2", df.list$specimenNR)] <- "NKBS"
+df.list$newFormation[grepl("^3", df.list$specimenNR)] <- "NKBS"
+df.list$newFormation[grepl("^4", df.list$specimenNR)] <- "NKLS"
+df.list$newFormation[grepl("^5", df.list$specimenNR)] <- "NKLS"
+df.list$newFormation[grepl("^6", df.list$specimenNR)] <- "Tewkesbury"
+df.list$newFormation[grepl("^7", df.list$specimenNR)] <- "SHCSBSB"
+df.list$newFormation[grepl("^8", df.list$specimenNR)] <- "Tainui"
+df.list$newFormation[grepl("^10", df.list$specimenNR)] <- "Upper Kai-Iwi"
+df.list$newFormation[grepl("^11", df.list$specimenNR)] <- "Waipuru"
+
+#write.csv(df.list,
+#          "imageList.csv",
+#          row.names = FALSE)
 
 #### COMPARE TO METADATA FILE ----
 
@@ -180,7 +193,7 @@ df.trimmed <- df.trim[!duplicated(df.trim[c('specimenNR')]), ]
 
 dates <- c(rep("NA", length(extra.df)), bryo.meta$DATE[bryo.meta$SPECIMEN.NR %in% extra.bryo])
 folder <- c(df.trimmed$folder, rep("NA", length(extra.bryo)))
-formation <- c(df.trimmed$formation, rep("NA", length(extra.bryo)))
+formation <- c(df.trimmed$newFormation, rep("NA", length(extra.bryo)))
 fromDataset <- c(rep("imageFiles", length(extra.df)), rep("metadata", length(extra.bryo)))
 imageDiff <- c(extra.df, extra.bryo)
 errors.df <- cbind(fromDataset, imageDiff, folder, formation, dates)
@@ -190,20 +203,3 @@ errors.df <- cbind(fromDataset, imageDiff, folder, formation, dates)
 #          row.names = FALSE)
 
 # ADD NOTES MANUALLY
-
-##### MATCH TO FORMATION -----
-
-errors.df <- read.csv("./Results/errors.csv", header = TRUE)
-
-errors.df$newFormation <- ""
-errors.df$newFormation[grepl("^0", errors.df$imageDiff)] <- "NKBS"
-errors.df$newFormation[grepl("^1", errors.df$imageDiff)] <- "NKBS"
-errors.df$newFormation[grepl("^2", errors.df$imageDiff)] <- "NKBS"
-errors.df$newFormation[grepl("^3", errors.df$imageDiff)] <- "NKBS"
-errors.df$newFormation[grepl("^4", errors.df$imageDiff)] <- "NKLS"
-errors.df$newFormation[grepl("^6", errors.df$imageDiff)] <- "Tewkesbury"
-errors.df$newFormation[grepl("^7", errors.df$imageDiff)] <- "SHCSBSB"
-errors.df$newFormation[grepl("^8", errors.df$imageDiff)] <- "Tainui"
-errors.df$newFormation[grepl("^10", errors.df$imageDiff)] <- "Upper Kai-Iwi"
-errors.df$newFormation[grepl("^11", errors.df$imageDiff)] <- "Waipuru"
-

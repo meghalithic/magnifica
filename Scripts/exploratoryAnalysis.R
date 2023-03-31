@@ -2,6 +2,8 @@
 ## meghan.balk@nhm.uio.no
 
 ## This code:
+# 1) creates trait measurements
+# 2) investigates causes of measurement differences
 
 #### LOAD PACKAGES ----
 require(stringr)
@@ -13,19 +15,12 @@ require(tidyverse)
 
 #### LOAD DATA ----
 output <- read.csv("./Data/output.csv", header = TRUE)
-AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
+bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv",
+                      header = TRUE)
 
 #### EXPLORE DATA ----
 
 ##images from shared "JPG" folder
-nrow(AP_images) #1654
-imageName.parse_AP <- str_split(AP_images$imageName, fixed("_"))
-specimen.NR_AP <- c()
-for(i in 1:length(imageName.parse_AP)){
-  specimen.NR_AP[i] <- paste0(imageName.parse_AP[[i]][1], imageName.parse_AP[[i]][2])
-}
-AP_images$SPECIMEN.NR <- specimen.NR_AP
-nrow(AP_images[!duplicated(AP_images$SPECIMEN.NR),]) #779, two more than in bryo metadata
 
 nrow(output) #16924
 
@@ -51,7 +46,7 @@ for(i in 1:length(imageName.parse)){
   mag[i] <- imageName.parse[[i]][5]
 }
 output$SPECIMEN.NR <- specimen.NR
-nrow(output[!duplicated(output$SPECIMEN.NR),]) #777 #two less than in AP_images, same number as bryo metadata
+nrow(output[!duplicated(output$SPECIMEN.NR),]) #777
 
 output$mag <- mag
 output$mag[output$mag == "x30.BSE"] <- "x30"
@@ -60,18 +55,7 @@ output$mag[output$mag == "x35.BSE"] <- "x35"
 #names(output)[names(output)=="id"] <- "path"
 #output$id <- id.only
 
-## overlap between A. Porto images with output:
-output.spID <- unique(output$SPECIMEN.NR)
-jpg.ID <- unique(AP_images$SPECIMEN.NR)
-setdiff(output.spID, jpg.ID) #"NA"
-setdiff(jpg.ID, output.spID) #"3131.jpg" "492CC"    "494CC" not in output
-#there is an image named 313_1.jpg
-#492 and 494 look poor quality
-
 #### MATCH WITH METADATA ----
-bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv",
-                      header = TRUE)
-
 ##there are duplicated records, want to extract unique values
 #upon first inspection, it seems dupes differ by NR.OF.PICS
 
@@ -252,6 +236,19 @@ p <- ggplot(traits.df) +
   scale_x_continuous(name = "Zooid Height (pixels)")
 
 #ggsave(p, file = "./Results/zooid_height_by_magnification.png", width = 14, height = 10, units = "cm")
+
+##what does it look like if all magnification is the same?
+#still get bimodal hump
+p <- ggplot(traits.df[traits.df$magnification == "x30",]) +
+  geom_density(aes(x = zh[traits.df$magnification == "x30"])) + 
+  ggtitle("Zooid height by magnification x30, N = 16595") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "Zooid Height (pixels)")
+
+#ggsave(p, file = "./Results/zooid_height_magnification_x30.png", width = 14, height = 10, units = "cm")
+
 
 ##### SCALING -----
 
