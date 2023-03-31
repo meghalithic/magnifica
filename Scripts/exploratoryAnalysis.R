@@ -45,12 +45,17 @@ output$imageName <- id.imageName
 
 imageName.parse <- str_split(id.imageName, fixed("_"))
 specimen.NR <- c()
+mag <- c()
 for(i in 1:length(imageName.parse)){
-  specimen.NR[i] <- paste0(imageName.parse[[i]][1], imageName.parse[[i]][2], "_",
-                           imageName.parse[[i]][])
+  specimen.NR[i] <- paste0(imageName.parse[[i]][1], imageName.parse[[i]][2])
+  mag[i] <- imageName.parse[[i]][5]
 }
 output$SPECIMEN.NR <- specimen.NR
 nrow(output[!duplicated(output$SPECIMEN.NR),]) #777 #two less than in AP_images, same number as bryo metadata
+
+output$mag <- mag
+output$mag[output$mag == "x30.BSE"] <- "x30"
+output$mag[output$mag == "x35.BSE"] <- "x35"
 
 #names(output)[names(output)=="id"] <- "path"
 #output$id <- id.only
@@ -70,9 +75,10 @@ bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv",
 ##there are duplicated records, want to extract unique values
 #upon first inspection, it seems dupes differ by NR.OF.PICS
 
-meta.trim <- bryo.meta[!duplicated(bryo.meta$SPECIMEN.NR), c("DATE", "SPECIMEN.NR", "FORMATION")]
+meta.trim <- bryo.meta[!duplicated(bryo.meta$SPECIMEN.NR), 
+                       c("DATE", "SPECIMEN.NR", "FORMATION")]
 nrow(bryo.meta) #880
-nrow(meta.trim) #777; 103 rows removed
+nrow(meta.trim) #778; 102 rows removed
 
 output.meta <- merge(output, meta.trim,
                      by = "SPECIMEN.NR",
@@ -145,6 +151,7 @@ cw.d.y <-  abs((output$Y8-output$Y7))
 cw.d <- sqrt(((cw.d.x)^2 + (cw.d.y)^2))
 
 traits.df <- data.frame(boxID = output.meta$box_id,
+                        magnification = output.meta$mag,
                         imageName = output.meta$imageName,
                         specimenNR = output.meta$SPECIMEN.NR,
                         formation = output.meta$FORMATION,
@@ -159,55 +166,15 @@ traits.df <- data.frame(boxID = output.meta$box_id,
                         cw.b = cw.b,
                         cw.d = cw.d) #d = distal
 
-##### HISTOGRAM -----
-
-traits.melt <- melt(data = traits.df,
-                    id.vars = c("imageName", "specimenNR", "formation", "dates"),
-                    variable.name = "measurementType",
-                    value.name = "measurementValue")
-
-ggplot(traits.melt) +
-  geom_density(aes(x = measurementValue,
-                   group = measurementType,
-                   col = measurementType)) + #lots are bimodal
-  ggtitle("Distribution of traits, N = 16924") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "Trait measurement (pixels)")
-  
-##explore bimodality, using zooid height as an example then see if it generalizes
-p <- ggplot(traits.df) +
-  geom_density(aes(x = zh)) +
-  ggtitle("Zooid height, N = 16924") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "Zooid Height (pixels)")
-
-ggsave(p, file = "./Results/zooid_height.png", width = 14, height = 10, units = "cm")
-
-p <- ggplot(traits.df) +
-  geom_density(aes(x = zh,
-                   group = formation,
-                   col = formation)) + #all but Punneki Limestone are bimodal
-  ggtitle("Zooid height by formation, N = 16924") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "Zooid Height (pixels)")
-
-ggsave(p, file = "./Results/zooid_height_by_formation.png", width = 14, height = 10, units = "cm")
-
-
-##seems like first hump ends around 300 pixels
-sm.traits <- traits.df[traits.df$zh < 300,]
-length(unique(sm.traits$specimenNR)) #174 images out of 778
-
 ##### ABOUT TRAITS -----
 
 nrow(output) #16924
 nrow(traits.df) #16924
+
+traits.melt <- melt(data = traits.df,
+                    id.vars = c("boxID","imageName", "specimenNR", "formation", "dates", "magnification"),
+                    variable.name = "measurementType",
+                    value.name = "measurementValue")
 
 traits.stats <- traits.melt %>%
   group_by(measurementType) %>%
@@ -230,6 +197,62 @@ traits.stats <- traits.melt %>%
 ##expect zh to be largest value - YES
 ##expect mpw.b to be smallest value - YES
 
+##### HISTOGRAM -----
+
+ggplot(traits.melt) +
+  geom_density(aes(x = measurementValue,
+                   group = measurementType,
+                   col = measurementType)) + #lots are bimodal
+  ggtitle("Distribution of traits, N = 16924") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_lpine(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "Trait measurement (pixels)")
+
+###### BIMODALITY ------  
+##explore bimodality, using zooid height as an example then see if it generalizes
+p <- ggplot(traits.df) +
+  geom_density(aes(x = zh)) +
+  ggtitle("Zooid height, N = 16924") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "Zooid Height (pixels)")
+
+#ggsave(p, file = "./Results/zooid_height.png", width = 14, height = 10, units = "cm")
+
+##driven by formation?
+#all but Punneki Limestone are bimodal
+p <- ggplot(traits.df) +
+  geom_density(aes(x = zh,
+                   group = formation,
+                   col = formation)) + 
+  ggtitle("Zooid height by formation, N = 16924") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "Zooid Height (pixels)")
+
+#ggsave(p, file = "./Results/zooid_height_by_formation.png", width = 14, height = 10, units = "cm")
+
+##seems like first hump ends around 300 pixels
+sm.traits <- traits.df[traits.df$zh < 300,]
+length(unique(sm.traits$specimenNR)) #174 images out of 778
+
+##driven by magnification?
+#not that I can tell...
+p <- ggplot(traits.df) +
+  geom_density(aes(x = zh,
+                   group = magnification,
+                   col = magnification)) + 
+  ggtitle("Zooid height by magnification, N = 16924") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "Zooid Height (pixels)")
+
+#ggsave(p, file = "./Results/zooid_height_by_magnification.png", width = 14, height = 10, units = "cm")
+
 ##### SCALING -----
 
 ## right v left side of operculum
@@ -247,7 +270,7 @@ oh.model <- lmodel2(formula = oh.r ~ oh.l,
                     range.y = "relative")
 oh.model$regression.results #slope = 1, no asymmetry
 
-ggsave(p, file = "./Results/operculum_height.png", width = 14, height = 10, units = "cm")
+#ggsave(p, file = "./Results/operculum_height.png", width = 14, height = 10, units = "cm")
 
 ##against zooid height
 
@@ -275,6 +298,7 @@ slice_max(traits.df, n = 2, order_by = zh)
 zh.owm.model <- lm(ow.m ~ zh,
                    data = traits.df)
 
+###### TWO CLUSTERS -----
 ## are the two clusters driven by formation? - NO
 ggplot(data = traits.df) +
   geom_smooth(aes(x = zh, y = ow.m), method = "lm") +
@@ -287,5 +311,15 @@ ggplot(data = traits.df) +
   scale_y_continuous(name = "Operculum mid-width (pixels)") +
   scale_x_continuous(name = "Zooid height (pixels)")
 
-## are they driven by differences in magnification? 
-# add magnification to traits.df
+## are they driven by differences in magnification? - NO
+ggplot(data = traits.df) +
+  geom_smooth(aes(x = zh, y = ow.m), method = "lm") +
+  geom_point(aes(x = zh, y = ow.m,
+                 group = magnification,
+                 col = magnification,
+                 alpha = .3)) + #two clusters
+  ggtitle("Scaling of operculum mid-width with zooid height, N = 16924") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Operculum mid-width (pixels)") +
+  scale_x_continuous(name = "Zooid height (pixels)")
