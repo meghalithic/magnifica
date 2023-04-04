@@ -24,7 +24,7 @@ files.df <- read.table("./Data/txt_metadata.csv",
 df.list$fileName[1]
 
 files.df$fileName[1] #for txt
-files.df$ImageName[1] #for tif
+files.df$ImageName[1] #for tif; ImageName is inside of txt metadata file
 
 nrow(files.df) #1889
 nrow(df.list) #3779
