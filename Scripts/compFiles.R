@@ -22,7 +22,7 @@ require(dplyr)
 #write.csv(all_names, "test.csv")
 
 ## get folder names
-list = list.files(path = "/Users/meghanabalk/Library/CloudStorage/Dropbox/Rocks-Paradox/Bryozoans/Stegino images",
+list = list.files(path = "",
                   full.names = TRUE,
                   recursive = TRUE)
 list.trim <- gsub(list,
