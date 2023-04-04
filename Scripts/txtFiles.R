@@ -53,7 +53,7 @@ av <- c("AV", gsub(".0kV", "v",condition[[3]][1]))
 mag <- c(condition[[3]][2], condition[[4]][1])
 wd <- c(condition[[4]][2], condition[[5]][1])
 lensMode <- c(condition[[5]][2], condition[[6]][1])
-image <- c("path", "/Users/mab/Library/CloudStorage/Dropbox/Rocks-Paradox/Bryozoans/Stegino images/Sara/002_CV_1_15v_x30.txt")
+path <- c("path", "/Users/mab/Library/CloudStorage/Dropbox/Rocks-Paradox/Bryozoans/Stegino images/Sara/002_CV_1_15v_x30.txt")
 
 cond.paste <- paste(ff$V1_2[ff$V1_1 == "Condition"], 
                     ff$V1_3[ff$V1_1 == "Condition"],
@@ -67,7 +67,7 @@ ff2$V1_2[ff2$V1_1 == "Condition"] <- cond.paste
 
 ff3 <- ff2[,1:2]
 
-ff4 <- rbind(image, as.data.frame(ff3), av, mag, wd, lensMode)
+ff4 <- rbind(path, as.data.frame(ff3), av, mag, wd, lensMode)
 
 ff4$V1_1
 
@@ -96,8 +96,8 @@ for(i in 1:length(txtPath)){
   mag <- c(condition[[3]][2], condition[[4]][1])
   wd <- c(condition[[4]][2], condition[[5]][1])
   lensMode <- c(condition[[5]][2], condition[[6]][1])
-  image <- c("path", txtPath[i])
-  
+  path <- c("path", txtPath[i])
+   
   cond.paste <- paste(ff$V1_2[ff$V1_1 == "Condition"], 
                       ff$V1_3[ff$V1_1 == "Condition"],
                       ff$V1_4[ff$V1_1 == "Condition"], 
@@ -111,7 +111,7 @@ for(i in 1:length(txtPath)){
   
   ff3 <- ff2[,1:2]
   
-  ff4 <- rbind(image, as.data.frame(ff3), av, mag, wd, lensMode)
+  ff4 <- rbind(path, as.data.frame(ff3), av, mag, wd, lensMode)
 
   names <- ff4$V1_1
   ff5 <- as.data.frame(t(ff4[,-1]))
@@ -123,7 +123,8 @@ for(i in 1:length(txtPath)){
 
 nrow(files.df) #1889
 
-files.df$image <- str_extract(files.df$ImageName, pattern = "[^.]+")
+files.df$fileName <- basename(files.df$path)
+files.df$image <- str_extract(files.df$fileName, pattern = "[^.]+")
 
 
 imageName.parse <- str_split(files.df$image,

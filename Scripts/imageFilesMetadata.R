@@ -21,23 +21,33 @@ files.df <- read.table("./Data/txt_metadata.csv",
 
 ##### CREATE SHARED FILE NAME -----
 
-df.list$image[1]
+df.list$fileName[1]
 
-files.df$image[1]
+files.df$fileName[1] #for txt
+files.df$ImageName[1] #for tif
 
-nrow(files.df)
-nrow(df.list)
+nrow(files.df) #1889
+nrow(df.list) #3779
 
-df.images <- df.list[df.list$ext == "tif",] 
-nrow(df.images) #there's an extra image...
+## make two: one for txt one for tif
+
+df.images <- df.list[df.list$ext == "tif",] #1890
+df.txt <- df.list[df.list$ext == "txt",] #1889
+
+length(setdiff(df.images$fileName, files.df$ImageName)) #49
+length(setdiff(files.df$ImageName, df.images$fileName)) #39
 
 df.image.meta <- merge(df.images, files.df,
-                       by = "image",
-                       all.x = TRUE, all.y = TRUE)
-nrow(df.image.meta) #1940...some mismatches...
+                      by.x = "fileName", by.y = "ImageName",
+                      all.x = TRUE, all.y = TRUE) #1938
+
+setdiff(df.txt$fileName, files.df$fileName)
+setdiff(files.df$fileName, df.txt$fileName)
+# no difference in txt files
+
 
 #write.csv(df.image.meta,
-#          "./Data/imageFilesMetadata.csv",
+#          "./Data/image_txt.csv",
 #          row.names = FALSE)
 
-## LOOK AT IT MANUALLY ##
+## RECONCILE MANUALLY ##

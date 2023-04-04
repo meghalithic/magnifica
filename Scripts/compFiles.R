@@ -2,9 +2,8 @@
 ## meghan.balk@nhm.uio.no
 
 ## This code:
-## 1) extracts file names from the zip file of Steginoporella images
+## 1) extracts file names from the folder of Steginoporella images from the lab computer
 ## 2) creates a csv file with the information parsed
-## 3) compares the files to the bryozoan metadata file
 
 #### LOAD PACKAGES ----
 require(stringr)
@@ -22,51 +21,67 @@ require(dplyr)
 #write.csv(all_names, "test.csv")
 
 ## get folder names
-list = list.files(path = "",
+list = list.files(path = "/Users/mab/Desktop/from lab computer",
                   full.names = TRUE,
                   recursive = TRUE)
-list.trim <- gsub(list,
-                  pattern = "/Users/meghanabalk/Library/CloudStorage/Dropbox/Rocks-Paradox/Bryozoans/Stegino images/",
-                  replacement = "")
-
-#get rid of abstract book, I think
-list.rm <- list.trim[!grepl("Stegs/ISME 14 ABSTRACT BOOK", list.trim)]
+length(list) #3809
 
 #### CREATE CSV ----
 
+path <- unlist(list)
+length(path) #3809
+
 ##### PARSE FILE NAMES -----
-list.parse <- str_split(list.rm,
-                        pattern = "/")
 
 #first folder is either Sara (folder name Sara) or Mali (folder names Stegs and Stegs2)
 #subfolder folder, when given, is the formation or grouping
 
+list.trim <- gsub(list,
+                  pattern = "/Users/mab/Desktop/from lab computer/",
+                  replacement = "")
+
+list.parse <- str_split(list.trim,
+                        pattern = "/")
+
 folder <- c()
-formation <- c()
-image <- c()
+subfolder <- c()
+sub.subfolder <- c()
+fileName <- c()
 ext <- c()
 
 for(i in 1:length(list.parse)){
   folder[i] <- list.parse[[i]][1]
   if(isTRUE(endsWith(list.parse[[i]][2], ".txt"))){
-    formation[i] <- "NONE"
+    fileName[i] <- list.parse[[i]][2]
+    sub.subfolder[i] <- "NONE"
+    subfolder[i] <- "NONE"
   }
   else if(isTRUE(endsWith(list.parse[[i]][2], ".tif"))){
-    formation[i] <- "NONE"
+    fileName[i] <- list.parse[[i]][2]
+    sub.subfolder[i] <- "NONE"
+    subfolder[i] <- "NONE"
   }
   else{
-    formation[i] <- list.parse[[i]][2]
+    subfolder[i] <- list.parse[[i]][2]
   }
-  if(isTRUE(endsWith(list.parse[[i]][2], ".txt"))){
-    image[i] <- list.parse[[i]][2]
+  if(isTRUE(endsWith(list.parse[[i]][3], ".txt"))){
+    fileName[i] <- list.parse[[i]][3]
+    sub.subfolder[i] <- "NONE"
   }
-  else if(isTRUE(endsWith(list.parse[[i]][2], ".tif"))){
-    image[i] <- list.parse[[i]][2]
+  else if(isTRUE(endsWith(list.parse[[i]][3], ".tif"))){
+    fileName[i] <- list.parse[[i]][3]
+    sub.subfolder[i] <- "NONE"
   }
   else{
-    image[i] <- list.parse[[i]][3]
+    sub.subfolder[i] <- list.parse[[i]][3]
   }
-  if(isTRUE(endsWith(image[i], ".txt"))){
+  if(isTRUE(endsWith(list.parse[[i]][4], ".txt"))){
+    fileName[i] <- list.parse[[i]][4]
+  }
+  else if(isTRUE(endsWith(list.parse[[i]][4], ".tif"))){
+    fileName[i] <- list.parse[[i]][4]
+  }
+  if(isTRUE(endsWith(fileName[i], ".txt"))){
     ext[i] <- "txt"
   }
   else{
@@ -76,7 +91,7 @@ for(i in 1:length(list.parse)){
 
 ##### PARSE IMAGE NAME -----
 
-imageName <- paste(str_extract(image, pattern = "[^.]+"), formation, sep = "_")
+image <- str_extract(fileName, pattern = "[^.]+")
 
 imageName.list <- str_split(image,
                             pattern = "_")
@@ -104,10 +119,11 @@ for(i in 1:length(imageName.list)){
 ##### COMBINE & WRITE CSV ----
 
 df.list <- data.frame(folder = folder,
-                      formation = formation,
+                      subfolder = subfolder,
+                      sub.subfolder = sub.subfolder,
                       image = image,
                       ext = ext,
-                      imageName = imageName,
+                      fileName = fileName,
                       specimenNR = specimenNR,
                       number = number,
                       colonyCurve = colonyCurve,
@@ -117,8 +133,8 @@ df.list <- data.frame(folder = folder,
                       backscatter = backscatter,
                       stringsAsFactors = FALSE)
 
-nrow(df.list) #3779
-nrow(df.list[df.list$ext == "tif",])
+nrow(df.list) #3809
+nrow(df.list[df.list$ext == "tif",]) #1906
 
 df.list$newFormation <- ""
 df.list$newFormation[grepl("^0", df.list$specimenNR)] <- "NKBS"
@@ -134,5 +150,5 @@ df.list$newFormation[grepl("^10", df.list$specimenNR)] <- "Upper Kai-Iwi"
 df.list$newFormation[grepl("^11", df.list$specimenNR)] <- "Waipuru"
 
 #write.csv(df.list,
-#          "imageList.csv",
+#          "./Data/computerImageList.csv",
 #          row.names = FALSE)

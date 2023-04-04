@@ -4,7 +4,6 @@
 ## This code:
 ## 1) extracts file names from the zip file of Steginoporella images
 ## 2) creates a csv file with the information parsed
-## 3) compares the files to the bryozoan metadata file
 
 #### LOAD PACKAGES ----
 require(stringr)
@@ -48,7 +47,7 @@ list.parse <- str_split(list.trim,
 
 folder <- c()
 formation <- c()
-ImageName <- c()
+fileName <- c()
 ext <- c()
 
 for(i in 1:length(list.parse)){
@@ -63,15 +62,15 @@ for(i in 1:length(list.parse)){
     formation[i] <- list.parse[[i]][2]
   }
   if(isTRUE(endsWith(list.parse[[i]][2], ".txt"))){
-    ImageName[i] <- list.parse[[i]][2]
+    fileName[i] <- list.parse[[i]][2]
   }
   else if(isTRUE(endsWith(list.parse[[i]][2], ".tif"))){
-    ImageName[i] <- list.parse[[i]][2]
+    fileName[i] <- list.parse[[i]][2]
   }
   else{
-    ImageName[i] <- list.parse[[i]][3]
+    fileName[i] <- list.parse[[i]][3]
   }
-  if(isTRUE(endsWith(ImageName[i], ".txt"))){
+  if(isTRUE(endsWith(fileName[i], ".txt"))){
     ext[i] <- "txt"
   }
   else{
@@ -81,7 +80,7 @@ for(i in 1:length(list.parse)){
 
 ##### PARSE IMAGE NAME -----
 
-image <- str_extract(ImageName, pattern = "[^.]+")
+image <- str_extract(fileName, pattern = "[^.]+")
 
 ImageName.list <- str_split(image,
                             pattern = "_")
@@ -113,7 +112,7 @@ df.list <- data.frame(path = listPath,
                       formation = formation,
                       image = image,
                       ext = ext,
-                      ImageName = ImageName,
+                      fileName = fileName,
                       specimenNR = specimenNR,
                       number = number,
                       colonyCurve = colonyCurve,
