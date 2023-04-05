@@ -21,7 +21,7 @@ require(dplyr)
 #write.csv(all_names, "test.csv")
 
 ## get folder names
-list = list.files(path = "/Users/mab/Desktop/from lab computer",
+list = list.files(path = "/Users/mab/Library/CloudStorage/Dropbox/Rocks-Paradox/Bryozoans/from lab computer",
                   full.names = TRUE,
                   recursive = TRUE)
 length(list) #3809
@@ -37,7 +37,7 @@ length(path) #3809
 #subfolder folder, when given, is the formation or grouping
 
 list.trim <- gsub(list,
-                  pattern = "/Users/mab/Desktop/from lab computer/",
+                  pattern = "/Users/mab/Library/CloudStorage/Dropbox/Rocks-Paradox/Bryozoans/from lab computer/",
                   replacement = "")
 
 list.parse <- str_split(list.trim,
@@ -53,13 +53,13 @@ for(i in 1:length(list.parse)){
   folder[i] <- list.parse[[i]][1]
   if(isTRUE(endsWith(list.parse[[i]][2], ".txt"))){
     fileName[i] <- list.parse[[i]][2]
-    sub.subfolder[i] <- "NONE"
     subfolder[i] <- "NONE"
+    sub.subfolder[i] <- "NONE"
   }
   else if(isTRUE(endsWith(list.parse[[i]][2], ".tif"))){
     fileName[i] <- list.parse[[i]][2]
-    sub.subfolder[i] <- "NONE"
     subfolder[i] <- "NONE"
+    sub.subfolder[i] <- "NONE"
   }
   else{
     subfolder[i] <- list.parse[[i]][2]
@@ -93,27 +93,13 @@ for(i in 1:length(list.parse)){
 
 image <- str_extract(fileName, pattern = "[^.]+")
 
-imageName.list <- str_split(image,
-                            pattern = "_")
+image.list <- str_split(image,
+                        pattern = "_")
 
 specimenNR <- c()
-number <- c()
-colonyCurve <- c()
-pictureNumber <- c()
-AV <- c()
-magnification <- c()
-backscatter <- c()
 
-for(i in 1:length(imageName.list)){
-  number[i] <- imageName.list[[i]][1]
-  colonyCurve[i] <- imageName.list[[i]][2]
-  pictureNumber[i] <- imageName.list[[i]][3]
-  AV[i] <- imageName.list[[i]][4]
-  magnification[i] <- str_extract(imageName.list[[i]][5],
-                                  pattern = "[^.]+")
-  backscatter[i] <- str_extract(imageName.list[[i]][6],
-                                pattern = "[^.]+")
-  specimenNR[i] <- paste0(imageName.list[[i]][1], imageName.list[[i]][2])
+for(i in 1:length(image.list)){
+  specimenNR[i] <- paste0(image.list[[i]][1], image.list[[i]][2])
 }
 
 ##### COMBINE & WRITE CSV ----
@@ -125,29 +111,10 @@ df.list <- data.frame(folder = folder,
                       ext = ext,
                       fileName = fileName,
                       specimenNR = specimenNR,
-                      number = number,
-                      colonyCurve = colonyCurve,
-                      pictureNumber = pictureNumber,
-                      AV = AV,
-                      magnification = magnification,
-                      backscatter = backscatter,
                       stringsAsFactors = FALSE)
 
 nrow(df.list) #3809
 nrow(df.list[df.list$ext == "tif",]) #1906
-
-df.list$newFormation <- ""
-df.list$newFormation[grepl("^0", df.list$specimenNR)] <- "NKBS"
-df.list$newFormation[grepl("^1", df.list$specimenNR)] <- "NKBS"
-df.list$newFormation[grepl("^2", df.list$specimenNR)] <- "NKBS"
-df.list$newFormation[grepl("^3", df.list$specimenNR)] <- "NKBS"
-df.list$newFormation[grepl("^4", df.list$specimenNR)] <- "NKLS"
-df.list$newFormation[grepl("^5", df.list$specimenNR)] <- "NKLS"
-df.list$newFormation[grepl("^6", df.list$specimenNR)] <- "Tewkesbury"
-df.list$newFormation[grepl("^7", df.list$specimenNR)] <- "SHCSBSB"
-df.list$newFormation[grepl("^8", df.list$specimenNR)] <- "Tainui"
-df.list$newFormation[grepl("^10", df.list$specimenNR)] <- "Upper Kai-Iwi"
-df.list$newFormation[grepl("^11", df.list$specimenNR)] <- "Waipuru"
 
 #write.csv(df.list,
 #          "./Data/computerImageList.csv",

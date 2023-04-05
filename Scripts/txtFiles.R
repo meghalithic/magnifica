@@ -41,7 +41,7 @@ f <- read.table("/Users/mab/Library/CloudStorage/Dropbox/Rocks-Paradox/Bryozoans
 ## now make two columns, using "=" as deliminator
 
 ff <- cSplit(f, 'V1',
-             sep="=",
+             sep = "=",
              stripWhite = TRUE,
              type.convert = FALSE)
 
@@ -69,11 +69,11 @@ ff3 <- ff2[,1:2]
 
 ff4 <- rbind(path, as.data.frame(ff3), av, mag, wd, lensMode)
 
-ff4$V1_1
+ff4$V1_1 #need to transpose
 
 ## now for all!
 
-files.df <- data.frame()
+txt.df <- data.frame()
 
 for(i in 1:length(txtPath)){
   f <- read.table(txtPath[i],
@@ -117,37 +117,25 @@ for(i in 1:length(txtPath)){
   ff5 <- as.data.frame(t(ff4[,-1]))
   colnames(ff5) <- names
   
-  files.df <- rbind(files.df, ff5)
+  txt.df <- rbind(txt.df, ff5)
   
 }
 
-nrow(files.df) #1889
+nrow(txt.df) #1889
 
-files.df$fileName <- basename(files.df$path)
-files.df$image <- str_extract(files.df$fileName, pattern = "[^.]+")
+txt.df$fileName <- basename(txt.df$path)
+txt.df$image <- str_extract(txt.df$fileName, pattern = "[^.]+")
 
 
-imageName.parse <- str_split(files.df$image,
-                             pattern = "_")
-files.df$specimenNR <- ""
-files.df$number <- ""
-files.df$colonyCurve <- ""
-files.df$pictureNumber <- ""
-files.df$AV <- ""
-files.df$magnification <- ""
-files.df$backscatter <- ""
-for(i in 1:nrow(files.df)){
-  files.df$number[i] <- imageName.parse[[i]][1]
-  files.df$colonyCurve[i] <- imageName.parse[[i]][2]
-  files.df$pictureNumber[i] <- imageName.parse[[i]][3]
-  files.df$AV[i] <- imageName.parse[[i]][4]
-  files.df$magnification[i] <- str_extract(imageName.parse[[i]][5],
-                                  pattern = "[^.]+")
-  files.df$backscatter[i] <- str_extract(imageName.parse[[i]][6],
-                                pattern = "[^.]+")
-  files.df$specimenNR[i] <- paste0(imageName.parse[[i]][1], imageName.parse[[i]][2])
+image.parse <- str_split(txt.df$image,
+                         pattern = "_")
+
+txt.df$specimenNR <- ""
+
+for(i in 1:nrow(txt.df)){
+  txt.df$specimenNR[i] <- paste0(image.parse[[i]][1], image.parse[[i]][2])
 }
 
-#write.csv(files.df,
+#write.csv(txt.df,
 #          "./Data/txt_metadata.csv",
 #          row.names = FALSE)

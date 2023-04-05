@@ -46,28 +46,22 @@ list.parse <- str_split(list.trim,
 #subfolder folder, when given, is the formation or grouping
 
 folder <- c()
-formation <- c()
+subfolder <- c()
 fileName <- c()
 ext <- c()
 
 for(i in 1:length(list.parse)){
   folder[i] <- list.parse[[i]][1]
   if(isTRUE(endsWith(list.parse[[i]][2], ".txt"))){
-    formation[i] <- "NONE"
-  }
-  else if(isTRUE(endsWith(list.parse[[i]][2], ".tif"))){
-    formation[i] <- "NONE"
-  }
-  else{
-    formation[i] <- list.parse[[i]][2]
-  }
-  if(isTRUE(endsWith(list.parse[[i]][2], ".txt"))){
     fileName[i] <- list.parse[[i]][2]
+    subfolder[i] <- "NONE"
   }
   else if(isTRUE(endsWith(list.parse[[i]][2], ".tif"))){
     fileName[i] <- list.parse[[i]][2]
+    subfolder[i] <- "NONE"
   }
   else{
+    subfolder[i] <- list.parse[[i]][2]
     fileName[i] <- list.parse[[i]][3]
   }
   if(isTRUE(endsWith(fileName[i], ".txt"))){
@@ -82,61 +76,41 @@ for(i in 1:length(list.parse)){
 
 image <- str_extract(fileName, pattern = "[^.]+")
 
-ImageName.list <- str_split(image,
-                            pattern = "_")
+image.list <- str_split(image,
+                        pattern = "_")
 
 specimenNR <- c()
-number <- c()
-colonyCurve <- c()
-pictureNumber <- c()
-AV <- c()
-magnification <- c()
-backscatter <- c()
 
-for(i in 1:length(ImageName.list)){
-  number[i] <- ImageName.list[[i]][1]
-  colonyCurve[i] <- ImageName.list[[i]][2]
-  pictureNumber[i] <- ImageName.list[[i]][3]
-  AV[i] <- ImageName.list[[i]][4]
-  magnification[i] <- str_extract(ImageName.list[[i]][5],
-                                  pattern = "[^.]+")
-  backscatter[i] <- str_extract(ImageName.list[[i]][6],
-                                pattern = "[^.]+")
-  specimenNR[i] <- paste0(ImageName.list[[i]][1], ImageName.list[[i]][2])
+for(i in 1:length(image.list)){
+  specimenNR[i] <- paste0(image.list[[i]][1], image.list[[i]][2])
 }
 
 ##### COMBINE & WRITE CSV ----
 
 df.list <- data.frame(path = listPath,
                       folder = folder,
-                      formation = formation,
+                      subfolder = subfolder,
                       image = image,
                       ext = ext,
                       fileName = fileName,
                       specimenNR = specimenNR,
-                      number = number,
-                      colonyCurve = colonyCurve,
-                      pictureNumber = pictureNumber,
-                      AV = AV,
-                      magnification = magnification,
-                      backscatter = backscatter,
                       stringsAsFactors = FALSE)
 
 nrow(df.list) #3779
 nrow(df.list[df.list$ext == "tif",]) #1890, an extra image
 
-df.list$newFormation <- ""
-df.list$newFormation[grepl("^0", df.list$specimenNR)] <- "NKBS"
-df.list$newFormation[grepl("^1", df.list$specimenNR)] <- "NKBS"
-df.list$newFormation[grepl("^2", df.list$specimenNR)] <- "NKBS"
-df.list$newFormation[grepl("^3", df.list$specimenNR)] <- "NKBS"
-df.list$newFormation[grepl("^4", df.list$specimenNR)] <- "NKLS"
-df.list$newFormation[grepl("^5", df.list$specimenNR)] <- "NKLS"
-df.list$newFormation[grepl("^6", df.list$specimenNR)] <- "Tewkesbury"
-df.list$newFormation[grepl("^7", df.list$specimenNR)] <- "SHCSBSB"
-df.list$newFormation[grepl("^8", df.list$specimenNR)] <- "Tainui"
-df.list$newFormation[grepl("^10", df.list$specimenNR)] <- "Upper Kai-Iwi"
-df.list$newFormation[grepl("^11", df.list$specimenNR)] <- "Waipuru"
+df.list$formation <- ""
+df.list$formation[grepl("^0", df.list$specimenNR)] <- "NKBS"
+df.list$formation[grepl("^1", df.list$specimenNR)] <- "NKBS"
+df.list$formation[grepl("^2", df.list$specimenNR)] <- "NKBS"
+df.list$formation[grepl("^3", df.list$specimenNR)] <- "NKBS"
+df.list$formation[grepl("^4", df.list$specimenNR)] <- "NKLS"
+df.list$formation[grepl("^5", df.list$specimenNR)] <- "NKLS"
+df.list$formation[grepl("^6", df.list$specimenNR)] <- "Tewkesbury"
+df.list$formation[grepl("^7", df.list$specimenNR)] <- "SHCSBSB"
+df.list$formation[grepl("^8", df.list$specimenNR)] <- "Tainui"
+df.list$formation[grepl("^10", df.list$specimenNR)] <- "Upper Kai-Iwi"
+df.list$formation[grepl("^11", df.list$specimenNR)] <- "Waipuru"
 
 #write.csv(df.list,
 #          "./Data/imageList.csv",
