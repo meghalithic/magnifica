@@ -42,8 +42,14 @@ df.image.meta <- merge(df.images, txt.df,
                       by = "image",
                       all.x = TRUE, all.y = TRUE) #1892
 
-colnames(df.image.meta) <- gsub('.x', '.tif', names(df.image.meta))
-colnames(df.image.meta) <- gsub('.y', '.txt', names(df.image.meta))
+colnames(df.image.meta)[colnames(df.image.meta) == 'specimenNR.x'] <- 'specimenNR.tif'
+colnames(df.image.meta)[colnames(df.image.meta) == 'specimenNR.y'] <- 'specimenNR.txt'
+colnames(df.image.meta)[colnames(df.image.meta) == 'fileName.x'] <- 'fileName.tif'
+colnames(df.image.meta)[colnames(df.image.meta) == 'fileName.y'] <- 'fileName.txt'
+colnames(df.image.meta)[colnames(df.image.meta) == 'path.x'] <- 'path.tif'
+colnames(df.image.meta)[colnames(df.image.meta) == 'path.y'] <- 'path.txt'
+
+
 
 ## make check in ImageName matches fileName
 df.image.meta$ImageNameCheck <- df.image.meta$fileName.tif == df.image.meta$ImageName
