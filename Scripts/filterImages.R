@@ -26,7 +26,7 @@ nrow(bryo.images.30) #1835
 bryo.images.30$fileName.tif <- paste0(bryo.images.30$fileName, ".tif")
 
 #### CREATE OLD FILE NAMES - DELETE LATER ####
-recon.df <- read.table("~/Desktop/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
+recon.df <- read.table("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                        header = TRUE, sep = ";")
 
 setdiff(recon.df$newFileName, bryo.images$fileName) #none

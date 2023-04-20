@@ -14,9 +14,19 @@ require(lmodel2)
 require(tidyverse)
 
 #### LOAD DATA ----
-output <- read.csv("./Data/output.csv", header = TRUE)
-bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv",
-                      header = TRUE)
+output <- read.csv("./Data/output.csv",
+                   header = TRUE)
+df.images <- read.table("./Data/filteredImages.csv",
+                        header = TRUE,
+                        sep = ";")
+
+#### REDUCE TO SELECTED IMAGES ####
+
+noPath <- output$id
+
+list.trim <- gsub(list,
+                  pattern = "/Users/mab/Library/CloudStorage/Dropbox/Rocks-Paradox/Bryozoans/from lab computer/",
+                  replacement = "")
 
 #### EXPLORE DATA ----
 
