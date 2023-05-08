@@ -2,8 +2,7 @@
 ## meghan.balk@nhm.uio.no
 
 ## This code:
-# 1) compares image list in output.csv to metadata file and 
-# metadata file from AP
+# 1) compares image list in output from Steginator to bryozoa metadata file
 
 #### LOAD PACKAGES ----
 require(stringr)
@@ -14,30 +13,78 @@ require(lmodel2)
 require(tidyverse)
 
 #### LOAD DATA ----
-output <- read.csv("./Data/output.csv", header = TRUE)
-AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
-bryo.meta <- read.csv("./Data/Imaged Steginoporella magnifica specimens.csv",
-                      header = TRUE)
-AP_meta <- read.table("./Data/AP_Steginoporella.csv", 
+output <- read.csv("./Data/output_21Apr2023_Stegniator.csv", header = TRUE)
+#AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
+bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
                       sep = ";")
+#AP_meta <- read.table("./Data/AP_Steginoporella.csv", 
+#                      header = TRUE,
+#                      sep = ";")
+
 #### EXPLORE DATA ----
 
+nrow(bryo.meta) #1890
+
+nrow(output) #19346
+colnames(output)
+output$id[1]
+
+output$fileName <- gsub("/media/voje-lab/bryozoa/imaging/Stegino_images/combined/",
+                        "",
+                        output$id)
+
+output$image <- gsub(".tif",
+                     "",
+                     output$fileName)
+
+zz <- output[duplicated(output$box_id),]
+nrow(zz) #19
+
+#output$specimenNR <- c()
+#for(i in 1:nrow(output)){
+#  output$specimenNR[i] <- paste0(str_split(output$image[i], fixed("_"))[[1]][1],
+#                                 str_split(output$image[i], fixed("_"))[[1]][2])
+#}
+
+#### MERGE FILES ----
+
+bryo.meta.trim <- bryo.meta %>%
+  select(newFileName, newImage, newSpecimenNR,
+         image, fileName.tif, path.tif, specimenNR.tif,
+         Enterer, NOTES, formation, Mag)
+
+bryo.meta.trim$imageName <- gsub(".tif", "",
+                                 bryo.meta.trim$fileName.tif)
+
+meta.images <- merge(output, bryo.meta.trim,
+                     by.x = "image", by.y = "imageName",
+                     all.x = TRUE, all.y = FALSE)
+
+nrow(meta.images) #19346
+
+
+write.csv(meta.images,
+          "./Data/meta.images.csv",
+          row.names = FALSE)
+
+#### OLD ----
+
 ##images from shared "JPG" folder
-nrow(AP_images) #1654
-imageName.parse_AP <- str_split(AP_images$imageName, fixed("_"))
-specimen.NR_AP <- c()
-for(i in 1:length(imageName.parse_AP)){
-  specimen.NR_AP[i] <- paste0(imageName.parse_AP[[i]][1], imageName.parse_AP[[i]][2])
-}
-AP_images$SPECIMEN.NR <- specimen.NR_AP
-nrow(AP_images[!duplicated(AP_images$SPECIMEN.NR),]) #779
-AP_images.trimmed <- AP_images[!duplicated(AP_images$SPECIMEN.NR),]
+#nrow(AP_images) #1654
+#imageName.parse_AP <- str_split(AP_images$imageName, fixed("_"))
+#specimen.NR_AP <- c()
+#for(i in 1:length(imageName.parse_AP)){
+#  specimen.NR_AP[i] <- paste0(imageName.parse_AP[[i]][1], imageName.parse_AP[[i]][2])
+#}
+#AP_images$SPECIMEN.NR <- specimen.NR_AP
+#nrow(AP_images[!duplicated(AP_images$SPECIMEN.NR),]) #779
+#AP_images.trimmed <- AP_images[!duplicated(AP_images$SPECIMEN.NR),]
 
 ## overlap between A. Porto image list with bryo metadata:
 
-length(setdiff(AP_images.trimmed$SPECIMEN.NR, bryo.meta$SPECIMEN.NR)) #136
-length(setdiff(bryo.meta$SPECIMEN.NR, AP_images.trimmed$SPECIMEN.NR)) #134
+#length(setdiff(AP_images.trimmed$SPECIMEN.NR, bryo.meta$SPECIMEN.NR)) #136
+#length(setdiff(bryo.meta$SPECIMEN.NR, AP_images.trimmed$SPECIMEN.NR)) #134
 
 ## overlap between A. Porto image list with metadata provided by him:
 length(setdiff(AP_images.trimmed$SPECIMEN.NR, AP_meta$specimen.nr.)) #137
