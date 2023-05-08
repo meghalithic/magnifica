@@ -192,6 +192,10 @@ p.zh.form <- ggplot(traits.df) +
 sm.traits <- traits.df[traits.df$zh < 300,]
 length(unique(sm.traits$specimenNR)) #95 images out of 891
 
+write.csv(sm.traits,
+          "./Results/small_bimodal_hump.csv",
+          row.names = FALSE)
+
 ##driven by magnification?
 #not that I can tell...
 p.zh.mag <- ggplot(traits.df) +
