@@ -18,9 +18,6 @@ output <- read.csv("./Data/output_21Apr2023_Stegniator.csv", header = TRUE)
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
                       sep = ";")
-#AP_meta <- read.table("./Data/AP_Steginoporella.csv", 
-#                      header = TRUE,
-#                      sep = ";")
 
 #### EXPLORE DATA ----
 
@@ -40,6 +37,10 @@ output$image <- gsub(".tif",
 
 zz <- output[duplicated(output$box_id),]
 nrow(zz) #19
+
+output$new.id <- paste0(output$box_id, "_", output$image)
+xx <- output[duplicated(output$new.id),]
+nrow(xx) #0! yay!
 
 #output$specimenNR <- c()
 #for(i in 1:nrow(output)){
@@ -69,6 +70,10 @@ write.csv(meta.images,
           row.names = FALSE)
 
 #### OLD ----
+
+#AP_meta <- read.table("./Data/AP_Steginoporella.csv", 
+#                      header = TRUE,
+#                      sep = ";")
 
 ##images from shared "JPG" folder
 #nrow(AP_images) #1654
