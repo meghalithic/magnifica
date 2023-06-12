@@ -10,7 +10,6 @@ require(dplyr)
 require(ggplot2)
 require(reshape2)
 require(lmodel2)
-require(tidyverse)
 require(stringr)
 
 #### LOAD DATA ----
@@ -21,6 +20,8 @@ nrow(bryo.images) #1890
 
 bryo.images.30 <- bryo.images[bryo.images$Magnification == 30,]
 nrow(bryo.images.30) #1835
+
+bryo.images.removed <- bryo.images[bryo.images$Magnification != 30,]
 
 ##### add in full file name #####
 bryo.images.30$fileName.tif <- paste0(bryo.images.30$fileName, ".tif")
@@ -40,6 +41,13 @@ bryo.images.path <- merge(bryo.images.30, recon.df.path,
 nrow(bryo.images.path)
 #duplicates to reconcile manually
 
-#write.csv(bryo.images.path,
-#          "./Data/filteredImages.csv",
-#          row.names = FALSE)
+write.csv(bryo.images.removed,
+          "./Data/imagesRemoved.csv",
+          row.names = FALSE)
+
+write.csv(bryo.images.path,
+          "./Data/filteredImageswithDupes.csv",
+          row.names = FALSE)
+#add dupes to new file
+#some file paths matched an image taken by Mali to Sara's folder and vice versa
+#some images were duplicates and differed by image name LH or MHR; kept the LH file names
