@@ -14,9 +14,9 @@ require(lmodel2)
 require(tidyverse)
 
 #### LOAD DATA ----
-images.meta <- read.csv("./Data/meta.images.csv",
+images.meta <- read.csv("./Data/meta.images.Jun2023.csv",
                    header = TRUE,
-                   sep = ";")
+                   sep = ",")
 
 df.filter <- read.table("./Data/filteredImages.csv",
                         header = TRUE,
@@ -34,11 +34,15 @@ for(i in 1:nrow(df.filter)){
 }
 
 images.filter <- images.meta[images.meta$fileName.tif %in% df.filter$fileName.old,]
-nrow(images.filter) #19346
+nrow(images.filter) #18890
 length(unique(images.filter$fileName.tif)) #1824; only 10 images removed
 
-
 #### CALCULATE DISTANCES ----
+#measurements based off Voje et al. 2020 https://doi.org/10.5061/dryad.t4b8gthxm
+#zh is similar to LZ
+#cw.m is similar to WZ
+#oh is similar to LO
+#ow.m is similar to WO
 #see "stegs_linear_24Mar2023.png" for linear measurements
 #z = zooid
 #h = height
@@ -81,6 +85,9 @@ ow.b.x <- abs((images.filter$X21-images.filter$X20))
 ow.b.y <-  abs((images.filter$Y21-images.filter$Y20))
 ow.b <- sqrt(((ow.b.x)^2 + (ow.b.y)^2))
 
+## Operculum height
+oh <- (.5/ow.b)*sqrt(ow.b+oh.r+oh.l)
+
 ## Median process base width: 5 to 6
 mpw.b.x <- abs((images.filter$X5-images.filter$X6))
 mpw.b.y <-  abs((images.filter$Y5-images.filter$Y6))
@@ -101,20 +108,28 @@ cw.d.x <- abs((images.filter$X8-images.filter$X7))
 cw.d.y <-  abs((images.filter$Y8-images.filter$Y7))
 cw.d <- sqrt(((cw.d.x)^2 + (cw.d.y)^2))
 
+##### MAKE TABLE & SCALE CORRECT -----
+#For 30x it is 0.606 pixels per um(micrometer)
+
 traits.df <- data.frame(boxID = images.filter$box_id,
                         magnification = images.filter$Mag,
                         imageName = images.filter$image,
                         specimenNR = images.filter$specimenNR.tif,
                         formation = images.filter$formation,
-                        zh = zh, #z = zooid; h = height
-                        oh.l = oh.l, #o = operculum; l = left
-                        oh.r = oh.r, #r = right
-                        ow.m = ow.m, #w = width; m = mid
-                        ow.b = ow.b, #b = base
-                        mpw.b = mpw.b, #pt = polypide tube
-                        cw.m = cw.m, #c = cryptocyst
-                        cw.b = cw.b,
-                        cw.d = cw.d) #d = distal
+                        zh = zh/.606, #z = zooid; h = height
+                        oh = oh/.606, #o = operculum;
+                        ow.m = ow.m/.606, #w = width; m = mid
+                        ow.b = ow.b/.606, #b = base
+                        mpw.b = mpw.b/.606, #pt = polypide tube
+                        cw.m = cw.m/.606, #c = cryptocyst
+                        cw.b = cw.b/.606,
+                        cw.d = cw.d/.606, #d = distal
+                        zh.zw = zh/cw.d, #similar to LZ/WZ
+                        oh.ow = oh/ow.m) # similar to LO/WO 
+
+write.csv(traits.df,
+          "./Results/traits.csv",
+          row.names = FALSE)
 
 ##### ABOUT TRAITS -----
 
@@ -151,14 +166,16 @@ traits.stats <- traits.melt %>%
 ##### HISTOGRAM -----
 
 p.dist <- ggplot(traits.melt) +
-  geom_density(aes(x = measurementValue,
+  geom_density(aes(x = log10(measurementValue),
                    group = measurementType,
                    col = measurementType)) + #lots are bimodal
   ggtitle("Distribution of traits, N zooids = 18890, N colony = 891") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "Trait measurement (pixels)")
+  scale_x_continuous(name = "log10 trait measurement (pixels)")
+
+#ggsave(p.dist, file = "./Results/trait_distribution.png", width = 14, height = 10, units = "cm")
 
 ###### BIMODALITY ------  
 ##explore bimodality, using zooid height as an example then see if it generalizes
@@ -248,7 +265,7 @@ oh.model$regression.results #slope = 1, no asymmetry
 
 ##against zooid height
 
-ow.zh <- ggplot(data = traits.df) +
+p.ow.zh <- ggplot(data = traits.df) +
   geom_smooth(aes(x = zh, y = ow.m), method = "lm") +
   geom_point(aes(x = zh, y = ow.m)) + #two clusters
   ggtitle("Scaling of operculum mid-width with zooid height, N zooids = 18890, N colony = 891") +
@@ -256,6 +273,8 @@ ow.zh <- ggplot(data = traits.df) +
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   scale_y_continuous(name = "Operculum mid-width (pixels)") +
   scale_x_continuous(name = "Zooid height (pixels)")
+
+#ggsave(p.ow.zh, file = "./Results/ow.zh.scaling.png", width = 14, height = 10, units = "cm")
 
 #look at 4 images:
 #2 with the largest operculum width

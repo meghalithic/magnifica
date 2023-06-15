@@ -13,7 +13,8 @@ require(lmodel2)
 require(tidyverse)
 
 #### LOAD DATA ----
-output <- read.csv("./Data/output_21Apr2023_Stegniator.csv", header = TRUE)
+## CHANGE DATA FILE NAME AS NEEDED
+output <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
 #AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
@@ -51,7 +52,7 @@ nrow(xx) #0! yay!
 #### MERGE FILES ----
 
 bryo.meta.trim <- bryo.meta %>%
-  select(newFileName, newImage, newSpecimenNR,
+  dplyr::select(newFileName, newImage, newSpecimenNR,
          image, fileName.tif, path.tif, specimenNR.tif,
          Enterer, NOTES, formation, Mag)
 
@@ -65,8 +66,9 @@ meta.images <- merge(output, bryo.meta.trim,
 nrow(meta.images) #19346
 
 
+## CHANGE DATE EXT EVERYTIME
 write.csv(meta.images,
-          "./Data/meta.images.csv",
+          "./Data/meta.images.Jun2023.csv",
           row.names = FALSE)
 
 #### OLD ----
