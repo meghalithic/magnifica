@@ -147,7 +147,7 @@ form_data=lapply(form_final,function(x) x[complete.cases(x),])
 
 ##### PRIORS -----
 phen.var=lapply(form_data,function (x){ (cov(x[,3:7]))}) #traits
-prior=lapply(phen.var, function (x){list(G=list(V=x/2,nu=2),
+prior=lapply(phen.var, function (x){list(G=list(G1=list(V=x/2,nu=2)),
                                          R=list(V=x/4,nu=2))})
 #rescale by 100 or 1000
 
