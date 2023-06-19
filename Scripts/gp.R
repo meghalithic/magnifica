@@ -149,14 +149,13 @@ form_data=lapply(form_final,function(x) x[complete.cases(x),])
 phen.var=lapply(form_data,function (x){ (cov(x[,3:7]))}) #traits
 prior=lapply(phen.var, function (x){list(G=list(G1=list(V=x/2,nu=2)),
                                          R=list(V=x/4,nu=2))})
-#rescale by 100 or 1000
 
 ##### MCMC -----
 #Running the MCMC chain
 model_G=list()
 for (i in 1:length(form_data)){ #length 7 because 7 formations
   model_G[[i]]<-MCMCglmm(cbind(zh, ow.m, mpw.b, cw.m, cw.d)~trait-1,
-                         random = ~us(trait):specimenNR, #the number of these determines # of Gs
+                         random = ~us(trait):specimenNR, #the number of these determines # of Gs #+ us(trait):formation
                          rcov=~us(trait):units,
                          family=rep("gaussian",5), #5 for 5 traits
                          data=form_data[[i]],
@@ -164,5 +163,77 @@ for (i in 1:length(form_data)){ #length 7 because 7 formations
                          prior=prior[[i]],verbose=TRUE)
   
 }
+
+save(model_G, file="./Results/New_g_matrices.RData")
+
+load(file = "New_g_matrices.RData") #load the g matrices calculated above 
+
+summary(model_G[[1]])
+summary(model_G[[2]])
+summary(model_G[[3]])
+summary(model_G[[4]])
+summary(model_G[[5]])
+summary(model_G[[6]])
+summary(model_G[[7]])
+
+##plots to see where sampling from:
+plot(model_G[[1]]$VCV) #catepillar!
+plot(model_G[[2]]$VCV) #catepillar!
+plot(model_G[[3]]$VCV) #catepillar!
+plot(model_G[[4]]$VCV) #catepillar!
+plot(model_G[[5]]$VCV) #catepillar!
+plot(model_G[[6]]$VCV) #catepillar!
+plot(model_G[[7]]$VCV) #catepillar!
+
+#Retrieving G from posterior
+model = model_G
+data = (dat_lg_N)
+ntraits = 5
+Gmat = lapply(model, function (x) { 
+  matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
+
+
+#Standardizing G by the trait means 
+
+mean_by_form = setDT(na.omit(data[,2:7]))[, lapply(.SD, mean, na.rm = F), by = .(formation)] #omit col 1
+u_form=split(mean_by_form,mean_by_form$formation)
+test=lapply(u_form, function (x){ data.matrix(x[,2:6])}) #omit col and form
+test_std=lapply(test,function (x){(as.numeric(x))%*%t(as.numeric(x))})
+G_std=list()
+for (i in 1:length(Gmat)){
+  G_std[[i]]=Gmat[[i]]/(test_std[names(form_data[i])][[1]])
+}
+G_std
+names(G_std)=names(form_data[1:i])
+
+##Genetic variance in traits and eigenvectors
+
+#load(file="New_g_matrices.RData") #load the g matrices calculated above 
+
+lapply(G_std, isSymmetric)  
+std_variances = lapply(G_std, diag)
+paste("Trait variances")
+head(std_variances)
+
+eig_variances=lapply(G_std, function (x) {eigen(x)$values})
+paste("Eigenvalue variances")
+head(eig_variances)
+
+eig_percent=lapply(eig_variances, function (x) {x/sum(x)})
+eig_per_mat=do.call(rbind, eig_percent)
+eig_per_mat=data.frame(eig_per_mat,rownames(eig_per_mat))
+eig_per=melt(eig_per_mat)
+#dev.off()
+PC_dist = ggplot(eig_per,
+                 aes(x = variable, y = value,
+                     group = rownames.eig_per_mat.,
+                     colour = rownames.eig_per_mat.)) +
+  geom_line(aes(linetype = rownames.eig_per_mat.)) +
+  geom_point() +
+  xlab("Principal component rank") +
+  ylab("%Variation in the PC")
+PC_dist
+
+ggsave(PC_dist, file = "./Results/PC_dist_form.png", width = 14, height = 10, units = "cm")
 
 
