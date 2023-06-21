@@ -184,6 +184,8 @@ plot(model_G[[4]]$VCV) #catepillar!
 plot(model_G[[5]]$VCV) #catepillar!
 plot(model_G[[6]]$VCV) #catepillar!
 plot(model_G[[7]]$VCV) #catepillar!
+#formations: "NKLS", "NKBS", "Tewkesbury", "Waipuru", "Upper Kai-Iwi", "SHCSBSB", "Tainui" #old to young
+## RESAVE MODELS because saved as wrong formations
 
 #Retrieving G from posterior
 model = model_G
@@ -234,6 +236,23 @@ PC_dist = ggplot(eig_per,
   ylab("%Variation in the PC")
 PC_dist
 
-ggsave(PC_dist, file = "./Results/PC_dist_form.png", width = 14, height = 10, units = "cm")
+#ggsave(PC_dist, file = "./Results/PC_dist_form.png", width = 14, height = 10, units = "cm")
+
+##Controlling for noise
+#Extend G
+
+G_ext = lapply(G_std, function (x){ ExtendMatrix(x, ret.dim = 7)$ExtMat})
+lapply(G_ext,isSymmetric)  
+Ext_std_variances=lapply(G_ext,diag)
+Ext_eig_variances=lapply(G_ext,function (x) {eigen(x)$values})
+
+
+comp_mat=RandomSkewers(G_ext)
+corr_mat=comp_mat$correlations+t(comp_mat$correlations) 
+diag(corr_mat)=1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(corr_mat,upper="number", lower="pie")
+
+
 
 
