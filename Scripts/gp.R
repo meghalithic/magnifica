@@ -185,7 +185,7 @@ plot(model_G[[5]]$VCV) #catepillar!
 plot(model_G[[6]]$VCV) #catepillar!
 plot(model_G[[7]]$VCV) #catepillar!
 #formations: "NKLS", "NKBS", "Tewkesbury", "Waipuru", "Upper Kai-Iwi", "SHCSBSB", "Tainui" #old to young
-## RESAVE MODELS because saved as wrong formations
+## ORDER HERE: NKBS, NKLS, SSHCSBSB, Tainui, Twekesbury, Upper Kai-Iwi, Waipuru (despite releveling :/)
 
 #Retrieving G from posterior
 model = model_G
