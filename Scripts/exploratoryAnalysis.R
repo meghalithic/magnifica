@@ -14,7 +14,7 @@ require(lmodel2)
 require(tidyverse)
 
 #### LOAD DATA ----
-images.meta <- read.csv("./Data/meta.images.Jun2023.csv",
+images.meta <- read.csv("./Data/meta.images.22Jun2023.csv",
                    header = TRUE,
                    sep = ",")
 
@@ -24,7 +24,7 @@ df.filter <- read.table("./Data/filteredImages.csv",
 
 #### EXPLORE DATA ----
 nrow(df.filter) #1834
-nrow(images.meta) #19346
+nrow(images.meta) #15783
 
 #### REDUCE TO SELECTED IMAGES ####
 
@@ -34,8 +34,8 @@ for(i in 1:nrow(df.filter)){
 }
 
 images.filter <- images.meta[images.meta$fileName.tif %in% df.filter$fileName.old,]
-nrow(images.filter) #18890
-length(unique(images.filter$fileName.tif)) #1824; only 10 images removed
+nrow(images.filter) #15773
+length(unique(images.filter$fileName.tif)) #1464; only 370 images removed
 
 #### CALCULATE DISTANCES ----
 #measurements based off Voje et al. 2020 https://doi.org/10.5061/dryad.t4b8gthxm
@@ -128,40 +128,23 @@ traits.df <- data.frame(boxID = images.filter$box_id,
                         oh.ow = oh/ow.m) # similar to LO/WO 
 
 write.csv(traits.df,
-          "./Results/traits.csv",
+          "./Results/traits_22Jun2023.csv",
           row.names = FALSE)
 
 ##### ABOUT TRAITS -----
 
-nrow(images.filter) #18890
-nrow(traits.df) #18890
-length(unique(traits.melt$specimenNR)) #891 unique colonies
+nrow(images.filter) #15773
+nrow(traits.df) #15773
 
 traits.melt <- melt(data = traits.df,
                     id.vars = c("boxID","imageName", "specimenNR", "formation", "magnification"),
                     variable.name = "measurementType",
                     value.name = "measurementValue")
+length(unique(traits.melt$specimenNR)) #742 unique colonies
 
 traits.stats <- traits.melt %>%
   group_by(measurementType) %>%
   summarise(avg = mean(measurementValue))
-
-# # A tibble: 9 × 2
-# measurementType    avg
-# <fct>             <dbl>
-# 1 zh               483.
-# 2 oh.l             267.
-# 3 oh.r             267.
-# 4 ow.m             261.
-# 5 ow.b             212.
-# 6 mpw.b            108.
-# 7 cw.m             242.
-# 8 cw.b             140.
-# 9 cw.d             264.
-
-##expect oh.l and oh.r to be similar - YES
-##expect zh to be largest value - YES
-##expect mpw.b to be smallest value - YES
 
 ##### HISTOGRAM -----
 
@@ -175,7 +158,7 @@ p.dist <- ggplot(traits.melt) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "log10 trait measurement (pixels)")
 
-#ggsave(p.dist, file = "./Results/trait_distribution.png", width = 14, height = 10, units = "cm")
+#ggsave(p.dist, file = "./Results/trait_distribution_22Jun2023.png", width = 14, height = 10, units = "cm")
 
 ###### BIMODALITY ------  
 ##explore bimodality, using zooid height as an example then see if it generalizes
@@ -231,8 +214,8 @@ p.zh.mag <- ggplot(traits.df) +
 ##what does it look like if all magnification is the same?
 #still get bimodal hump
 
-nrow(traits.df[traits.df$magnification == "x30",]) #18752
-length(unique(traits.df$specimenNR[traits.df$magnification == "x30"])) #884
+nrow(traits.df[traits.df$magnification == "x30",]) #15773
+length(unique(traits.df$specimenNR[traits.df$magnification == "x30"])) #742
 
 p.zh.mag.30 <- ggplot(traits.df[traits.df$magnification == "x30",]) +
   geom_density(aes(x = zh[traits.df$magnification == "x30"])) + 

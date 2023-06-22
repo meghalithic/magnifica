@@ -14,7 +14,7 @@ require(tidyverse)
 
 #### LOAD DATA ----
 ## CHANGE DATA FILE NAME AS NEEDED
-output <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
+output <- read.csv("./Data/output_21Jun2023_Stegniator.csv", header = TRUE)
 #AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
@@ -24,20 +24,20 @@ bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
 
 nrow(bryo.meta) #1890
 
-nrow(output) #19346
+nrow(output) #15783
 colnames(output)
 output$id[1]
 
-output$fileName <- gsub("/media/voje-lab/bryozoa/imaging/Stegino_images/combined/",
+output$fileName <- gsub("bryozoa_lab_images/",
                         "",
                         output$id)
 
-output$image <- gsub(".tif",
+output$image <- gsub(".jpg",
                      "",
                      output$fileName)
 
 zz <- output[duplicated(output$box_id),]
-nrow(zz) #19
+nrow(zz) #13
 
 output$new.id <- paste0(output$box_id, "_", output$image)
 xx <- output[duplicated(output$new.id),]
@@ -63,12 +63,12 @@ meta.images <- merge(output, bryo.meta.trim,
                      by.x = "image", by.y = "imageName",
                      all.x = TRUE, all.y = FALSE)
 
-nrow(meta.images) #19346
+nrow(meta.images) #15783
 
 
 ## CHANGE DATE EXT EVERYTIME
 write.csv(meta.images,
-          "./Data/meta.images.Jun2023.csv",
+          "./Data/meta.images.22Jun2023.csv",
           row.names = FALSE)
 
 #### OLD ----

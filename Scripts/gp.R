@@ -32,7 +32,7 @@ library(coin)
 
 #### LOAD DATA ----
 
-df <- read.csv("./Results/traits.csv",
+df <- read.csv("./Results/traits_22Jun2023.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
@@ -212,10 +212,15 @@ names(G_std)=names(form_data[1:i])
 
 #load(file="New_g_matrices.RData") #load the g matrices calculated above 
 
-lapply(G_std, isSymmetric)  
+lapply(G_std, isSymmetric)  #is.symmetric.matrix
 std_variances = lapply(G_std, diag)
 paste("Trait variances")
 head(std_variances)
+
+m.1 <- round(G_std[[1]], 10)
+is.symmetric.matrix(m.1)
+
+is.positive.definite(m.1) #no spot with zero variance; so variance along certain directions are negative
 
 eig_variances=lapply(G_std, function (x) {eigen(x)$values})
 paste("Eigenvalue variances")
@@ -238,9 +243,11 @@ PC_dist
 
 #ggsave(PC_dist, file = "./Results/PC_dist_form.png", width = 14, height = 10, units = "cm")
 
+#Note that some matrices have negative eigenvalues. This can cause a lot of trouble in analyses involving inverted matrices.
+#Solution from evolqg Marroig et al. 2012
+
 ##Controlling for noise
 #Extend G
-
 G_ext = lapply(G_std, function (x){ ExtendMatrix(x, ret.dim = 7)$ExtMat})
 lapply(G_ext,isSymmetric)  
 Ext_std_variances=lapply(G_ext,diag)
