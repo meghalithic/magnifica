@@ -191,7 +191,7 @@ for (i in 1:1){ #length 7 because 7 formations
 
 data.list = list(model_G, dat_lg_N)
 
-save(model_G, file="./Results/g_matrices_data.RData")
+save(model_G, file="./Results/g_matrices_data_1form.RData")
 
 load(file = "New_g_matrices.RData") #load the g matrices calculated above 
 
@@ -204,7 +204,7 @@ summary(model_G[[6]])
 summary(model_G[[7]])
 
 ##plots to see where sampling from:
-plot(model_G[[1]]$VCV, ask = F) #catepillar!
+plot(model_G[[1]]$VCV) #catepillar!
 plot(model_G[[2]]$VCV) #catepillar!
 plot(model_G[[3]]$VCV) #catepillar!
 plot(model_G[[4]]$VCV) #catepillar!
@@ -217,7 +217,7 @@ plot(model_G[[7]]$VCV) #catepillar!
 #Retrieving G from posterior
 model = model_G
 data = (dat_lg_N)
-ntraits = 5
+ntraits = 8
 Gmat = lapply(model, function (x) { 
   matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
 
