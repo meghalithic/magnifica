@@ -192,7 +192,7 @@ p.dist <- ggplot(traits.melt) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "log10 trait measurement (pixels)")
 
-#ggsave(p.dist, file = "./Results/trait_distribution_22Jun2023.png", width = 14, height = 10, units = "cm")
+ggsave(p.dist, file = "./Results/trait_distribution_26Jun2023.png", width = 14, height = 10, units = "cm")
 
 ###### BIMODALITY ------  
 ##explore bimodality, using zooid height as an example then see if it generalizes
