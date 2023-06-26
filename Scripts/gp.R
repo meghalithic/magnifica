@@ -99,7 +99,7 @@ for (i in 1:length(traits)){
 ml <- marrangeGrob(Fig, nrow = 5, ncol = 1)
 ml
 
-ggsave(ml, file = "./Results/trait.interest_distribution.png", width = 14, height = 10, units = "cm")
+ggsave(ml, file = "./Results/trait.interest_distribution_26June2023.png", width = 14, height = 10, units = "cm")
 
 
 ## most would be normal without small hump...
@@ -157,7 +157,7 @@ p1 <- ggplot(dataset) +
   labs(x = paste("LD1 (", percent(prop.lda[1]), ")", sep=""),
        y = paste("LD2 (", percent(prop.lda[2]), ")", sep=""))
 p1
-ggsave(p1, file = "./Results/trait_discriminant.png", width = 14, height = 10, units = "cm")
+ggsave(p1, file = "./Results/trait_discriminant_26Jun2023.png", width = 14, height = 10, units = "cm")
 
 #### P MATRIX ----
 

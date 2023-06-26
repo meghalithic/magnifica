@@ -85,6 +85,22 @@ ow.b.x <- abs((images.filter$X21-images.filter$X20))
 ow.b.y <-  abs((images.filter$Y21-images.filter$Y20))
 ow.b <- sqrt(((ow.b.x)^2 + (ow.b.y)^2))
 
+## Operculum side length of right side: 21 to 18
+o.side.r.x <- abs((images.filter$X21-images.filter$X18))
+o.side.r.y <- abs((images.filter$Y21-images.filter$Y18))
+o.side.r <- sqrt(((o.side.r.x)^2 + (o.side.r.y)^2))
+
+## Operculum side length of left side: 20 to 17
+o.side.l.x <- abs((images.filter$X20-images.filter$X17))
+o.side.l.y <- abs((images.filter$Y20-images.filter$Y17))
+o.side.l <- sqrt(((o.side.l.x)^2 + (o.side.l.y)^2))
+
+## Operculum average side length:
+o.side.avg <- rowMeans(cbind(o.side.r, o.side.l))
+
+plot(o.side.l, o.side.r)
+summary(lm(o.side.r ~ o.side.l)) #basically 1
+
 ## Operculum height
 oh <- (.5/ow.b)*sqrt(ow.b+oh.r+oh.l)
 
@@ -108,6 +124,22 @@ cw.d.x <- abs((images.filter$X8-images.filter$X7))
 cw.d.y <-  abs((images.filter$Y8-images.filter$Y7))
 cw.d <- sqrt(((cw.d.x)^2 + (cw.d.y)^2))
 
+## Cryptocyst side length of right side: 1 to 7
+c.side.r.x <- abs((images.filter$X1-images.filter$X7))
+c.side.r.y <- abs((images.filter$Y1-images.filter$Y7))
+c.side.r <- sqrt(((c.side.r.x)^2 + (c.side.r.y)^2))
+
+## Cryptocyst side length of left side: 9 to 8
+c.side.l.x <- abs((images.filter$X9-images.filter$X8))
+c.side.l.y <- abs((images.filter$Y9-images.filter$Y8))
+c.side.l <- sqrt(((c.side.l.x)^2 + (c.side.l.y)^2))
+
+## Cryptocyst average side length:
+c.side.avg <- rowMeans(cbind(c.side.r, c.side.l))
+
+plot(c.side.l, c.side.r)
+summary(lm(c.side.r ~ c.side.l)) #basically 1
+
 ##### MAKE TABLE & SCALE CORRECT -----
 #For 30x it is 0.606 pixels per um(micrometer)
 
@@ -117,18 +149,20 @@ traits.df <- data.frame(boxID = images.filter$box_id,
                         specimenNR = images.filter$specimenNR.tif,
                         formation = images.filter$formation,
                         zh = zh/.606, #z = zooid; h = height
-                        oh = oh/.606, #o = operculum;
+                        oh = oh/.606, #o = operculum
                         ow.m = ow.m/.606, #w = width; m = mid
                         ow.b = ow.b/.606, #b = base
+                        o.side = o.side.avg/.606,
                         mpw.b = mpw.b/.606, #pt = polypide tube
                         cw.m = cw.m/.606, #c = cryptocyst
                         cw.b = cw.b/.606,
                         cw.d = cw.d/.606, #d = distal
+                        c.side = c.side.avg/.606,
                         zh.zw = zh/cw.d, #similar to LZ/WZ
                         oh.ow = oh/ow.m) # similar to LO/WO 
 
 write.csv(traits.df,
-          "./Results/traits_22Jun2023.csv",
+          "./Results/traits_26Jun2023.csv",
           row.names = FALSE)
 
 ##### ABOUT TRAITS -----
@@ -189,7 +223,7 @@ p.zh.form <- ggplot(traits.df) +
 #only see bimodal in Waipurpu, NKBS, Upper Kai-Iwi
 
 ##seems like first hump ends around 300 pixels
-sm.traits <- traits.df[traits.df$zh < 300,]
+sm.traits <- traits.df[traits.df$zh < 500,]
 length(unique(sm.traits$specimenNR)) #95 images out of 891
 
 write.csv(sm.traits,
