@@ -30,6 +30,25 @@ library(scales)
 library(RColorBrewer)
 library(coin)
 
+# library(remotes)
+# remotes::install_version("evolqg",
+#                          version = "0.2.6",
+#                          upgrade = "never",
+#                          repos = "http://cran.us.r-project.org")
+# 
+# packageurl <- "https://cran.r-project.org/src/contrib/Archive/evolqg/evolqg_0.2-7.tar.gz"
+# install.packages(packageurl, repos=NULL, type="source")
+# 
+# package = "https://cran.r-project.org/src/contrib/Archive/evolqg/evolqg_0.2-7.tar.gz"
+# utils::install.packages(pkgs = package, repos = NULL)
+# 
+# library(evolqg)
+# 
+# library("groundhog")
+# groundhog.library("evolqg", 
+#                   "2019-04-08",
+#                   tolerate.R.version='4.2.3')
+
 #### LOAD DATA ----
 
 df <- read.csv("./Results/traits_22Jun2023.csv",
@@ -45,16 +64,21 @@ df$new.id <- paste0(df$boxID, "_", df$image)
 colony_list <- unique(df$image)
 length(colony_list) #1824
 
-levels(df$formation)<-c("NKLS", "NKBS", "Tewkesbury", "Waipuru", "Upper Kai-Iwi", "SHCSBSB", "Tainui") #old to young
+df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
+                                                "Waipuru", "Upper Kai-Iwi", 
+                                                "Tainui", "SHCSBSB")) #old to young
 formation_list<-unique(df$formation)
 length(formation_list)
 
-traits = names(df[, c("zh", "mpw.b", "cw.m", "cw.d", "ow.m")])
+traits = names(df[, c("zh", "mpw.b", "cw.m", "cw.d", "ow.m", "oh", "c.side", "o.side")])
 df$zh <- log10(df$zh)
 df$mpw.b <- log10(df$mpw.b)
 df$cw.m <- log10(df$cw.m)
 df$cw.d <- log10(df$cw.d)
 df$ow.m <- log10(df$ow.m)
+df$oh <- log10(df$oh)
+df$o.side <- log10(df$o.side)
+df$c.side <- log10(df$c.side)
 
 colNums <- match(c(traits,"image"),names(df))
 
@@ -112,13 +136,13 @@ means = dat_lg_N %>%
 
 #### SCALE DATA ----
 dat_lda=dat_lg_N
-dat_lda[,3:7]=scale(dat_lda[,3:7],center=F,scale=T) #just traits
+dat_lda[,3:10]=scale(dat_lda[,3:10],center=F,scale=T) #just traits
 data_discriminant=dat_lda
 
-data_plot=na.omit(data_discriminant[,1:7]) #all rows
+data_plot=na.omit(data_discriminant[,1:10]) #all rows
 
 r3 <- lda(formula = formation ~ ., 
-          data = data_plot[,2:7], method='mle') #just traits + formation 
+          data = data_plot[,2:10], method='mle') #just traits + formation 
 
 plda = predict(object = r3, # predictions
                newdata = data_plot)
@@ -146,25 +170,28 @@ form_final=colony_form[names(enough[enough==T,])]
 form_data=lapply(form_final,function(x) x[complete.cases(x),])
 
 ##### PRIORS -----
-phen.var=lapply(form_data,function (x){ (cov(x[,3:7]))}) #traits
+phen.var=lapply(form_data,function (x){ (cov(x[,3:10]))}) #traits
 prior=lapply(phen.var, function (x){list(G=list(G1=list(V=x/2,nu=2)),
                                          R=list(V=x/4,nu=2))})
 
 ##### MCMC -----
 #Running the MCMC chain
 model_G=list()
-for (i in 1:length(form_data)){ #length 7 because 7 formations
-  model_G[[i]]<-MCMCglmm(cbind(zh, ow.m, mpw.b, cw.m, cw.d)~trait-1,
+for (i in 1:1){ #length 7 because 7 formations
+  model_G[[i]]<-MCMCglmm(cbind(zh, oh, ow.m, o.side, 
+                               mpw.b, cw.m, cw.d, c.side)~trait-1,
                          random = ~us(trait):specimenNR, #the number of these determines # of Gs #+ us(trait):formation
                          rcov=~us(trait):units,
-                         family=rep("gaussian",5), #5 for 5 traits
+                         family=rep("gaussian",8), #num of traits
                          data=form_data[[i]],
                          nitt=1500000,thin=1000,burnin=500000,
                          prior=prior[[i]],verbose=TRUE)
   
 }
 
-save(model_G, file="./Results/New_g_matrices.RData")
+data.list = list(model_G, dat_lg_N)
+
+save(model_G, file="./Results/g_matrices_data.RData")
 
 load(file = "New_g_matrices.RData") #load the g matrices calculated above 
 
@@ -177,7 +204,7 @@ summary(model_G[[6]])
 summary(model_G[[7]])
 
 ##plots to see where sampling from:
-plot(model_G[[1]]$VCV) #catepillar!
+plot(model_G[[1]]$VCV, ask = F) #catepillar!
 plot(model_G[[2]]$VCV) #catepillar!
 plot(model_G[[3]]$VCV) #catepillar!
 plot(model_G[[4]]$VCV) #catepillar!
@@ -206,7 +233,7 @@ for (i in 1:length(Gmat)){
   G_std[[i]]=Gmat[[i]]/(test_std[names(form_data[i])][[1]])
 }
 G_std
-names(G_std)=names(form_data[1:i])
+names(G_std)=names(form_data[1:i]) #only one negative; formation 4 (Tainui)
 
 ##Genetic variance in traits and eigenvectors
 
@@ -217,10 +244,10 @@ std_variances = lapply(G_std, diag)
 paste("Trait variances")
 head(std_variances)
 
-m.1 <- round(G_std[[1]], 10)
-is.symmetric.matrix(m.1)
+#m.1 <- round(G_std[[1]], 10)
+#is.symmetric.matrix(m.1)
 
-is.positive.definite(m.1) #no spot with zero variance; so variance along certain directions are negative
+#is.positive.definite(m.1) #no spot with zero variance; so variance along certain directions are negative
 
 eig_variances=lapply(G_std, function (x) {eigen(x)$values})
 paste("Eigenvalue variances")
@@ -239,16 +266,19 @@ PC_dist = ggplot(eig_per,
   geom_point() +
   xlab("Principal component rank") +
   ylab("%Variation in the PC")
-PC_dist
+PC_dist #one negative; none above 1!
 
-#ggsave(PC_dist, file = "./Results/PC_dist_form.png", width = 14, height = 10, units = "cm")
+ggsave(PC_dist, file = "./Results/PC_dist_form.png", width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. This can cause a lot of trouble in analyses involving inverted matrices.
 #Solution from evolqg Marroig et al. 2012
 
 ##Controlling for noise
 #Extend G
-G_ext = lapply(G_std, function (x){ ExtendMatrix(x, ret.dim = 7)$ExtMat})
+G_ext = lapply(G_std, function (x){ ExtendMatrix(x, ret.dim = 5)$ExtMat}) 
+#Error in array(dim = c(p - 6)) : negative length vectors are not allowed
+#In addition: Warning message:
+#  In ExtendMatrix(x, ret.dim = 5) : matrix is too small
 lapply(G_ext,isSymmetric)  
 Ext_std_variances=lapply(G_ext,diag)
 Ext_eig_variances=lapply(G_ext,function (x) {eigen(x)$values})
