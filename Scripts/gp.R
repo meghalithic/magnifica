@@ -557,6 +557,7 @@ plot(g.std_variances[[1]], p.std_variances[[1]],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "NKLS")
+abline(0,1)
 summary(lm(p.std_variances[[1]] ~ g.std_variances[[1]]))
 
 plot(g.std_variances[[2]], p.std_variances[[2]],
@@ -564,6 +565,7 @@ plot(g.std_variances[[2]], p.std_variances[[2]],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "NKBS")
+abline(0,1)
 summary(lm(p.std_variances[[2]] ~ g.std_variances[[2]]))
 
 plot(g.std_variances[[3]], p.std_variances[[3]],
@@ -571,6 +573,7 @@ plot(g.std_variances[[3]], p.std_variances[[3]],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "Tewkesbury")
+abline(0,1)
 summary(lm(p.std_variances[[3]] ~ g.std_variances[[3]]))
 
 plot(g.std_variances[[4]], p.std_variances[[4]],
@@ -578,6 +581,7 @@ plot(g.std_variances[[4]], p.std_variances[[4]],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "Waipuru")
+abline(0,1)
 summary(lm(p.std_variances[[4]] ~ g.std_variances[[4]]))
 
 plot(g.std_variances[[5]], p.std_variances[[5]],
@@ -585,6 +589,7 @@ plot(g.std_variances[[5]], p.std_variances[[5]],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "Upper Kai-Iwi")
+abline(0,1)
 summary(lm(p.std_variances[[5]] ~ g.std_variances[[5]]))
 
 plot(g.std_variances[[6]], p.std_variances[[6]],
@@ -592,6 +597,7 @@ plot(g.std_variances[[6]], p.std_variances[[6]],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "Tainui")
+abline(0,1)
 summary(lm(p.std_variances[[6]] ~ g.std_variances[[6]]))
 
 plot(g.std_variances[[7]], p.std_variances[[7]],
@@ -599,4 +605,5 @@ plot(g.std_variances[[7]], p.std_variances[[7]],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "SHCSBSB")
+abline(0,1)
 summary(lm(p.std_variances[[7]] ~ g.std_variances[[7]]))
