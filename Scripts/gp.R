@@ -143,7 +143,8 @@ mean_by_formation = mean_by_formation_colony %>%
 
 colony_means = dat_lg_N %>%
   group_by(colony.id) %>%
-  summarize(n.zooid = length(unique(zooid.id)),
+  summarize(formation = formation[1],
+            n.zooid = length(unique(zooid.id)),
             avg.zh = mean(ln.zh, na.rm = T),
             avg.mpw.b = mean(ln.mpw.b, na.rm = T),
             avg.cw.m = mean(ln.cw.m, na.rm = T),
@@ -198,8 +199,74 @@ col_form = split.data.frame(mean_by_formation_colony, mean_by_formation_colony$f
 #just to look; max 328, smallest 19
 col_form.n = lapply(col_form, function(x){dim(x)[1]})
 by_form = split.data.frame(mean_by_formation_colony, mean_by_formation_colony$formation)
-form_data = lapply(by_form, function(x) x[complete.cases(x),])
-p.cov = lapply(form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
+p.form_data = lapply(by_form, function(x) x[complete.cases(x),])
+p.cov = lapply(p.form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
+
+
+p.model = p.cov
+p.data = (colony_means)
+ntraits = 8
+Pmat = lapply(model, function (x) { 
+  matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
+
+
+###### P STD ------
+
+#Standardizing G by the trait means 
+
+mean_by_form.col = setDT(na.omit(p.data[, c(2, 4:11)]))[, lapply(.SD, mean, na.rm = F),
+                                                        by = .(formation)] #traits + formation
+p.u_form = split(mean_by_form.col, mean_by_form.col$formation)
+p.test = lapply(p.u_form, function (x){ data.matrix(x[, 2:9])}) #only traits from mean_by_form
+p.test_std = lapply(p.test, function (x){(as.numeric(x))%*%t(as.numeric(x))})
+P_std = list()
+for (i in 1:length(Pmat)){
+  P_std[[i]] = Pmat[[i]]/(p.test_std[names(p.form_data[i])][[1]])
+}
+P_std
+names(P_std)=names(p.form_data[1:i])
+
+##Genetic variance in traits and eigen vectors
+
+#load(file="New_g_matrices.RData") #load the g matrices calculated above 
+
+lapply(P_std, isSymmetric)  #is.symmetric.matrix
+p.std_variances = lapply(P_std, diag)
+paste("Trait variances")
+head(p.std_variances)
+
+###### P EIGEN ------
+
+p.eig_variances=lapply(P_std, function (x) {eigen(x)$values})
+paste("Eigenvalue variances")
+head(p.eig_variances)
+
+p.eig_percent = lapply(p.eig_variances, function (x) {x/sum(x)})
+p.eig_per_mat = do.call(rbind, p.eig_percent)
+p.eig_per_mat = data.frame(p.eig_per_mat, rownames(p.eig_per_mat))
+p.eig_per = melt(p.eig_per_mat)
+#dev.off()
+P_PC_dist = ggplot(p.eig_per,
+                   aes(x = variable, y = value,
+                       group = rownames.p.eig_per_mat.,
+                       colour = rownames.p.eig_per_mat.)) +
+  geom_line(aes(linetype = rownames.p.eig_per_mat.)) +
+  geom_point() +
+  xlab("Principal component rank") +
+  ylab("%Variation in the PC")
+P_PC_dist #one negative; none above 1!
+
+ggsave(P_PC_dist, file = "./Results/P_PC_dist_form.png", 
+       width = 14, height = 10, units = "cm")
+
+###### P NOISE ------
+##Controlling for noise
+#Extend G
+P_ext = lapply(P_std, function (x){ ExtendMatrix(x, ret.dim = 7)$ExtMat}) #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+lapply(P_ext, isSymmetric)  
+P_Ext_std_variances = lapply(P_ext, diag)
+P_Ext_eig_variances = lapply(P_ext, function (x) {eigen(x)$values})
 
 #### G MATRIX ----
 #keep at zooid level because correct for this later
@@ -258,10 +325,10 @@ plot(model_G[[7]]$VCV) #catepillar!
 
 ###### G MATRIX ------
 #Retrieving G from posterior
-model = model_G
-data = (dat_lg_N)
+g.model = model_G
+g.data = (dat_lg_N)
 ntraits = 8
-Gmat = lapply(model, function (x) { 
+Gmat = lapply(g.model, function (x) { 
   matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
 
 
@@ -269,26 +336,26 @@ Gmat = lapply(model, function (x) {
 
 #Standardizing G by the trait means 
 
-mean_by_form = setDT(na.omit(data[, 3:11]))[, lapply(.SD, mean, na.rm = F), 
-                                            by = .(formation)] #traits + formation
-u_form = split(mean_by_form, mean_by_form$formation)
-test = lapply(u_form, function (x){ data.matrix(x[, 2:9])}) #only traits from mean_by_form
-test_std = lapply(test, function (x){(as.numeric(x))%*%t(as.numeric(x))})
+mean_by_form = setDT(na.omit(g.data[, 3:11]))[, lapply(.SD, mean, na.rm = F), 
+                                              by = .(formation)] #traits + formation
+g.u_form = split(mean_by_form, mean_by_form$formation)
+g.test = lapply(g.u_form, function (x){ data.matrix(x[, 2:9])}) #only traits from mean_by_form
+g.test_std = lapply(g.test, function (x){(as.numeric(x))%*%t(as.numeric(x))})
 G_std = list()
 for (i in 1:length(Gmat)){
-  G_std[[i]] = Gmat[[i]]/(test_std[names(form_data[i])][[1]])
+  G_std[[i]] = Gmat[[i]]/(g.test_std[names(zooid_form_data[i])][[1]]) #was p.form_data
 }
 G_std
-names(G_std)=names(form_data[1:i]) #only one negative; formation 4 (Tainui)
+names(G_std) = names(form_data[1:i])
 
-##Genetic variance in traits and eigenvectors
+##Genetic variance in traits and eigen vectors
 
 #load(file="New_g_matrices.RData") #load the g matrices calculated above 
 
 lapply(G_std, isSymmetric)  #is.symmetric.matrix
-std_variances = lapply(G_std, diag)
+g.std_variances = lapply(G_std, diag)
 paste("Trait variances")
-head(std_variances)
+head(g.std_variances)
 
 #require(matrixcalc)
 #m.1 <- round(G_std[[1]], 10)
@@ -300,26 +367,26 @@ head(std_variances)
 
 ###### G EIGEN ------
 
-eig_variances=lapply(G_std, function (x) {eigen(x)$values})
+g.eig_variances = lapply(G_std, function (x) {eigen(x)$values})
 paste("Eigenvalue variances")
-head(eig_variances)
+head(g.eig_variances)
 
-eig_percent = lapply(eig_variances, function (x) {x/sum(x)})
-eig_per_mat = do.call(rbind, eig_percent)
-eig_per_mat = data.frame(eig_per_mat, rownames(eig_per_mat))
-eig_per = melt(eig_per_mat)
+g.eig_percent = lapply(g.eig_variances, function (x) {x/sum(x)})
+g.eig_per_mat = do.call(rbind, g.eig_percent)
+g.eig_per_mat = data.frame(g.eig_per_mat, rownames(g.eig_per_mat))
+g.eig_per = melt(g.eig_per_mat)
 #dev.off()
-PC_dist = ggplot(eig_per,
-                 aes(x = variable, y = value,
-                     group = rownames.eig_per_mat.,
-                     colour = rownames.eig_per_mat.)) +
-  geom_line(aes(linetype = rownames.eig_per_mat.)) +
+G_PC_dist = ggplot(g.eig_per,
+                   aes(x = variable, y = value,
+                       group = rownames.g.eig_per_mat.,
+                       colour = rownames.g.eig_per_mat.)) +
+  geom_line(aes(linetype = rownames.g.eig_per_mat.)) +
   geom_point() +
   xlab("Principal component rank") +
   ylab("%Variation in the PC")
-PC_dist #one negative; none above 1!
+G_PC_dist #one negative; none above 1!
 
-ggsave(PC_dist, file = "./Results/PC_dist_form.png", 
+ggsave(G_PC_dist, file = "./Results/G_PC_dist_form.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
@@ -404,8 +471,8 @@ for (i in 1:length(sample_sizes_G)){
 }
 
 # Here, we do the actual Random Skewers test and 
-# combined the results (correlations in the respons to selection) 
-# with the smallest samle size for the pairs of G that are investigated
+# combined the results (correlations in the response to selection) 
+# with the smallest sample size for the pairs of G that are investigated
 comp_mat = RandomSkewers(G_ext)
 melt_comp = melt(comp_mat$correlations[lower.tri(comp_mat$correlations)])
 melt_samples = melt(comp_sampleN[lower.tri(comp_sampleN)])
@@ -417,241 +484,119 @@ plot(out_results[, 2], out_results[, 1],
        xlab = "Sample size", ylab = "Similarity", 
        pch = 19, col = "grey")
 points(obs_melt$N, obs_melt$RS, 
-       col = "purple", pch = 19)
+       col = "#00BFC4", pch = 19) #color by formation
 
+#### CORR OF G FOR P ----
 
+#formations and colors: 
+#NKLS = #F8766D
+#NKBS = #CD9600
+#Twekesbury = #7CAE00
+#Waipuru = #00BE67
+#Upper Kai-Iwi = #00A9FF
+#Tainui = #C77CFF
+#SHCSBSB = #FF61CC
+col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", "#00A9FF", "#C77CFF", "#FF61CC")
 
+##### RANDOM SKEWERS OF P & G OF EACH FORMATION -----
+#NKLS
+NKLS_comp_mat = RandomSkewers(list(G_ext[[1]], P_ext[[1]])) #need at least
+NKLS_corr_mat = NKLS_comp_mat$correlations + t(NKLS_comp_mat$correlations) 
+diag(NKLS_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKLS_corr_mat, upper = "number", lower = "pie")
 
+#NKBS
+NKBS_comp_mat = RandomSkewers(list(G_ext[[2]], P_ext[[2]])) #need at least
+NKBS_corr_mat =NKBS_comp_mat$correlations + t(NKBS_comp_mat$correlations) 
+diag(NKBS_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKBS_corr_mat, upper = "number", lower = "pie")
 
+#Tewkesbury
+Tewkesbury_comp_mat = RandomSkewers(list(G_ext[[3]], P_ext[[3]])) #need at least
+Tewkesbury_corr_mat = Tewkesbury_comp_mat$correlations + t(Tewkesbury_comp_mat$correlations) 
+diag(Tewkesbury_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tewkesbury_corr_mat, upper = "number", lower = "pie")
 
-# G-based neutrality test
-##Cladogenetic
-clado_vecs=function (ancestor,descendant, dataframe){
-  anc_matrix=dataframe[names(dataframe)==ancestor][[1]]
-  desc_matrix=dataframe[names(dataframe)==descendant][[1]]
-  if (max(anc_matrix$age)<=max(desc_matrix$age)){
-    print('The descendant species is older or, at least, as old as the ancestral')
-  }
-  else{
-    desc_value=desc_matrix[nrow(desc_matrix)][,4:11]
-    anc_values=anc_matrix[anc_matrix$age>max(desc_matrix$age[nrow(desc_matrix)])][,4:11]
-    std_diff=-sweep(as.matrix(anc_values),2,
-                    as.matrix(desc_value))/as.matrix(anc_values)
-    std_diff}
-}
+#Waipuru
+Waipuru_comp_mat = RandomSkewers(list(G_ext[[4]], P_ext[[4]])) #need at least
+Waipuru_corr_mat = Waipuru_comp_mat$correlations + t(Waipuru_comp_mat$correlations) 
+diag(Waipuru_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Waipuru_corr_mat, upper = "number", lower = "pie")
 
-clado_vec=list()
-clado_vec[[1]]=clado_vecs('coll','auric',age_sorted_clado)
-clado_vec[[2]]=clado_vecs('auric','nsp09',age_sorted_clado)
-clado_vec[[3]]=clado_vecs('nsp09','nsp10',age_sorted_clado)
-clado_vec[[4]]=clado_vecs('lacry','nsp03',age_sorted_clado)
-clado_vec[[5]]=clado_vecs('nsp03','nsp04',age_sorted_clado)
+#Upper Kai-Iwi
+UKai_Iwi_comp_mat = RandomSkewers(list(G_ext[[5]], P_ext[[5]])) #need at least
+UKai_Iwi_corr_mat = UKai_Iwi_comp_mat$correlations + t(UKai_Iwi_comp_mat$correlations) 
+diag(UKai_Iwi_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(UKai_Iwi_corr_mat, upper = "number", lower = "pie")
 
-div_sp_std_mean=rbind(clado_vec[[2]],clado_vec[[3]],
-                      clado_vec[[4]],clado_vec[[5]])
-clado_B=t(div_sp_std_mean)%*%div_sp_std_mean/8
-Gselect=Reduce("+", G_ext) / length(G_ext)#mean G to make drift tests during cladogenesis
-pc_G_clado=eigen(Gselect)$vectors
-var_B_clado=diag(t(pc_G_clado)%*%clado_B%*%pc_G_clado)
-var_G_clado=eigen(Gselect)$values
-Fig_drift_clado=ggplot(data=data.frame(var_G_clado,var_B_clado),
-                       aes(x=log(var_G_clado),y=log(var_B_clado)))+
-  geom_point()+geom_smooth(method="lm")
-fit_obj_clado=lm(log(var_B_clado)~log(var_G_clado))
-conf_int_drift_clado=stats::confint(fit_obj_clado)
-head(conf_int_drift_clado)
+#Tainui
+Tainui_comp_mat = RandomSkewers(list(G_ext[[6]], P_ext[[6]])) #need at least
+Tainui_corr_mat = Tainui_comp_mat$correlations + t(Tainui_comp_mat$correlations) 
+diag(Tainui_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tainui_corr_mat, upper = "number", lower = "pie")
 
-#Anagenetic lineages
-drift_N=lapply(results_mean, function(x) {sum(x!="NA")/8})
-drift_N=drift_N[drift_N>9]
-ana_drift=subset(results_mean,names(results_mean)%in%names(drift_N))
-dft=lapply(ana_drift,function (x){t(x)%*%x})
-Fig_drift=list()
-conf_int_drift=list()
-for (i in 1:5){
-  
-  dft[[i]]=dft[[i]]/drift_N[[i]]
-  pc_G=eigen(G_std[[i]])$vectors
-  var_B=diag(t(pc_G)%*%dft[[i]]%*%pc_G)
-  var_G=eigen(G_std[[i]])$values
-  Fig_drift[[i]]=ggplot(data=data.frame(var_G,var_B), aes(x=log(var_G),
-                                                          y=log(var_B)))+
-    geom_point()+geom_smooth(method="lm")
-  fit_obj=lm(log(var_B)~log(var_G))
-  conf_int_drift[[i]]=stats::confint(fit_obj)
-  
-}
-names(conf_int_drift)=names(G_std[-4])
-head(conf_int_drift)
+#SHCSBSB
+SHCSBSB_comp_mat = RandomSkewers(list(G_ext[[7]], P_ext[[7]])) #need at least
+SHCSBSB_corr_mat = SHCSBSB_comp_mat$correlations + t(SHCSBSB_comp_mat$correlations) 
+diag(SHCSBSB_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(SHCSBSB_corr_mat, upper = "number", lower = "pie")
 
-##Is morphological evolution occurring along directions of high evolvability?
-Bet_sp=apply(div_sp_std_mean,1,Normalize)
-colSums(Bet_sp^2)#making sure they are normalized (should sum up to 1)
+##### COMPARISON OF PC1 AND PC2 OF P & G OF EACH FORMATION -----
+g.std_variances
+p.std_variances
 
-#within species
-results_sub=subset(results_mean,names(results_mean)%in%names(drift_N))
-w_sp=lapply(results_sub, function(x){apply(x,1,Normalize)}) 
-lapply(w_sp,function (x){colSums(x^2)})
+plot(g.std_variances[[1]], p.std_variances[[1]],
+     pch = 19, col = col.form[1],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "NKLS")
+summary(lm(p.std_variances[[1]] ~ g.std_variances[[1]]))
 
-#Random correlations
-num.traits <- 8
-iterations=400
-beta.mat <- array(rnorm(num.traits * iterations), c(num.traits,iterations))
-beta.mat <- apply(beta.mat, 2, Normalize)
-bet_corr=t(beta.mat)%*%beta.mat
-paste("95%CI for vector correlations between random vectors")
-rand_corr=quantile(as.vector(abs(bet_corr)),0.95)
-rand_corr
+plot(g.std_variances[[2]], p.std_variances[[2]],
+     pch = 19, col = col.form[2],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "NKBS")
+summary(lm(p.std_variances[[2]] ~ g.std_variances[[2]]))
 
-#Deltaz vectors + Random Vectors
-beta.mat.clado=Bet_sp
-beta.mat.ana=w_sp
-evolv_ana=list()
-for (i in 1:5){
-  evolv_ana[[i]]=diag(t(beta.mat.ana[[i]]) %*% G_ext[[i]] %*% beta.mat.ana[[i]])
-} 
-evolv_clado=diag(t(beta.mat.clado) %*% Gselect %*% beta.mat.clado)
+plot(g.std_variances[[3]], p.std_variances[[3]],
+     pch = 19, col = col.form[3],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "Tewkesbury")
+summary(lm(p.std_variances[[3]] ~ g.std_variances[[3]]))
 
-evolv_mat_rand=diag(t(beta.mat) %*% Gselect %*% beta.mat)
+plot(g.std_variances[[4]], p.std_variances[[4]],
+     pch = 19, col = col.form[4],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "Waipuru")
+summary(lm(p.std_variances[[4]] ~ g.std_variances[[4]]))
 
-evolv_final=list(unlist(evolv_ana),evolv_clado,evolv_mat_rand)
-names(evolv_final)=c("Anagenetic", "Cladogenetic", "Random")
-evolv_melted=melt(evolv_final)
-evolv_ggp=ggplot(data=evolv_melted, aes(x=L1, y=value, fill=L1))+ 
-  geom_boxplot(alpha=0.6)+
-  ylab("Evolvability")+xlab(NULL)+ theme(legend.position='none')
+plot(g.std_variances[[5]], p.std_variances[[5]],
+     pch = 19, col = col.form[5],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "Upper Kai-Iwi")
+summary(lm(p.std_variances[[5]] ~ g.std_variances[[5]]))
 
-c_evolv_ana=list()
-for (i in 1:5){
-  c_evolv_ana[[i]]=(1/diag(t(beta.mat.ana[[i]]) %*% solve(G_ext[[i]],
-                                                          beta.mat.ana[[i]])))
-} 
-c_evolv_clado=(1/diag(t(beta.mat.clado) %*% solve(Gselect, beta.mat.clado)))
+plot(g.std_variances[[6]], p.std_variances[[6]],
+     pch = 19, col = col.form[6],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "Tainui")
+summary(lm(p.std_variances[[6]] ~ g.std_variances[[6]]))
 
-c_evolv_mat_rand=(1/diag(t(beta.mat) %*% solve(Gselect, beta.mat)))
-
-c_evolv_final=list(unlist(c_evolv_ana),c_evolv_clado,c_evolv_mat_rand)
-names(c_evolv_final)=c("Anagenetic", "Cladogenetic", "Random")
-c_evolv_melted=melt(c_evolv_final)
-cevol_ggp=ggplot(data=c_evolv_melted, aes(x=L1, y=value, fill=L1))+ 
-  geom_boxplot(alpha=0.6)+ylab("Conditional Evolvability") +
-  xlab(NULL)+ theme(legend.position='none')
-
-grid.arrange(evolv_ggp,cevol_ggp,nrow=1,ncol=2)
-
-# Selection
-#Comparable anagenetic vectors
-ana_morph_vec=function (ancestor,descendant, dataframe){
-  anc_matrix=dataframe[names(dataframe)==ancestor][[1]]
-  desc_matrix=dataframe[names(dataframe)==descendant][[1]]
-  anc_values=anc_matrix[anc_matrix$age>max(desc_matrix$age[nrow(desc_matrix)])][,4:11]
-  ana_values=anc_matrix[anc_matrix$age<=max(desc_matrix$age[nrow(desc_matrix)])][,4:11]
-  std_diff=-sweep(as.matrix(anc_values),2,
-                  as.matrix(ana_values[nrow(ana_values)]))/as.matrix(anc_values)
-  std_diff
-}
-
-
-ana_vec=list()
-ana_vec[[1]]=ana_morph_vec('coll','auric',age_sorted_clado)
-ana_vec[[2]]=ana_morph_vec('auric','nsp09',age_sorted_clado)
-ana_vec[[3]]=ana_morph_vec('nsp09','nsp10',age_sorted_clado)
-ana_vec[[4]]=ana_morph_vec('lacry','nsp03',age_sorted_clado)
-ana_vec[[5]]=ana_morph_vec('nsp03','nsp04',age_sorted_clado)
-
-w_sp_beta=list()
-w_sp_beta[[1]]=ana_vec[[2]]%*% solve(G_ext$auric)
-w_sp_beta[[2]]=ana_vec[[3]]%*% solve(G_ext$nsp09)
-w_sp_beta[[3]]=ana_vec[[4]]%*% solve(G_ext$lacry)
-w_sp_beta[[4]]=ana_vec[[5]]%*% solve(G_ext$lacry)
-
-beta_ana=unlist(lapply(w_sp_beta, function (x){colSums(t(x^2))^0.5}))
-
-b_sp_beta=list()
-b_sp_beta[[1]]=div_sp_std_mean[1:2,]%*% solve(G_ext$auric)
-b_sp_beta[[2]]=div_sp_std_mean[3:4,]%*% solve(G_ext$nsp09)
-b_sp_beta[[3]]=div_sp_std_mean[5,]%*% solve(G_ext$lacry)
-b_sp_beta[[4]]=div_sp_std_mean[6:8,]%*% solve(G_ext$lacry)
-
-
-beta_clado= unlist(lapply(b_sp_beta, function (x){colSums(t(x^2))^0.5}))
-
-ana_lineage=NULL
-subset_results=results_mean[names(G_ext)]
-for (i in 1:5){ana_lineage[i]=lapply(subset_results,function (x){
-  as.matrix(x) %*% solve(G_ext[[i]])})}
-beta_ana_lineage=unlist(lapply(ana_lineage, function (x){colSums(t(x^2))^0.5}))
-
-anag_p=as.vector(beta_ana)
-anag_p=cbind(rep(3,length(anag_p)),anag_p)
-
-clado_p=as.vector(beta_clado)
-clado_p=cbind(rep(1,length(clado_p)),clado_p)
-
-anag_l=as.vector(beta_ana_lineage)
-anag_l=cbind(rep(2,length(anag_l)),anag_l)
-
-selection_grad=as.data.frame(rbind(anag_p,clado_p,anag_l))
-names(selection_grad)=c("T1","T2")
-select_fig=ggplot(as.data.frame(selection_grad), aes(x=as.factor(T1), y=T2, 
-                                                     fill=as.factor(T1)))+geom_boxplot(alpha=0.6)+
-  ylab("Selection gradient (unitless elasticity)")+xlab(NULL)+ 
-  theme(legend.position='none')
-select_fig
-
-
-#Permutation tests
-library(lmPerm)
-#random vs clado - conditional evolvability
-c_evolv_melted_cladoRand=c_evolv_melted[c_evolv_melted$L1=='Random'|
-                                          c_evolv_melted$L1=='Cladogenetic',]
-t=aovp(value ~ L1,data=c_evolv_melted_cladoRand)
-summary(t)
-
-#random vs ana - conditional evolvability
-c_evolv_melted_anaRand=c_evolv_melted[c_evolv_melted$L1=='Random'|
-                                        c_evolv_melted$L1=='Anagenetic',]
-t1=aovp(value ~ L1,data=c_evolv_melted_anaRand)
-summary(t1)
-
-#clado vs ana - conditional evolvability
-c_evolv_melted_anaClado=c_evolv_melted[c_evolv_melted$L1=='Cladogenetic'|
-                                         c_evolv_melted$L1=='Anagenetic',]
-t2=aovp(value ~ L1,data=c_evolv_melted_anaClado)
-summary(t2)
-
-#random vs clado - evolvability
-evolv_melted_cladoRand=evolv_melted[evolv_melted$L1=='Random'|
-                                      evolv_melted$L1=='Cladogenetic',]
-t3=aovp(value ~ L1,data=evolv_melted_cladoRand)
-summary(t3)
-
-#random vs ana - evolvability
-evolv_melted_anaRand=evolv_melted[evolv_melted$L1=='Random'|
-                                    evolv_melted$L1=='Anagenetic',]
-t4=aovp(value ~ L1,data=evolv_melted_anaRand)
-summary(t4)
-
-#clado vs ana - evolvability
-evolv_melted_anaClado=evolv_melted[evolv_melted$L1=='Cladogenetic'|
-                                     evolv_melted$L1=='Anagenetic',]
-t5=aovp(value ~ L1,data=evolv_melted_anaClado)
-summary(t5)
-
-#clado vs ana -  rates
-
-melt_df_clado_ana=melt_df[melt_df$variable=='Cladogenesis'|
-                            melt_df$variable=='Anagenesis-Comparable',]
-t6=aovp(value ~ variable,data=melt_df_clado_ana)
-summary(t6)
-
-melt_df_clado_ana2=melt_df[melt_df$variable=='Cladogenesis'|
-                             melt_df$variable=='Anagenesis-Sequential',]
-t7=aovp(value ~ variable,data=melt_df_clado_ana2)
-summary(t7)
-
-#clado vs ana -  selection
-
-gradient_df_clado_ana=as.data.frame(selection_grad)
-t8=aovp(T2 ~ T1,data=gradient_df_clado_ana)
-summary(t8)
+plot(g.std_variances[[7]], p.std_variances[[7]],
+     pch = 19, col = col.form[7],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "SHCSBSB")
+summary(lm(p.std_variances[[7]] ~ g.std_variances[[7]]))
