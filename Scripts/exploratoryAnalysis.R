@@ -183,14 +183,14 @@ traits.stats <- traits.melt %>%
 ##### HISTOGRAM -----
 
 p.dist <- ggplot(traits.melt) +
-  geom_density(aes(x = log10(measurementValue),
+  geom_density(aes(x = log(measurementValue),
                    group = measurementType,
                    col = measurementType)) + #lots are bimodal
   ggtitle("Distribution of traits, N zooids = 18890, N colony = 891") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "log10 trait measurement (pixels)")
+  scale_x_continuous(name = "LN trait measurement (pixels)")
 
 ggsave(p.dist, file = "./Results/trait_distribution_26Jun2023.png", width = 14, height = 10, units = "cm")
 
