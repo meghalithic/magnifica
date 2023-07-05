@@ -1,8 +1,9 @@
 # Meghan A. Balk
 # meghan.balk@gmail.com
 # initially created: Jun 2023
-# last updated: 28 Jun 2023
+# last updated: 5 Jul 2023
 print("update 'last updated' & set working directory!")
+# set working directory to repo "magnifica"
 
 # The purpose of this script is to create a P and G matrix for 
 # Steginoporella magnifica for each age (formation) it is found
@@ -49,9 +50,9 @@ df <- read.csv("./Results/traits_26Jun2023.csv",
 df$zooid.id <- paste0(df$boxID, "_", df$image)
 colnames(df)[colnames(df) == 'specimenNR'] <- 'colony.id'
 
-
 #### MANIPULATE DATA ----
 
+##### CREATE ID -----
 # Extract unique elements and trait names
 
 zooid_list <- unique(df$zooid.id)
@@ -60,6 +61,7 @@ length(zooid_list) #15773
 colony_list <- unique(df$colony.id)
 length(colony_list) #742
 
+##### FORMATIONS ----
 # arrange formations from oldest to youngest
 df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
                                                 "Waipuru", "Upper Kai-Iwi", 
@@ -67,6 +69,7 @@ df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury",
 formation_list <- unique(df$formation)
 length(formation_list) #7
 
+##### LN TRANSFORM -----
 df$ln.zh <- log(df$zh)
 df$ln.mpw.b <- log(df$mpw.b)
 df$ln.cw.m <- log(df$cw.m)
@@ -79,31 +82,85 @@ df$ln.c.side <- log(df$c.side)
 traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
                       "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
 
+##### TRIM DATASET ----
 df.trim <- df %>%
   dplyr::select(zooid.id, colony.id, formation, matches(traits))
 
 colNums <- match(c(traits, "zooid.id"), names(df.trim))
-#  4  6  7  8  9 10 12 13  1
+#  4  6  7  8  9 10 11  1 (i.e., 4:11 are traits of interest)
 
 df = as.data.frame(df.trim)
 
 #### PLOT TRAITS ----
-Fig <- list ()
-for (i in 1:length(traits)){
-  Fig[[i]] = ggplot(data = df)+ 
-    geom_density(aes(x = df[,traits[i]], 
-                     group = formation,
-                     col = formation)) + 
-    theme(legend.position = "none", text = element_text(size = 20)) +
-    scale_x_continuous(name = traits[i])
-  
-}
+p.zh = ggplot(data = df) + 
+  geom_density(aes(x = df[, traits[1]], 
+                   group = formation,
+                   col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1])
 
+p.mpw.b = ggplot(data = df) + 
+  geom_density(aes(x = df[, traits[2]], 
+                   group = formation,
+                   col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[2])
+
+p.cw.m = ggplot(data = df) + 
+  geom_density(aes(x = df[, traits[3]], 
+                   group = formation,
+                   col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[3])
+
+p.cw.d = ggplot(data = df) + 
+  geom_density(aes(x = df[, traits[4]], 
+                   group = formation,
+                   col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[4])
+
+p.ow.m = ggplot(data = df) + 
+  geom_density(aes(x = df[, traits[5]], 
+                   group = formation,
+                   col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[5])
+
+p.oh = ggplot(data = df) + 
+  geom_density(aes(x = df[, traits[6]], 
+                   group = formation,
+                   col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[6])
+
+p.c.side = ggplot(data = df) + 
+  geom_density(aes(x = df[, traits[7]], 
+                   group = formation,
+                   col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[7])
+
+p.o.side = ggplot(data = df) + 
+  geom_density(aes(x = df[, traits[8]], 
+                   group = formation,
+                   col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[8])
+
+Fig = list(p.zh, p.mpw.b, p.cw.m, p.cw.d, p.ow.m, p.oh, p.c.side, p.o.side)
 ml <- marrangeGrob(Fig, nrow = 4, ncol = 2)
-ml #something wrong, when do it individually, they look different, but when loop they look the same...
-
-#ggsave(ml, file = "./Results/trait.interest_distribution_26June2023.png", 
-#       width = 14, height = 10, units = "cm")
+ml
+ggsave(ml, file = "./Results/trait.interest_distribution_3Jul2023.png", 
+       width = 14, height = 10, units = "cm")
 
 ## most would be normal without small hump...
 
@@ -156,14 +213,14 @@ colony_means = dat_lg_N %>%
   as.data.frame()
 
 means = dat_lg_N %>%
-  summarize(avg.zh = mean(zh, na.rm = T),
-            avg.mpw.b = mean(mpw.b, na.rm = T),
-            avg.cw.m = mean(cw.m, na.rm = T),
-            avg.cw.d = mean(cw.d, na.rm = T),
-            avg.ow.m = mean(ow.m, na.rm = T),
-            avg.o.side = mean(o.side, na.rm = T),
-            avg.c.side = mean(c.side, na.rm = T),
-            avg.oh = mean(oh, na.rm = T)) %>%
+  summarize(avg.zh = mean(ln.zh, na.rm = T),
+            avg.mpw.b = mean(ln.mpw.b, na.rm = T),
+            avg.cw.m = mean(ln.cw.m, na.rm = T),
+            avg.cw.d = mean(ln.cw.d, na.rm = T),
+            avg.ow.m = mean(ln.ow.m, na.rm = T),
+            avg.oh = mean(ln.oh, na.rm = T),
+            avg.o.side = mean(ln.o.side, na.rm = T),
+            avg.c.side = mean(ln.c.side, na.rm = T)) %>%
   as.data.frame()
 
 ## DISCRIMINANT ANALYSIS --> not needed now
@@ -194,50 +251,49 @@ means = dat_lg_N %>%
 #        width = 14, height = 10, units = "cm")
 
 #### P MATRIX ----
-#check number of colonies NOT zooids:
-col_form = split.data.frame(mean_by_formation_colony, mean_by_formation_colony$formation) #zooids per formation
+#check number of zooids NOT colonies:
+# by colonies use mean_by_formation_colony
+# by zooid us dat_lg_N
+col_form = split.data.frame(mean_by_formation_colony,  #by colonies
+                            mean_by_formation_colony$formation) #zooids per formation
 #just to look; max 328, smallest 19
 col_form.n = lapply(col_form, function(x){dim(x)[1]})
-by_form = split.data.frame(mean_by_formation_colony, mean_by_formation_colony$formation)
+## by zooids:
+by_form = split.data.frame(dat_lg_N, 
+                           dat_lg_N$formation)
 p.form_data = lapply(by_form, function(x) x[complete.cases(x),])
 p.cov = lapply(p.form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
 
-
-p.model = p.cov
-p.data = (colony_means)
-ntraits = 8
-Pmat = lapply(model, function (x) { 
-  matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
-
-
 ###### P STD ------
 
-#Standardizing G by the trait means 
+#Standardizing P by the trait means 
+#p.data = colony_means
 
-mean_by_form.col = setDT(na.omit(p.data[, c(2, 4:11)]))[, lapply(.SD, mean, na.rm = F),
-                                                        by = .(formation)] #traits + formation
-p.u_form = split(mean_by_form.col, mean_by_form.col$formation)
-p.test = lapply(p.u_form, function (x){ data.matrix(x[, 2:9])}) #only traits from mean_by_form
-p.test_std = lapply(p.test, function (x){(as.numeric(x))%*%t(as.numeric(x))})
-P_std = list()
-for (i in 1:length(Pmat)){
-  P_std[[i]] = Pmat[[i]]/(p.test_std[names(p.form_data[i])][[1]])
-}
-P_std
-names(P_std)=names(p.form_data[1:i])
+#mean_by_form.col = setDT(na.omit(p.data[, c(2, 4:11)]))[, lapply(.SD, mean, na.rm = F),
+#                                                        by = .(formation)] #traits + formation
+#p.u_form = split(mean_by_form.col, mean_by_form.col$formation)
+#p.test = lapply(p.u_form, function (x){ data.matrix(x[, 2:9])}) #only traits from mean_by_form
+#p.test_std = lapply(p.test, function (x){(as.numeric(x))%*%t(as.numeric(x))})
+#P_std = list()
+#for (i in 1:length(p.cov)){
+#  P_std[[i]] = p.cov[[i]]/(p.test_std[names(p.form_data[i])][[1]])
+#}
+#P_std
+#names(P_std)=names(p.form_data[1:i])
 
-##Genetic variance in traits and eigen vectors
+##### P VARIANCES ----
+##Phenotypic variance in traits and eigen vectors
+Pmat = p.cov
 
-#load(file="New_g_matrices.RData") #load the g matrices calculated above 
-
-lapply(P_std, isSymmetric)  #is.symmetric.matrix
-p.std_variances = lapply(P_std, diag)
+lapply(Pmat, isSymmetric)  #is.symmetric.matrix
+p.variances = lapply(Pmat, diag)
 paste("Trait variances")
-head(p.std_variances)
+head(p.variances)
 
 ###### P EIGEN ------
 
-p.eig_variances=lapply(P_std, function (x) {eigen(x)$values})
+p.eig_variances = lapply(Pmat, function (x) {eigen(x)$values})
+# lapply(Pmat, function (x) {eigen(x)})
 paste("Eigenvalue variances")
 head(p.eig_variances)
 
@@ -257,12 +313,13 @@ P_PC_dist = ggplot(p.eig_per,
 P_PC_dist #one negative; none above 1!
 
 ggsave(P_PC_dist, file = "./Results/P_PC_dist_form.png", 
-       width = 14, height = 10, units = "cm")
+       width = 14, height = 10, units = "cm") 
+#NKBS, Waipuru, Upper Kai-Iwi 
 
 ###### P NOISE ------
 ##Controlling for noise
 #Extend G
-P_ext = lapply(P_std, function (x){ ExtendMatrix(x, ret.dim = 7)$ExtMat}) #not 8 because last eigen value (#8) was negative
+P_ext = lapply(Pmat, function (x){ ExtendMatrix(x, ret.dim = 6)$ExtMat}) #not 8 because last eigen value (#8) was negative
 #ignore warning from above
 lapply(P_ext, isSymmetric)  
 P_Ext_std_variances = lapply(P_ext, diag)
@@ -270,10 +327,9 @@ P_Ext_eig_variances = lapply(P_ext, function (x) {eigen(x)$values})
 
 #### G MATRIX ----
 #keep at zooid level because correct for this later
-zoo_form = split.data.frame(dat_lg_N, dat_lg_N$formation) #zooids per formation
+zooid_by_form = split.data.frame(dat_lg_N, dat_lg_N$formation) #zooids per formation
 #just to look; highest 7836, smallest 454
-zoo_form.n = lapply(zoo_form, function(x){dim(x)[1]})
-zooid_by_form = split.data.frame(dat_lg_N, dat_lg_N$formation)
+zoo_form.n = lapply(zooid_by_form, function(x){dim(x)[1]})
 zooid_form_data = lapply(zooid_by_form, function(x) x[complete.cases(x),])
 
 ##### PRIORS -----
@@ -281,11 +337,10 @@ phen.var = lapply(zooid_form_data, function (x){ (cov(x[, 4:11]))}) #traits of A
 prior = lapply(phen.var, function (x){list(G = list(G1 = list(V = x/2, nu = 2)),
                                            R = list(V = x/4, nu = 2))})
 
-
 ##### MCMC -----
 #Running the MCMC chain
 model_G = list()
-for (i in 1:length(formation_list)){ #length 7 because 7 formations
+for (i in 1:length(formation_list)){ #length 7 because 7 formations 
   model_G[[i]] <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
                                  ln.ow.m, ln.c.side, ln.o.side, ln.oh) ~ trait-1,
                          #account for variation w/in colony:
@@ -300,9 +355,10 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 
 data.list = list(model_G, dat_lg_N, zooid_form_data, mean_by_formation_colony)
 
-save(data.list, file = "./Results/g_matrices_data_form.RData")
+save(data.list, file = "./Results/g_matrices_data_1form.RData")
 
-#load(file = "./Results/g_matrices_data_form.RData") #load the g matrices calculated above 
+#load(file="./Results/g_matrices_data_1form.RData") #load the g matrices calculated above 
+#model_G <- data.list[[1]]
 
 summary(model_G[[1]])
 summary(model_G[[2]])
@@ -323,39 +379,48 @@ plot(model_G[[7]]$VCV) #catepillar!
 #formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", "Waipuru", 
 #                                    "Upper Kai-Iwi", "SHCSBSB", "Tainui"
 
-###### G MATRIX ------
+###### POSTERIOR G MATRIX ------
 #Retrieving G from posterior
 g.model = model_G
-g.data = (dat_lg_N)
 ntraits = 8
 Gmat = lapply(g.model, function (x) { 
   matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
+#label lists as formations
+names(Gmat) = names(zooid_by_form[1]) #formation_list #[1]
 
+# why aren't traits labeled??
+#for (i in seq_along(Gmat)){
+#  colnames(Gmat[[i]]) <- colnames(means)
+#}
+#for (i in seq_along(Gmat)){
+#  rownames(Gmat[[i]]) <- colnames(means)
+#}
 
 ###### G STD ------
 
 #Standardizing G by the trait means 
+#g.data = (dat_lg_N)
 
-mean_by_form = setDT(na.omit(g.data[, 3:11]))[, lapply(.SD, mean, na.rm = F), 
-                                              by = .(formation)] #traits + formation
-g.u_form = split(mean_by_form, mean_by_form$formation)
-g.test = lapply(g.u_form, function (x){ data.matrix(x[, 2:9])}) #only traits from mean_by_form
-g.test_std = lapply(g.test, function (x){(as.numeric(x))%*%t(as.numeric(x))})
-G_std = list()
-for (i in 1:length(Gmat)){
-  G_std[[i]] = Gmat[[i]]/(g.test_std[names(zooid_form_data[i])][[1]]) #was p.form_data
-}
-G_std
-names(G_std) = names(form_data[1:i])
+#of colonies
+#mean_by_form = setDT(na.omit(g.data[, 3:11]))[, lapply(.SD, mean, na.rm = F), 
+  #                                            by = .(formation)] #traits + formation
+#g.u_form = split(mean_by_form, mean_by_form$formation)
+#g.test = lapply(g.u_form, function (x){ data.matrix(x[, 2:9])}) #only traits from mean_by_form
+#g.test_std = lapply(g.test, function (x){(as.numeric(x))%*%t(as.numeric(x))})
+#G_std = list()
+#for (i in 1:length(Gmat)){
+#  G_std[[i]] = Gmat[[i]]/(g.test_std[names(zooid_form_data[i])][[1]]) #was p.form_data
+#}
+#G_std
+#names(G_std) = names(form_data[1:i])
 
 ##Genetic variance in traits and eigen vectors
 
-#load(file="New_g_matrices.RData") #load the g matrices calculated above 
-
-lapply(G_std, isSymmetric)  #is.symmetric.matrix
-g.std_variances = lapply(G_std, diag)
+##### G VARIANCES -----
+lapply(Gmat, isSymmetric)  #is.symmetric.matrix
+g.variances = lapply(Gmat, diag)
 paste("Trait variances")
-head(g.std_variances)
+head(g.variances)
 
 #require(matrixcalc)
 #m.1 <- round(G_std[[1]], 10)
@@ -367,7 +432,7 @@ head(g.std_variances)
 
 ###### G EIGEN ------
 
-g.eig_variances = lapply(G_std, function (x) {eigen(x)$values})
+g.eig_variances = lapply(Gmat, function (x) {eigen(x)$values})
 paste("Eigenvalue variances")
 head(g.eig_variances)
 
@@ -396,26 +461,208 @@ ggsave(G_PC_dist, file = "./Results/G_PC_dist_form.png",
 ###### G NOISE ------
 ##Controlling for noise
 #Extend G
-G_ext = lapply(G_std, function (x){ ExtendMatrix(x, ret.dim = 7)$ExtMat}) #not 8 because last eigen value (#8) was negative
+G_ext = lapply(Gmat, function (x){ ExtendMatrix(x, ret.dim = 6)$ExtMat}) #not 8 because last eigen value (#8) was negative
 #ignore warning from above
 lapply(G_ext, isSymmetric)  
 Ext_std_variances = lapply(G_ext, diag)
 Ext_eig_variances = lapply(G_ext, function (x) {eigen(x)$values})
 ##need to create random cov.m for comparison
-#cov.m <- RandomMatrix(8, 1, 1, 100) 
-#G_list <- list(G_ext$NKLS, cov.m)
-comp_mat = RandomSkewers(G_ext) #need at least
+cov.m <- RandomMatrix(8, 1, 1, 100) 
+G_list <- list(G_ext[[1]], cov.m)
+
+comp_mat = RandomSkewers(G_list) #need at least
 corr_mat = comp_mat$correlations + t(comp_mat$correlations) 
 diag(corr_mat) = 1
 paste("Random Skewers similarity matrix")
 corrplot.mixed(corr_mat,upper = "number", lower = "pie")
 
+#### CORR OF G FOR P ----
+
+#formations and colors: 
+#NKLS = #F8766D
+#NKBS = #CD9600
+#Twekesbury = #7CAE00
+#Waipuru = #00BE67
+#Upper Kai-Iwi = #00A9FF
+#Tainui = #C77CFF
+#SHCSBSB = #FF61CC
+col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", "#00A9FF", "#C77CFF", "#FF61CC")
+
+##### CORR OF P & G DIAGONALS -----
+#Gmat
+#Pmat
+
+plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
+     pch = 19, col = col.form[1],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "NKLS",
+     xlim = c(0, .05),
+     ylim = c(0, .2))
+abline(0, 1)
+summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]])))
+
+plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
+     pch = 19, col = col.form[2],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "NKBS")
+abline(0, 1)
+summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]])))
+
+plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
+     pch = 19, col = col.form[3],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "Tewkesbury")
+abline(0, 1)
+summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]])))
+
+plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
+     pch = 19, col = col.form[4],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "Waipuru")
+abline(0, 1)
+summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]])))
+
+plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
+     pch = 19, col = col.form[5],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonals",
+     main = "Upper Kai-Iwi")
+abline(0, 1)
+summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]])))
+
+plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
+     pch = 19, col = col.form[6],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "Tainui")
+abline(0, 1)
+summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]])))
+
+plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
+     pch = 19, col = col.form[7],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "SHCSBSB")
+abline(0, 1)
+summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]])))
+
+##### RANDOM SKEWERS OF P & G OF EACH FORMATION -----
+#NKLS
+NKLS_comp_mat = RandomSkewers(list(G_ext[[1]], P_ext[[1]])) #need at least
+NKLS_corr_mat = NKLS_comp_mat$correlations + t(NKLS_comp_mat$correlations) 
+diag(NKLS_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKLS_corr_mat, upper = "number", lower = "pie")
+
+#NKBS
+NKBS_comp_mat = RandomSkewers(list(G_ext[[2]], P_ext[[2]])) #need at least
+NKBS_corr_mat =NKBS_comp_mat$correlations + t(NKBS_comp_mat$correlations) 
+diag(NKBS_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKBS_corr_mat, upper = "number", lower = "pie")
+
+#Tewkesbury
+Tewkesbury_comp_mat = RandomSkewers(list(G_ext[[3]], P_ext[[3]])) #need at least
+Tewkesbury_corr_mat = Tewkesbury_comp_mat$correlations + t(Tewkesbury_comp_mat$correlations) 
+diag(Tewkesbury_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tewkesbury_corr_mat, upper = "number", lower = "pie")
+
+#Waipuru
+Waipuru_comp_mat = RandomSkewers(list(G_ext[[4]], P_ext[[4]])) #need at least
+Waipuru_corr_mat = Waipuru_comp_mat$correlations + t(Waipuru_comp_mat$correlations) 
+diag(Waipuru_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Waipuru_corr_mat, upper = "number", lower = "pie")
+
+#Upper Kai-Iwi
+UKai_Iwi_comp_mat = RandomSkewers(list(G_ext[[5]], P_ext[[5]])) #need at least
+UKai_Iwi_corr_mat = UKai_Iwi_comp_mat$correlations + t(UKai_Iwi_comp_mat$correlations) 
+diag(UKai_Iwi_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(UKai_Iwi_corr_mat, upper = "number", lower = "pie")
+
+#Tainui
+Tainui_comp_mat = RandomSkewers(list(G_ext[[6]], P_ext[[6]])) #need at least
+Tainui_corr_mat = Tainui_comp_mat$correlations + t(Tainui_comp_mat$correlations) 
+diag(Tainui_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tainui_corr_mat, upper = "number", lower = "pie")
+
+#SHCSBSB
+SHCSBSB_comp_mat = RandomSkewers(list(G_ext[[7]], P_ext[[7]])) #need at least
+SHCSBSB_corr_mat = SHCSBSB_comp_mat$correlations + t(SHCSBSB_comp_mat$correlations) 
+diag(SHCSBSB_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(SHCSBSB_corr_mat, upper = "number", lower = "pie")
+
+##### COMPARISON OF PC1 AND PC2 OF P & G OF EACH FORMATION -----
+g.std_variances
+p.std_variances
+
+plot(g.std_variances[[1]], p.std_variances[[1]],
+     pch = 19, col = col.form[1],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "NKLS")
+abline(0, 1)
+summary(lm(p.std_variances[[1]] ~ g.std_variances[[1]]))
+
+plot(g.std_variances[[2]], p.std_variances[[2]],
+     pch = 19, col = col.form[2],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "NKBS")
+abline(0, 1)
+summary(lm(p.std_variances[[2]] ~ g.std_variances[[2]]))
+
+plot(g.std_variances[[3]], p.std_variances[[3]],
+     pch = 19, col = col.form[3],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "Tewkesbury")
+abline(0, 1)
+summary(lm(p.std_variances[[3]] ~ g.std_variances[[3]]))
+
+plot(g.std_variances[[4]], p.std_variances[[4]],
+     pch = 19, col = col.form[4],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "Waipuru")
+abline(0, 1)
+summary(lm(p.std_variances[[4]] ~ g.std_variances[[4]]))
+
+plot(g.std_variances[[5]], p.std_variances[[5]],
+     pch = 19, col = col.form[5],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "Upper Kai-Iwi")
+abline(0, 1)
+summary(lm(p.std_variances[[5]] ~ g.std_variances[[5]]))
+
+plot(g.std_variances[[6]], p.std_variances[[6]],
+     pch = 19, col = col.form[6],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "Tainui")
+abline(0, 1)
+summary(lm(p.std_variances[[6]] ~ g.std_variances[[6]]))
+
+plot(g.std_variances[[7]], p.std_variances[[7]],
+     pch = 19, col = col.form[7],
+     xlab = "G standardized variances",
+     ylab = "P standardized variances",
+     main = "SHCSBSB")
+abline(0, 1)
+summary(lm(p.std_variances[[7]] ~ g.std_variances[[7]]))
+
 ##### RAREFACTION -----
 ##Rarefaction - 
 #How much difference in matrix structure is induced by sampling error?
-
-#Rarefaction of G
-##Rarefaction - How much difference in matrix structure is induced by sampling error?
 
 # We do a rarefaction analyses and compare a 'true' matrix with an 
 # under-sampled version of itself and see whether the dissimilarities observed 
@@ -481,129 +728,7 @@ colnames(obs_melt) = c("RS","N")
 
 #Plotting the result
 plot(out_results[, 2], out_results[, 1], 
-       xlab = "Sample size", ylab = "Similarity", 
-       pch = 19, col = "grey")
+     xlab = "Sample size", ylab = "Similarity", 
+     pch = 19, col = "grey")
 points(obs_melt$N, obs_melt$RS, 
        col = "#00BFC4", pch = 19) #color by formation
-
-#### CORR OF G FOR P ----
-
-#formations and colors: 
-#NKLS = #F8766D
-#NKBS = #CD9600
-#Twekesbury = #7CAE00
-#Waipuru = #00BE67
-#Upper Kai-Iwi = #00A9FF
-#Tainui = #C77CFF
-#SHCSBSB = #FF61CC
-col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", "#00A9FF", "#C77CFF", "#FF61CC")
-
-##### RANDOM SKEWERS OF P & G OF EACH FORMATION -----
-#NKLS
-NKLS_comp_mat = RandomSkewers(list(G_ext[[1]], P_ext[[1]])) #need at least
-NKLS_corr_mat = NKLS_comp_mat$correlations + t(NKLS_comp_mat$correlations) 
-diag(NKLS_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(NKLS_corr_mat, upper = "number", lower = "pie")
-
-#NKBS
-NKBS_comp_mat = RandomSkewers(list(G_ext[[2]], P_ext[[2]])) #need at least
-NKBS_corr_mat =NKBS_comp_mat$correlations + t(NKBS_comp_mat$correlations) 
-diag(NKBS_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(NKBS_corr_mat, upper = "number", lower = "pie")
-
-#Tewkesbury
-Tewkesbury_comp_mat = RandomSkewers(list(G_ext[[3]], P_ext[[3]])) #need at least
-Tewkesbury_corr_mat = Tewkesbury_comp_mat$correlations + t(Tewkesbury_comp_mat$correlations) 
-diag(Tewkesbury_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(Tewkesbury_corr_mat, upper = "number", lower = "pie")
-
-#Waipuru
-Waipuru_comp_mat = RandomSkewers(list(G_ext[[4]], P_ext[[4]])) #need at least
-Waipuru_corr_mat = Waipuru_comp_mat$correlations + t(Waipuru_comp_mat$correlations) 
-diag(Waipuru_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(Waipuru_corr_mat, upper = "number", lower = "pie")
-
-#Upper Kai-Iwi
-UKai_Iwi_comp_mat = RandomSkewers(list(G_ext[[5]], P_ext[[5]])) #need at least
-UKai_Iwi_corr_mat = UKai_Iwi_comp_mat$correlations + t(UKai_Iwi_comp_mat$correlations) 
-diag(UKai_Iwi_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(UKai_Iwi_corr_mat, upper = "number", lower = "pie")
-
-#Tainui
-Tainui_comp_mat = RandomSkewers(list(G_ext[[6]], P_ext[[6]])) #need at least
-Tainui_corr_mat = Tainui_comp_mat$correlations + t(Tainui_comp_mat$correlations) 
-diag(Tainui_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(Tainui_corr_mat, upper = "number", lower = "pie")
-
-#SHCSBSB
-SHCSBSB_comp_mat = RandomSkewers(list(G_ext[[7]], P_ext[[7]])) #need at least
-SHCSBSB_corr_mat = SHCSBSB_comp_mat$correlations + t(SHCSBSB_comp_mat$correlations) 
-diag(SHCSBSB_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(SHCSBSB_corr_mat, upper = "number", lower = "pie")
-
-##### COMPARISON OF PC1 AND PC2 OF P & G OF EACH FORMATION -----
-g.std_variances
-p.std_variances
-
-plot(g.std_variances[[1]], p.std_variances[[1]],
-     pch = 19, col = col.form[1],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "NKLS")
-abline(0,1)
-summary(lm(p.std_variances[[1]] ~ g.std_variances[[1]]))
-
-plot(g.std_variances[[2]], p.std_variances[[2]],
-     pch = 19, col = col.form[2],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "NKBS")
-abline(0,1)
-summary(lm(p.std_variances[[2]] ~ g.std_variances[[2]]))
-
-plot(g.std_variances[[3]], p.std_variances[[3]],
-     pch = 19, col = col.form[3],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "Tewkesbury")
-abline(0,1)
-summary(lm(p.std_variances[[3]] ~ g.std_variances[[3]]))
-
-plot(g.std_variances[[4]], p.std_variances[[4]],
-     pch = 19, col = col.form[4],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "Waipuru")
-abline(0,1)
-summary(lm(p.std_variances[[4]] ~ g.std_variances[[4]]))
-
-plot(g.std_variances[[5]], p.std_variances[[5]],
-     pch = 19, col = col.form[5],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "Upper Kai-Iwi")
-abline(0,1)
-summary(lm(p.std_variances[[5]] ~ g.std_variances[[5]]))
-
-plot(g.std_variances[[6]], p.std_variances[[6]],
-     pch = 19, col = col.form[6],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "Tainui")
-abline(0,1)
-summary(lm(p.std_variances[[6]] ~ g.std_variances[[6]]))
-
-plot(g.std_variances[[7]], p.std_variances[[7]],
-     pch = 19, col = col.form[7],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "SHCSBSB")
-abline(0,1)
-summary(lm(p.std_variances[[7]] ~ g.std_variances[[7]]))
