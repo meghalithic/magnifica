@@ -188,7 +188,120 @@ ggsave(ml, file = "./Results/trait.interest_distribution.png",
 ##### CORRELATIONS -----
 ## are these coming from the same individuals??
 ## ask KLV for other metadata for sites
+## OH hump is on the other side
 
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[2]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[2]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[2]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[3]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[3]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[2]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[4]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[4]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[4]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[5]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[5]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[5]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[6]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[6]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[6]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[7]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[7]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[7]) +
+  scale_color_manual(values = col.form)
+#ln.c.side is not an issue really
+
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[8]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[8]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[8]) +
+  scale_color_manual(values = col.form)
+#ln.o.side is not an issue really
+
+## really convince self that these are the same individuals
+# make data more manageable by reducing it to the three formations
+# make data even more manageable by reducing it to the small hump that is seen
+
+## are these individuals from the same colony or across colonies?
 
 
 #### REDUCE TO TRAITS OF INTEREST ----
