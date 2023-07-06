@@ -159,7 +159,7 @@ p.o.side = ggplot(data = df) +
 Fig = list(p.zh, p.mpw.b, p.cw.m, p.cw.d, p.ow.m, p.oh, p.c.side, p.o.side)
 ml <- marrangeGrob(Fig, nrow = 4, ncol = 2)
 ml
-ggsave(ml, file = "./Results/trait.interest_distribution_3Jul2023.png", 
+ggsave(ml, file = "./Results/trait.interest_distribution.png", 
        width = 14, height = 10, units = "cm")
 
 ## most would be normal without small hump...
@@ -223,7 +223,8 @@ means = dat_lg_N %>%
             avg.c.side = mean(ln.c.side, na.rm = T)) %>%
   as.data.frame()
 
-## DISCRIMINANT ANALYSIS --> not needed now
+#### DISCRIMINANT ANALYSIS ----- 
+# not needed now
 # dat_lda = mean_by_formation_colony #dat_lg_N
 # dat_lda[, 4:11] = scale(dat_lda[, 4:11], center = F, scale = T) #just traits
 # data_discriminant = dat_lda
@@ -249,6 +250,7 @@ means = dat_lg_N %>%
 # p1
 # ggsave(p1, file = "./Results/trait_discriminant_27Jun2023.png", 
 #        width = 14, height = 10, units = "cm")
+
 
 #### P MATRIX ----
 #check number of zooids NOT colonies:
@@ -281,6 +283,7 @@ p.cov = lapply(p.form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony 
 #P_std
 #names(P_std)=names(p.form_data[1:i])
 
+
 ##### P VARIANCES ----
 ##Phenotypic variance in traits and eigen vectors
 Pmat = p.cov
@@ -310,7 +313,7 @@ P_PC_dist = ggplot(p.eig_per,
   geom_point() +
   xlab("Principal component rank") +
   ylab("%Variation in the PC")
-P_PC_dist #one negative; none above 1!
+P_PC_dist #none negative; none above 1!
 
 ggsave(P_PC_dist, file = "./Results/P_PC_dist_form.png", 
        width = 14, height = 10, units = "cm") 
@@ -324,6 +327,13 @@ P_ext = lapply(Pmat, function (x){ ExtendMatrix(x, ret.dim = 6)$ExtMat}) #not 8 
 lapply(P_ext, isSymmetric)  
 P_Ext_std_variances = lapply(P_ext, diag)
 P_Ext_eig_variances = lapply(P_ext, function (x) {eigen(x)$values})
+
+p.comp_mat = RandomSkewers(P_ext) #need at least
+p.corr_mat = p.comp_mat$correlations + t(p.comp_mat$correlations) 
+diag(p.corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(p.corr_mat, upper = "number", lower = "pie")
+
 
 #### G MATRIX ----
 #keep at zooid level because correct for this later
@@ -355,7 +365,7 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 
 data.list = list(model_G, dat_lg_N, zooid_form_data, mean_by_formation_colony)
 
-save(data.list, file = "./Results/g_matrices_data_1form.RData")
+save(data.list, file = "./Results/g_matrices_data_form.RData")
 
 #load(file="./Results/g_matrices_data_1form.RData") #load the g matrices calculated above 
 #model_G <- data.list[[1]]
@@ -386,7 +396,7 @@ ntraits = 8
 Gmat = lapply(g.model, function (x) { 
   matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
 #label lists as formations
-names(Gmat) = names(zooid_by_form[1]) #formation_list #[1]
+names(Gmat) = names(zooid_by_form) #formation_list #[1]
 
 # why aren't traits labeled??
 #for (i in seq_along(Gmat)){
@@ -467,14 +477,14 @@ lapply(G_ext, isSymmetric)
 Ext_std_variances = lapply(G_ext, diag)
 Ext_eig_variances = lapply(G_ext, function (x) {eigen(x)$values})
 ##need to create random cov.m for comparison
-cov.m <- RandomMatrix(8, 1, 1, 100) 
-G_list <- list(G_ext[[1]], cov.m)
+#cov.m <- RandomMatrix(8, 1, 1, 100) 
+#G_list <- list(G_ext)
 
-comp_mat = RandomSkewers(G_list) #need at least
-corr_mat = comp_mat$correlations + t(comp_mat$correlations) 
-diag(corr_mat) = 1
+g.comp_mat = RandomSkewers(G_ext) #need at least
+g.corr_mat = g.comp_mat$correlations + t(g.comp_mat$correlations) 
+diag(g.corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(corr_mat,upper = "number", lower = "pie")
+corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 
 #### CORR OF G FOR P ----
 
@@ -514,7 +524,9 @@ plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      pch = 19, col = col.form[3],
      xlab = "G non-standardized diagonal",
      ylab = "P non-standardized diagonal",
-     main = "Tewkesbury")
+     main = "Tewkesbury",
+     xlim = c(0, 0.01),
+     ylim = c(0, 0.05))
 abline(0, 1)
 summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]])))
 
@@ -546,7 +558,9 @@ plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      pch = 19, col = col.form[7],
      xlab = "G non-standardized diagonal",
      ylab = "P non-standardized diagonal",
-     main = "SHCSBSB")
+     main = "SHCSBSB",
+     xlim = c(0, 0.01),
+     ylim = c(0,0.05))
 abline(0, 1)
 summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]])))
 
