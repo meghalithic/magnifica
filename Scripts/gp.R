@@ -50,6 +50,17 @@ df <- read.csv("./Results/traits_26Jun2023.csv",
 df$zooid.id <- paste0(df$boxID, "_", df$image)
 colnames(df)[colnames(df) == 'specimenNR'] <- 'colony.id'
 
+#### PLOT THEME ----
+#formations and colors: 
+#NKLS = #F8766D
+#NKBS = #CD9600
+#Twekesbury = #7CAE00
+#Waipuru = #00BE67
+#Upper Kai-Iwi = #00A9FF
+#Tainui = #C77CFF
+#SHCSBSB = #FF61CC
+col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", "#00A9FF", "#C77CFF", "#FF61CC")
+
 #### MANIPULATE DATA ----
 
 ##### CREATE ID -----
@@ -92,13 +103,16 @@ colNums <- match(c(traits, "zooid.id"), names(df.trim))
 df = as.data.frame(df.trim)
 
 #### PLOT TRAITS ----
+
+##### DISTRIBUTIONS -----
 p.zh = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[1]], 
                    group = formation,
                    col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
-  scale_x_continuous(name = traits[1])
+  scale_x_continuous(name = traits[1]) +
+  scale_color_manual(values = col.form)
 
 p.mpw.b = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[2]], 
@@ -106,7 +120,8 @@ p.mpw.b = ggplot(data = df) +
                    col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
-  scale_x_continuous(name = traits[2])
+  scale_x_continuous(name = traits[2]) +
+  scale_color_manual(values = col.form)
 
 p.cw.m = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[3]], 
@@ -114,7 +129,8 @@ p.cw.m = ggplot(data = df) +
                    col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
-  scale_x_continuous(name = traits[3])
+  scale_x_continuous(name = traits[3]) +
+  scale_color_manual(values = col.form)
 
 p.cw.d = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[4]], 
@@ -122,7 +138,8 @@ p.cw.d = ggplot(data = df) +
                    col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
-  scale_x_continuous(name = traits[4])
+  scale_x_continuous(name = traits[4]) +
+  scale_color_manual(values = col.form)
 
 p.ow.m = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[5]], 
@@ -130,7 +147,8 @@ p.ow.m = ggplot(data = df) +
                    col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
-  scale_x_continuous(name = traits[5])
+  scale_x_continuous(name = traits[5]) +
+  scale_color_manual(values = col.form)
 
 p.oh = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[6]], 
@@ -138,7 +156,8 @@ p.oh = ggplot(data = df) +
                    col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
-  scale_x_continuous(name = traits[6])
+  scale_x_continuous(name = traits[6]) +
+  scale_color_manual(values = col.form)
 
 p.c.side = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[7]], 
@@ -146,7 +165,8 @@ p.c.side = ggplot(data = df) +
                    col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
-  scale_x_continuous(name = traits[7])
+  scale_x_continuous(name = traits[7]) +
+  scale_color_manual(values = col.form)
 
 p.o.side = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[8]], 
@@ -154,7 +174,8 @@ p.o.side = ggplot(data = df) +
                    col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
-  scale_x_continuous(name = traits[8])
+  scale_x_continuous(name = traits[8]) +
+  scale_color_manual(values = col.form)
 
 Fig = list(p.zh, p.mpw.b, p.cw.m, p.cw.d, p.ow.m, p.oh, p.c.side, p.o.side)
 ml <- marrangeGrob(Fig, nrow = 4, ncol = 2)
@@ -163,6 +184,12 @@ ggsave(ml, file = "./Results/trait.interest_distribution.png",
        width = 14, height = 10, units = "cm")
 
 ## most would be normal without small hump...
+
+##### CORRELATIONS -----
+## are these coming from the same individuals??
+## ask KLV for other metadata for sites
+
+
 
 #### REDUCE TO TRAITS OF INTEREST ----
 trt_lg_N = c("formation", "colony.id", "zooid.id", traits)
@@ -487,16 +514,6 @@ paste("Random Skewers similarity matrix")
 corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 
 #### CORR OF G FOR P ----
-
-#formations and colors: 
-#NKLS = #F8766D
-#NKBS = #CD9600
-#Twekesbury = #7CAE00
-#Waipuru = #00BE67
-#Upper Kai-Iwi = #00A9FF
-#Tainui = #C77CFF
-#SHCSBSB = #FF61CC
-col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", "#00A9FF", "#C77CFF", "#FF61CC")
 
 ##### CORR OF P & G DIAGONALS -----
 #Gmat
