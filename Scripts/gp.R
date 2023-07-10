@@ -1,7 +1,7 @@
 # Meghan A. Balk
 # meghan.balk@gmail.com
 # initially created: Jun 2023
-# last updated: 5 Jul 2023
+# last updated: 10 Jul 2023
 print("update 'last updated' & set working directory!")
 # set working directory to repo "magnifica"
 
@@ -401,6 +401,7 @@ save(data.list, file = "./Results/g_matrices_data_form.RData")
 #model_G <- data.list[[1]]
 
 ##### CHECK MODELS -----
+formation_list #order of formations
 summary(model_G[[1]])
 summary(model_G[[2]])
 summary(model_G[[3]])
@@ -446,7 +447,7 @@ col.vcv <- post.vcv[1:64]
 d.col.vcv <- col.vcv[c(1,10,19,28,37,46, 55, 64)]
 unt.vcv <- post.vcv[65:128]
 p.unt.vcv <- unt.vcv[c(1,10,19,28,37,46, 55, 64)]
-diag(Pmat[[1]])
+diag(Pmat[[4]]) #all bigger...wtf
 diag(Gmat[[1]])
 #zh is same as col.id, bigger than units
 #mpb.w is same as col.id, bigger than units
@@ -464,7 +465,7 @@ ntraits = 8
 Gmat = lapply(g.model, function (x) { 
   matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
 #label lists as formations
-names(Gmat) = names(by_form) #formation_list
+names(Gmat) = names(by_form) #formation_list or form_data
 #traits in Gmat are in different order than Pmat based on VCV 
 
 # why aren't traits labeled??
@@ -571,6 +572,26 @@ corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 ##### CORR OF P & G DIAGONALS -----
 #Gmat
 #Pmat
+
+###### REORDER TRAITS -----
+## need to reorder all of the diagonals..
+d.gmat.nkls <- diag(Gmat[[1]])[c(1,2,3,4,5,8,6,7)]
+d.gmat.nkbs <- diag(Gmat[[2]])[c(1,2,3,4,5,8,6,7)]
+d.gmat.tewkesbury <- diag(Gmat[[3]])[c(1,2,3,4,5,8,6,7)]
+d.gmat.waipuru <- diag(Gmat[[4]])[c(1,2,3,4,5,8,6,7)]
+d.gmat.uki <- diag(Gmat[[5]])[c(1,2,3,4,5,8,6,7)]
+d.gmat.tainui <- diag(Gmat[[6]])[c(1,2,3,4,5,8,6,7)]
+d.gmat.shcsbsb <- diag(Gmat[[7]])[c(1,2,3,4,5,8,6,7)]
+
+###### PLOT DIAGONALS -----
+plot(d.gmat.waipuru, diag(Pmat[[4]]),
+     pch = 19, col = col.form[1],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "Waipuru",
+     xlim = c(0, .05),
+     ylim = c(0, .2))
+abline(0, 1)
 
 d.gmat.nkbs <- diag(Gmat[[1]])[1,2,3,4,5,8,6,7]
 plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
