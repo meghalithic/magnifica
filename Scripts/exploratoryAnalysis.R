@@ -165,6 +165,20 @@ write.csv(traits.df,
           "./Results/traits_26Jun2023.csv",
           row.names = FALSE)
 
+##### LN TRANSFORM -----
+traits.df$ln.zh <- log(traits.df$zh)
+traits.df$ln.mpw.b <- log(traits.df$mpw.b)
+traits.df$ln.cw.m <- log(traits.df$cw.m)
+traits.df$ln.cw.d <- log(traits.df$cw.d)
+traits.df$ln.ow.m <- log(traits.df$ow.m)
+traits.df$ln.oh <- log(traits.df$oh)
+traits.df$ln.o.side <- log(traits.df$o.side)
+traits.df$ln.c.side <- log(traits.df$c.side)
+
+traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
+                      "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
+
+
 ##### ABOUT TRAITS -----
 
 nrow(images.filter) #15773
@@ -260,6 +274,129 @@ p.zh.mag.30 <- ggplot(traits.df[traits.df$magnification == "x30",]) +
   scale_x_continuous(name = "Zooid Height (pixels)")
 
 #ggsave(p.zh.mag.30, file = "./Results/zooid_height_magnification_x30.png", width = 14, height = 10, units = "cm")
+
+
+##### CORRELATIONS -----
+## are these coming from the same individuals??
+## ask KLV for other metadata for sites
+## OH hump is on the other side
+
+ggplot(data = traits.df) +
+  geom_smooth(aes(x = traits.df[, traits[1]],
+                  y = traits.traits.df[, traits[2]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = traits.df[, traits[1]],
+                 y = traits.df[, traits[2]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[2]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = traits.df) +
+  geom_smooth(aes(x = traits.df[, traits[1]],
+                  y = traits.df[, traits[3]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = traits.df[, traits[1]],
+                 y = traits.df[, traits[3]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[2]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = traits.df) +
+  geom_smooth(aes(x = traits.df[, traits[1]],
+                  y = traits.df[, traits[4]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = traits.df[, traits[1]],
+                 y = traits.df[, traits[4]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[4]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = traits.df) +
+  geom_smooth(aes(x = traits.df[, traits[1]],
+                  y = traits.df[, traits[5]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = traits.df[, traits[1]],
+                 y = traits.df[, traits[5]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[5]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = traits.df) +
+  geom_smooth(aes(x = traits.df[, traits[1]],
+                  y = traits.df[, traits[6]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = traits.df[, traits[1]],
+                 y = traits.df[, traits[6]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[6]) +
+  scale_color_manual(values = col.form)
+
+ggplot(data = traits.df) +
+  geom_smooth(aes(x = traits.df[, traits[1]],
+                  y = traits.df[, traits[7]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = traits.df[, traits[1]],
+                 y = traits.df[, traits[7]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[7]) +
+  scale_color_manual(values = col.form)
+#ln.c.side is not an issue really
+
+ggplot(data = traits.df) +
+  geom_smooth(aes(x = traits.df[, traits[1]],
+                  y = traits.df[, traits[8]],
+                  alpha = 0.5)) +
+  geom_point(aes(x = traits.df[, traits[1]],
+                 y = traits.df[, traits[8]],
+                 group = formation,
+                 col = formation,
+                 alpha = 0.5)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = traits[1]) +
+  scale_y_continuous(name = traits[8]) +
+  scale_color_manual(values = col.form)
+#ln.o.side is not an issue really
+
+## really convince self that these are the same individuals
+# make data more manageable by reducing it to the three formations
+# make data even more manageable by reducing it to the small hump that is seen
+nk.wa.uki <- traits.df[traits.df$formation == "NKBS" |
+                  traits.df$formation == "Waipuru" |
+                  traits.df$formation == "Upper Kai-Iwi",]
+sm.zoo <- nk.wa.uki[nk.wa.uki$ln.zh <= 6.25,]
+
+## are these individuals from the same colony or across colonies?
 
 ##### SCALING -----
 

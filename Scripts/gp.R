@@ -90,6 +90,8 @@ df$ln.oh <- log(df$oh)
 df$ln.o.side <- log(df$o.side)
 df$ln.c.side <- log(df$c.side)
 
+#same order as in df
+names(df)
 traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
                       "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
 
@@ -185,129 +187,10 @@ ggsave(ml, file = "./Results/trait.interest_distribution.png",
 
 ## most would be normal without small hump...
 
-##### CORRELATIONS -----
-## are these coming from the same individuals??
-## ask KLV for other metadata for sites
-## OH hump is on the other side
-
-ggplot(data = df) +
-  geom_smooth(aes(x = df[, traits[1]],
-                  y = df[, traits[2]],
-                  alpha = 0.5)) +
-  geom_point(aes(x = df[, traits[1]],
-                 y = df[, traits[2]],
-                 group = formation,
-                 col = formation,
-                 alpha = 0.5)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
-  scale_x_continuous(name = traits[1]) +
-  scale_y_continuous(name = traits[2]) +
-  scale_color_manual(values = col.form)
-
-ggplot(data = df) +
-  geom_smooth(aes(x = df[, traits[1]],
-                  y = df[, traits[3]],
-                  alpha = 0.5)) +
-  geom_point(aes(x = df[, traits[1]],
-                 y = df[, traits[3]],
-                 group = formation,
-                 col = formation,
-                 alpha = 0.5)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
-  scale_x_continuous(name = traits[1]) +
-  scale_y_continuous(name = traits[2]) +
-  scale_color_manual(values = col.form)
-
-ggplot(data = df) +
-  geom_smooth(aes(x = df[, traits[1]],
-                  y = df[, traits[4]],
-                  alpha = 0.5)) +
-  geom_point(aes(x = df[, traits[1]],
-                 y = df[, traits[4]],
-                 group = formation,
-                 col = formation,
-                 alpha = 0.5)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
-  scale_x_continuous(name = traits[1]) +
-  scale_y_continuous(name = traits[4]) +
-  scale_color_manual(values = col.form)
-
-ggplot(data = df) +
-  geom_smooth(aes(x = df[, traits[1]],
-                  y = df[, traits[5]],
-                  alpha = 0.5)) +
-  geom_point(aes(x = df[, traits[1]],
-                 y = df[, traits[5]],
-                 group = formation,
-                 col = formation,
-                 alpha = 0.5)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
-  scale_x_continuous(name = traits[1]) +
-  scale_y_continuous(name = traits[5]) +
-  scale_color_manual(values = col.form)
-
-ggplot(data = df) +
-  geom_smooth(aes(x = df[, traits[1]],
-                  y = df[, traits[6]],
-                  alpha = 0.5)) +
-  geom_point(aes(x = df[, traits[1]],
-                 y = df[, traits[6]],
-                 group = formation,
-                 col = formation,
-                 alpha = 0.5)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
-  scale_x_continuous(name = traits[1]) +
-  scale_y_continuous(name = traits[6]) +
-  scale_color_manual(values = col.form)
-
-ggplot(data = df) +
-  geom_smooth(aes(x = df[, traits[1]],
-                  y = df[, traits[7]],
-                  alpha = 0.5)) +
-  geom_point(aes(x = df[, traits[1]],
-                 y = df[, traits[7]],
-                 group = formation,
-                 col = formation,
-                 alpha = 0.5)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
-  scale_x_continuous(name = traits[1]) +
-  scale_y_continuous(name = traits[7]) +
-  scale_color_manual(values = col.form)
-#ln.c.side is not an issue really
-
-ggplot(data = df) +
-  geom_smooth(aes(x = df[, traits[1]],
-                  y = df[, traits[8]],
-                  alpha = 0.5)) +
-  geom_point(aes(x = df[, traits[1]],
-                 y = df[, traits[8]],
-                 group = formation,
-                 col = formation,
-                 alpha = 0.5)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
-  scale_x_continuous(name = traits[1]) +
-  scale_y_continuous(name = traits[8]) +
-  scale_color_manual(values = col.form)
-#ln.o.side is not an issue really
-
-## really convince self that these are the same individuals
-# make data more manageable by reducing it to the three formations
-# make data even more manageable by reducing it to the small hump that is seen
-
-## are these individuals from the same colony or across colonies?
-
-
 #### REDUCE TO TRAITS OF INTEREST ----
 trt_lg_N = c("formation", "colony.id", "zooid.id", traits)
 dat_lg_N = df[intersect(colnames(df), trt_lg_N)]
-head(dat_lg_N)
+head(dat_lg_N) #traits in same order as df and traits
 
 #### SUMMARY STATISTICS ----
 
@@ -392,7 +275,11 @@ means = dat_lg_N %>%
 #        width = 14, height = 10, units = "cm")
 
 
-#### P MATRIX ----
+#### CHECK SAMPLE SIZES ----
+## number of zooids per colony
+range(mean_by_formation_colony$n.zooid)
+#4 53
+
 #check number of zooids NOT colonies:
 # by colonies use mean_by_formation_colony
 # by zooid us dat_lg_N
@@ -400,11 +287,18 @@ col_form = split.data.frame(mean_by_formation_colony,  #by colonies
                             mean_by_formation_colony$formation) #zooids per formation
 #just to look; max 328, smallest 19
 col_form.n = lapply(col_form, function(x){dim(x)[1]})
+
+#### SPLIT BY FORMATION ----
 ## by zooids:
 by_form = split.data.frame(dat_lg_N, 
                            dat_lg_N$formation)
-p.form_data = lapply(by_form, function(x) x[complete.cases(x),])
-p.cov = lapply(p.form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
+#just to look; highest 7836, smallest 454
+by_form.n = lapply(by_form, function(x){dim(x)[1]})
+form_data = lapply(by_form, function(x) x[complete.cases(x),])
+
+#### P MATRIX ----
+p.cov = lapply(form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
+#p.cov is the same and the phen.var
 
 ###### P STD ------
 
@@ -476,14 +370,10 @@ corrplot.mixed(p.corr_mat, upper = "number", lower = "pie")
 
 
 #### G MATRIX ----
-#keep at zooid level because correct for this later
-zooid_by_form = split.data.frame(dat_lg_N, dat_lg_N$formation) #zooids per formation
-#just to look; highest 7836, smallest 454
-zoo_form.n = lapply(zooid_by_form, function(x){dim(x)[1]})
-zooid_form_data = lapply(zooid_by_form, function(x) x[complete.cases(x),])
 
 ##### PRIORS -----
-phen.var = lapply(zooid_form_data, function (x){ (cov(x[, 4:11]))}) #traits of ALL; correct for colony later
+#same as p.cov
+phen.var = lapply(form_data, function (x){ (cov(x[, 4:11]))}) #traits of ALL; correct for colony later
 prior = lapply(phen.var, function (x){list(G = list(G1 = list(V = x/2, nu = 2)),
                                            R = list(V = x/4, nu = 2))})
 
@@ -497,19 +387,20 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
                          random = ~us(trait):colony.id, #the number of these determines # of Gs #+ us(trait):formation
                          rcov = ~us(trait):units,
                          family = rep("gaussian", 8), #num of traits
-                         data = zooid_form_data[[i]],
+                         data = form_data[[i]],
                          nitt = 1500000, thin = 1000, burnin = 500000,
                          prior = prior[[i]], verbose = TRUE)
   
 }
 
-data.list = list(model_G, dat_lg_N, zooid_form_data, mean_by_formation_colony)
+data.list = list(model_G, dat_lg_N, form_data, mean_by_formation_colony)
 
 save(data.list, file = "./Results/g_matrices_data_form.RData")
 
-#load(file="./Results/g_matrices_data_1form.RData") #load the g matrices calculated above 
+#load(file="./Results/g_matrices_data_form.RData") #load the g matrices calculated above 
 #model_G <- data.list[[1]]
 
+##### CHECK MODELS -----
 summary(model_G[[1]])
 summary(model_G[[2]])
 summary(model_G[[3]])
@@ -529,6 +420,43 @@ plot(model_G[[7]]$VCV) #catepillar!
 #formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", "Waipuru", 
 #                                    "Upper Kai-Iwi", "SHCSBSB", "Tainui"
 
+
+##### CHECK P IS BIGGER THAN G -----
+
+###### PRIORS ------
+# diagonals of p.cov to priors
+diag(phen.var[[2]]) #all larger
+diag(prior$NKBS$G$G1$V)
+diag(prior$NKBS$R$V)
+
+diag(phen.var[[4]])
+diag(prior$Waipuru$G$G1$V)
+diag(prior$Waipuru$R$V)
+
+
+diag(phen.var[[5]])
+diag(prior$`Upper Kai-Iwi`$G$G1$V)
+diag(prior$`Upper Kai-Iwi`$R$V)
+
+###### RETRIEVE THE P MATRIX FROM THE MCMC OBJECT ------
+# p matrix for each formation (maybe colony?)
+#vcov(model_G[[1]])
+post.vcv <- posterior.mode(model_G[[1]]$VCV)
+col.vcv <- post.vcv[1:64]
+d.col.vcv <- col.vcv[c(1,10,19,28,37,46, 55, 64)]
+unt.vcv <- post.vcv[65:128]
+p.unt.vcv <- unt.vcv[c(1,10,19,28,37,46, 55, 64)]
+diag(Pmat[[1]])
+diag(Gmat[[1]])
+#zh is same as col.id, bigger than units
+#mpb.w is same as col.id, bigger than units
+#cw.m is same as col.id, smaller than units
+#cw.d is same as col.id, bigger than units
+#ow.m is same as col.id, bigger than units
+#c.side is same as col.id, bigger than units
+#o.side is same as col.id, bigger than units
+#oh is same as col.id, bigger than units
+
 ###### POSTERIOR G MATRIX ------
 #Retrieving G from posterior
 g.model = model_G
@@ -536,15 +464,27 @@ ntraits = 8
 Gmat = lapply(g.model, function (x) { 
   matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
 #label lists as formations
-names(Gmat) = names(zooid_by_form) #formation_list #[1]
+names(Gmat) = names(by_form) #formation_list
+#traits in Gmat are in different order than Pmat based on VCV 
 
 # why aren't traits labeled??
-#for (i in seq_along(Gmat)){
-#  colnames(Gmat[[i]]) <- colnames(means)
-#}
-#for (i in seq_along(Gmat)){
-#  rownames(Gmat[[i]]) <- colnames(means)
-#}
+for (i in seq_along(Gmat)){
+  colnames(Gmat[[i]]) <- c("ln.zh", "ln.mpb.w", "ln.cw.m", "ln.cw.d",
+                           "ln.ow.m", "ln.c.side", "ln.o.side", "ln.oh")
+}
+for (i in seq_along(Gmat)){
+  rownames(Gmat[[i]]) <- c("ln.zh", "ln.mpb.w", "ln.cw.m", "ln.cw.d",
+                           "ln.ow.m", "ln.c.side", "ln.o.side", "ln.oh")
+}
+
+diag(Gmat[[2]])
+diag(Pmat[[2]])
+
+diag(Gmat[[4]])
+diag(Pmat[[4]])
+
+diag(Gmat[[5]])
+diag(Pmat[[5]])
 
 ###### G STD ------
 
@@ -632,6 +572,7 @@ corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 #Gmat
 #Pmat
 
+d.gmat.nkbs <- diag(Gmat[[1]])[1,2,3,4,5,8,6,7]
 plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      pch = 19, col = col.form[1],
      xlab = "G non-standardized diagonal",
