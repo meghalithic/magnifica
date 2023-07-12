@@ -1,7 +1,7 @@
 # Meghan A. Balk
 # meghan.balk@gmail.com
 # initially created: Jun 2023
-# last updated: 10 Jul 2023
+# last updated: 11 Jul 2023
 print("update 'last updated' & set working directory!")
 # set working directory to repo "magnifica"
 
@@ -382,7 +382,7 @@ prior = lapply(phen.var, function (x){list(G = list(G1 = list(V = x/2, nu = 2)),
 model_G = list()
 for (i in 1:length(formation_list)){ #length 7 because 7 formations 
   model_G[[i]] <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
-                                 ln.ow.m, ln.c.side, ln.o.side, ln.oh) ~ trait-1,
+                                 ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1,
                          #account for variation w/in colony:
                          random = ~us(trait):colony.id, #the number of these determines # of Gs #+ us(trait):formation
                          rcov = ~us(trait):units,
@@ -426,37 +426,68 @@ plot(model_G[[7]]$VCV) #catepillar!
 
 ###### PRIORS ------
 # diagonals of p.cov to priors
+## chekcing NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
+
+# NKBS
 diag(phen.var[[2]]) #all larger
 diag(prior$NKBS$G$G1$V)
 diag(prior$NKBS$R$V)
 
-diag(phen.var[[4]])
+# Waipuru
+diag(phen.var[[4]]) #all larger
 diag(prior$Waipuru$G$G1$V)
 diag(prior$Waipuru$R$V)
 
-
-diag(phen.var[[5]])
+# Upper Kai-Iwi
+diag(phen.var[[5]]) #all larger
 diag(prior$`Upper Kai-Iwi`$G$G1$V)
 diag(prior$`Upper Kai-Iwi`$R$V)
 
 ###### RETRIEVE THE P MATRIX FROM THE MCMC OBJECT ------
 # p matrix for each formation (maybe colony?)
-#vcov(model_G[[1]])
-post.vcv <- posterior.mode(model_G[[1]]$VCV)
-col.vcv <- post.vcv[1:64]
-d.col.vcv <- col.vcv[c(1,10,19,28,37,46, 55, 64)]
-unt.vcv <- post.vcv[65:128]
-p.unt.vcv <- unt.vcv[c(1,10,19,28,37,46, 55, 64)]
-diag(Pmat[[4]]) #all bigger...wtf
-diag(Gmat[[1]])
-#zh is same as col.id, bigger than units
-#mpb.w is same as col.id, bigger than units
-#cw.m is same as col.id, smaller than units
-#cw.d is same as col.id, bigger than units
-#ow.m is same as col.id, bigger than units
-#c.side is same as col.id, bigger than units
-#o.side is same as col.id, bigger than units
-#oh is same as col.id, bigger than units
+## chekcing NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
+
+#vcov(model_G[[1]]) #does not work
+
+# NKBS
+post.vcv.nkbs <- posterior.mode(model_G[[2]]$VCV)
+col.vcv.nkbs <- post.vcv.nkbs[1:64] #has negatives
+d.col.vcv.nkbs <- col.vcv.nkbs[c(1, 10, 19, 28, 37, 46, 55, 64)] #g matrix diagonal
+unt.vcv.nkbs <- post.vcv.nkbs[65:128] #has negatives
+#p.unt.vcv.nkbs <- unt.vcv.nkbs[c(1,10,19,28,37,46, 55, 64)]
+#p.m.nkbs <- p.col.vcv.nkbs + p.unt.vcv.nkbs
+p.m.nkbs <- col.vcv.nkbs + unt.vcv.nkbs #summed p-matrix
+d.p.m.nkbs <- p.m.nkbs[c(1, 10, 9, 28, 37, 46, 55, 64)]
+d.p.m.nkbs #extracted p-matrix diagonal
+d.col.vcv.nkbs #is this "g" matrix smaller than the sum p matrix?
+# "g' matrix all smaller than 'p' matrix [whew]
+diag(Pmat[[2]]) # all larger
+
+# Waipuru
+post.vcv.wp <- posterior.mode(model_G[[4]]$VCV)
+col.vcv.wp <- post.vcv.wp[1:64] #has negatives
+d.col.vcv.wp <- col.vcv.wp[c(1, 10, 19, 28, 37, 46, 55, 64)]
+unt.vcv.wp <- post.vcv.wp[65:128] #has negatives
+#p.unt.vcv.wp <- unt.vcv.wp[c(1,10,19,28,37,46, 55, 64)]
+#p.m.wp <- p.col.vcv.wp + p.unt.vcv.wp
+p.m.wp <- col.vcv.wp + unt.vcv.wp
+d.p.m.wp <- p.m.wp[c(1, 10, 19, 28, 37, 46, 55, 64)]
+d.p.m.wp
+d.col.vcv.wp #this 'g' matrix are smaller
+diag(Pmat[[4]]) # cw.m; ow.m; oh; c.side; o.side are smaller than P matrix; all larger than G matrix 
+
+# Upper Kai-Iwi
+post.vcv.uki <- posterior.mode(model_G[[5]]$VCV)
+col.vcv.uki <- post.vcv.uki[1:64] #has negatives
+d.col.vcv.uki <- col.vcv.uki[c(1, 10, 19, 28, 37, 46, 55, 64)]
+unt.vcv.uki <- post.vcv.uki[65:128] #has negatives
+#p.unt.vcv.uki <- unt.vcv.uki[c(1,10,19,28,37,46, 55, 64)]
+#p.m.uki <- p.col.vcv.uki + p.unt.vcv.uki
+p.m.uki <- col.vcv.uki + unt.vcv.uki
+d.p.m.uki <- p.m.uki[c(1, 10, 19, 28, 37, 46, 55, 64)]
+d.p.m.uki
+d.col.vcv.uki #this 'g' matrix are smaller
+diag(Pmat[[5]]) # zh, mpw.b, cw.m, cw.d, ow.m, oh, c.side, o.side are smaller; all larger than G matrix 
 
 ###### POSTERIOR G MATRIX ------
 #Retrieving G from posterior
@@ -470,22 +501,22 @@ names(Gmat) = names(by_form) #formation_list or form_data
 
 # why aren't traits labeled??
 for (i in seq_along(Gmat)){
-  colnames(Gmat[[i]]) <- c("ln.zh", "ln.mpb.w", "ln.cw.m", "ln.cw.d",
-                           "ln.ow.m", "ln.c.side", "ln.o.side", "ln.oh")
+  colnames(Gmat[[i]]) <- traits
 }
 for (i in seq_along(Gmat)){
-  rownames(Gmat[[i]]) <- c("ln.zh", "ln.mpb.w", "ln.cw.m", "ln.cw.d",
-                           "ln.ow.m", "ln.c.side", "ln.o.side", "ln.oh")
+  rownames(Gmat[[i]]) <- traits
 }
 
+## chekcing NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
+
 diag(Gmat[[2]])
-diag(Pmat[[2]])
+diag(Pmat[[2]]) # all larger
 
 diag(Gmat[[4]])
-diag(Pmat[[4]])
+diag(Pmat[[4]]) # all larger
 
 diag(Gmat[[5]])
-diag(Pmat[[5]])
+diag(Pmat[[5]]) # all larger
 
 ###### G STD ------
 
@@ -522,7 +553,6 @@ head(g.variances)
 #so variance along certain directions are negative
 
 ###### G EIGEN ------
-
 g.eig_variances = lapply(Gmat, function (x) {eigen(x)$values})
 paste("Eigenvalue variances")
 head(g.eig_variances)
@@ -574,26 +604,10 @@ corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 #Pmat
 
 ###### REORDER TRAITS -----
-## need to reorder all of the diagonals..
-d.gmat.nkls <- diag(Gmat[[1]])[c(1,2,3,4,5,8,6,7)]
-d.gmat.nkbs <- diag(Gmat[[2]])[c(1,2,3,4,5,8,6,7)]
-d.gmat.tewkesbury <- diag(Gmat[[3]])[c(1,2,3,4,5,8,6,7)]
-d.gmat.waipuru <- diag(Gmat[[4]])[c(1,2,3,4,5,8,6,7)]
-d.gmat.uki <- diag(Gmat[[5]])[c(1,2,3,4,5,8,6,7)]
-d.gmat.tainui <- diag(Gmat[[6]])[c(1,2,3,4,5,8,6,7)]
-d.gmat.shcsbsb <- diag(Gmat[[7]])[c(1,2,3,4,5,8,6,7)]
+formation_list
 
 ###### PLOT DIAGONALS -----
-plot(d.gmat.waipuru, diag(Pmat[[4]]),
-     pch = 19, col = col.form[1],
-     xlab = "G non-standardized diagonal",
-     ylab = "P non-standardized diagonal",
-     main = "Waipuru",
-     xlim = c(0, .05),
-     ylim = c(0, .2))
-abline(0, 1)
 
-d.gmat.nkbs <- diag(Gmat[[1]])[1,2,3,4,5,8,6,7]
 plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      pch = 19, col = col.form[1],
      xlab = "G non-standardized diagonal",
@@ -601,16 +615,16 @@ plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      main = "NKLS",
      xlim = c(0, .05),
      ylim = c(0, .2))
-abline(0, 1)
-summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]])))
+abline(0, 1) # looks good!
+summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]]))) #p-value: 0.0008405 ***
 
 plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      pch = 19, col = col.form[2],
      xlab = "G non-standardized diagonal",
      ylab = "P non-standardized diagonal",
      main = "NKBS")
-abline(0, 1)
-summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]])))
+abline(0, 1) # looks good!
+summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]]))) #p-value: 0.0002011 ***
 
 plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      pch = 19, col = col.form[3],
@@ -619,32 +633,32 @@ plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      main = "Tewkesbury",
      xlim = c(0, 0.01),
      ylim = c(0, 0.05))
-abline(0, 1)
-summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]])))
+abline(0, 1) # looks good!
+summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]]))) #p-value: 0.00396 **
 
 plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      pch = 19, col = col.form[4],
      xlab = "G non-standardized diagonal",
      ylab = "P non-standardized diagonal",
      main = "Waipuru")
-abline(0, 1)
-summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]])))
+abline(0, 1) # looks good!
+summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]]))) #p-value: 6.33e-05 ***
 
 plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      pch = 19, col = col.form[5],
      xlab = "G non-standardized diagonal",
      ylab = "P non-standardized diagonals",
      main = "Upper Kai-Iwi")
-abline(0, 1)
-summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]])))
+abline(0, 1) # looks good!
+summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]]))) #p-value: 2.999e-06 ***
 
 plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      pch = 19, col = col.form[6],
      xlab = "G non-standardized diagonal",
      ylab = "P non-standardized diagonal",
      main = "Tainui")
-abline(0, 1)
-summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]])))
+abline(0, 1) # looks good!
+summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]]))) #p-value: 0.002156 **
 
 plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      pch = 19, col = col.form[7],
@@ -653,8 +667,8 @@ plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      main = "SHCSBSB",
      xlim = c(0, 0.01),
      ylim = c(0,0.05))
-abline(0, 1)
-summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]])))
+abline(0, 1) # looks good!
+summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) #p-value: 2.477e-05 ***
 
 ##### RANDOM SKEWERS OF P & G OF EACH FORMATION -----
 #NKLS
@@ -707,64 +721,95 @@ paste("Random Skewers similarity matrix")
 corrplot.mixed(SHCSBSB_corr_mat, upper = "number", lower = "pie")
 
 ##### COMPARISON OF PC1 AND PC2 OF P & G OF EACH FORMATION -----
-g.std_variances
-p.std_variances
+g.eig_variances
+p.eig_variances
 
-plot(g.std_variances[[1]], p.std_variances[[1]],
+plot(g.eig_variances[[1]], p.eig_variances[[1]],
      pch = 19, col = col.form[1],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "NKLS")
-abline(0, 1)
-summary(lm(p.std_variances[[1]] ~ g.std_variances[[1]]))
+abline(0, 1) # looks good!
+summary(lm(p.eig_variances[[1]] ~ g.eig_variances[[1]])) #p-value: 1.13e-05 ***
 
-plot(g.std_variances[[2]], p.std_variances[[2]],
+plot(g.eig_variances[[2]], p.eig_variances[[2]],
      pch = 19, col = col.form[2],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "NKBS")
-abline(0, 1)
-summary(lm(p.std_variances[[2]] ~ g.std_variances[[2]]))
+abline(0, 1) # looks good!
+summary(lm(p.eig_variances[[2]] ~ g.eig_variances[[2]])) #p-value: 1.073e-06 ***
 
-plot(g.std_variances[[3]], p.std_variances[[3]],
+plot(g.eig_variances[[3]], p.eig_variances[[3]],
      pch = 19, col = col.form[3],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "Tewkesbury")
-abline(0, 1)
-summary(lm(p.std_variances[[3]] ~ g.std_variances[[3]]))
+abline(0, 1) # looks good!
+summary(lm(p.eig_variances[[3]] ~ g.eig_variances[[3]])) #p-value: 3.526e-10 ***
 
-plot(g.std_variances[[4]], p.std_variances[[4]],
+plot(g.eig_variances[[4]], p.eig_variances[[4]],
      pch = 19, col = col.form[4],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "Waipuru")
-abline(0, 1)
-summary(lm(p.std_variances[[4]] ~ g.std_variances[[4]]))
+abline(0, 1) # looks okay...
+summary(lm(p.eig_variances[[4]] ~ g.eig_variances[[4]])) #p-value: 1.533e-06 ***
 
-plot(g.std_variances[[5]], p.std_variances[[5]],
+plot(g.eig_variances[[5]], p.eig_variances[[5]],
      pch = 19, col = col.form[5],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "Upper Kai-Iwi")
-abline(0, 1)
-summary(lm(p.std_variances[[5]] ~ g.std_variances[[5]]))
+abline(0, 1) # looks good!
+summary(lm(p.eig_variances[[5]] ~ g.eig_variances[[5]])) #p-value: 7.121e-10 ***
 
-plot(g.std_variances[[6]], p.std_variances[[6]],
+plot(g.eig_variances[[6]], p.eig_variances[[6]],
      pch = 19, col = col.form[6],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "Tainui")
-abline(0, 1)
-summary(lm(p.std_variances[[6]] ~ g.std_variances[[6]]))
+abline(0, 1) # looks good!
+summary(lm(p.eig_variances[[6]] ~ g.eig_variances[[6]])) #p-value: 4.171e-07 ***
 
-plot(g.std_variances[[7]], p.std_variances[[7]],
+plot(g.eig_variances[[7]], p.eig_variances[[7]],
      pch = 19, col = col.form[7],
      xlab = "G standardized variances",
      ylab = "P standardized variances",
      main = "SHCSBSB")
-abline(0, 1)
-summary(lm(p.std_variances[[7]] ~ g.std_variances[[7]]))
+abline(0, 1) # looks good!
+summary(lm(p.eig_variances[[7]] ~ g.eig_variances[[7]])) #p-value: 3.279e-05 ***
+
+##### PLOT P, E, AND G VARIATION ----
+# E = units
+# P = cov or units + colony id
+# G = estimate or colony id
+
+g.eig_vectors <- lapply(Gmat, function (x) {eigen(x)$vectors})
+paste("Eigenvalue vectors")
+head(g.eig_vectors)
+
+r.names <- c(rep(formations[1], 8),
+             rep(formations[2], 8),
+             rep(formations[3], 8),
+             rep(formations[4], 8),
+             rep(formations[5], 8),
+             rep(formations[6], 8),
+             rep(formations[7], 8))
+
+g.eig_vect_mat = do.call(rbind, g.eig_vectors)
+g.eig_vect_mat = data.frame(g.eig_vect_mat,
+                            rownames(r.names))
+g.eig_vect = melt(g.eig_vect_mat)
+ggplot(g.eig_vect,
+       aes(x = variable, y = value,
+           group = rep.rownames.g.eig_per_mat...8.,
+           colour = rep.rownames.g.eig_per_mat...8.)) +
+  geom_line(aes(linetype = rep.rownames.g.eig_per_mat...8.)) +
+  geom_point() +
+  xlab("Principal component vector") +
+  ylab("%Variation in the PC")
+G_PC_dist #one negative; none above 1!
 
 ##### RAREFACTION -----
 ##Rarefaction - 
@@ -838,3 +883,5 @@ plot(out_results[, 2], out_results[, 1],
      pch = 19, col = "grey")
 points(obs_melt$N, obs_melt$RS, 
        col = "#00BFC4", pch = 19) #color by formation
+
+

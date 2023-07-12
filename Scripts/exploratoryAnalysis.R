@@ -37,6 +37,11 @@ images.filter <- images.meta[images.meta$fileName.tif %in% df.filter$fileName.ol
 nrow(images.filter) #15773
 length(unique(images.filter$fileName.tif)) #1464; only 370 images removed
 
+images.filter$formation <- factor(images.filter$formation, 
+                                  levels = c("NKLS", "NKBS", "Tewkesbury",
+                                             "Waipuru", "Upper Kai-Iwi",
+                                             "Tainui", "SHCSBSB")) 
+
 #### CALCULATE DISTANCES ----
 #measurements based off Voje et al. 2020 https://doi.org/10.5061/dryad.t4b8gthxm
 #zh is similar to LZ
@@ -140,6 +145,23 @@ c.side.avg <- rowMeans(cbind(c.side.r, c.side.l))
 plot(c.side.l, c.side.r)
 summary(lm(c.side.r ~ c.side.l)) #basically 1
 
+## right v left side of operculum
+p.oh.rl <- ggplot(data = traits.df) +
+  geom_point(aes(x = oh.l, y = oh.r)) +
+  ggtitle("Operculum Height, N zooids = 18890, N colony = 891") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Operculum Height Right Side (pixels)") +
+  scale_x_continuous(name = "Operculum Height Left Side (pixels)")
+
+oh.model <- lmodel2(formula = oh.r ~ oh.l,
+                    data = traits.df,
+                    range.x = "relative", 
+                    range.y = "relative")
+oh.model$regression.results #slope = 1, no asymmetry
+
+#ggsave(p.oh.rl, file = "./Results/operculum_height.png", width = 14, height = 10, units = "cm")
+
 ##### MAKE TABLE & SCALE CORRECT -----
 #For 30x it is 0.606 pixels per um(micrometer)
 
@@ -178,7 +200,6 @@ traits.df$ln.c.side <- log(traits.df$c.side)
 traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
                       "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
 
-
 ##### ABOUT TRAITS -----
 
 nrow(images.filter) #15773
@@ -192,6 +213,10 @@ length(unique(traits.melt$specimenNR)) #742 unique colonies
 
 traits.stats <- traits.melt %>%
   group_by(measurementType) %>%
+  summarise(avg = mean(measurementValue))
+
+traits.stats.form <- traits.melt %>%
+  group_by(measurementType, formation) %>%
   summarise(avg = mean(measurementValue))
 
 ##### HISTOGRAM -----
@@ -275,15 +300,14 @@ p.zh.mag.30 <- ggplot(traits.df[traits.df$magnification == "x30",]) +
 
 #ggsave(p.zh.mag.30, file = "./Results/zooid_height_magnification_x30.png", width = 14, height = 10, units = "cm")
 
-
-##### CORRELATIONS -----
+##### CORRELATIONS & ALLOMETRIES -----
 ## are these coming from the same individuals??
 ## ask KLV for other metadata for sites
 ## OH hump is on the other side
 
 ggplot(data = traits.df) +
   geom_smooth(aes(x = traits.df[, traits[1]],
-                  y = traits.traits.df[, traits[2]],
+                  y = traits.df[, traits[2]],
                   alpha = 0.5)) +
   geom_point(aes(x = traits.df[, traits[1]],
                  y = traits.df[, traits[2]],
@@ -295,6 +319,7 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[2]) +
   scale_color_manual(values = col.form)
+summary(lm(traits.df[, traits[2]] ~ traits.df[, traits[1]]))
 
 ggplot(data = traits.df) +
   geom_smooth(aes(x = traits.df[, traits[1]],
@@ -308,8 +333,9 @@ ggplot(data = traits.df) +
   theme(text = element_text(size = 16),
         legend.position = "none") +
   scale_x_continuous(name = traits[1]) +
-  scale_y_continuous(name = traits[2]) +
+  scale_y_continuous(name = traits[3]) +
   scale_color_manual(values = col.form)
+summary(lm(traits.df[, traits[3]] ~ traits.df[, traits[1]]))
 
 ggplot(data = traits.df) +
   geom_smooth(aes(x = traits.df[, traits[1]],
@@ -325,6 +351,7 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[4]) +
   scale_color_manual(values = col.form)
+summary(lm(traits.df[, traits[4]] ~ traits.df[, traits[1]]))
 
 ggplot(data = traits.df) +
   geom_smooth(aes(x = traits.df[, traits[1]],
@@ -340,6 +367,7 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[5]) +
   scale_color_manual(values = col.form)
+summary(lm(traits.df[, traits[5]] ~ traits.df[, traits[1]]))
 
 ggplot(data = traits.df) +
   geom_smooth(aes(x = traits.df[, traits[1]],
@@ -355,6 +383,7 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[6]) +
   scale_color_manual(values = col.form)
+summary(lm(traits.df[, traits[6]] ~ traits.df[, traits[1]]))
 
 ggplot(data = traits.df) +
   geom_smooth(aes(x = traits.df[, traits[1]],
@@ -371,6 +400,7 @@ ggplot(data = traits.df) +
   scale_y_continuous(name = traits[7]) +
   scale_color_manual(values = col.form)
 #ln.c.side is not an issue really
+summary(lm(traits.df[, traits[7]] ~ traits.df[, traits[1]]))
 
 ggplot(data = traits.df) +
   geom_smooth(aes(x = traits.df[, traits[1]],
@@ -387,6 +417,7 @@ ggplot(data = traits.df) +
   scale_y_continuous(name = traits[8]) +
   scale_color_manual(values = col.form)
 #ln.o.side is not an issue really
+summary(lm(traits.df[, traits[7]] ~ traits.df[, traits[1]]))
 
 ## really convince self that these are the same individuals
 # make data more manageable by reducing it to the three formations
@@ -397,27 +428,6 @@ nk.wa.uki <- traits.df[traits.df$formation == "NKBS" |
 sm.zoo <- nk.wa.uki[nk.wa.uki$ln.zh <= 6.25,]
 
 ## are these individuals from the same colony or across colonies?
-
-##### SCALING -----
-
-## right v left side of operculum
-p.oh.rl <- ggplot(data = traits.df) +
-  geom_point(aes(x = oh.l, y = oh.r)) +
-  ggtitle("Operculum Height, N zooids = 18890, N colony = 891") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Operculum Height Right Side (pixels)") +
-  scale_x_continuous(name = "Operculum Height Left Side (pixels)")
-
-oh.model <- lmodel2(formula = oh.r ~ oh.l,
-                    data = traits.df,
-                    range.x = "relative", 
-                    range.y = "relative")
-oh.model$regression.results #slope = 1, no asymmetry
-
-#ggsave(p.oh.rl, file = "./Results/operculum_height.png", width = 14, height = 10, units = "cm")
-
-##against zooid height
 
 p.ow.zh <- ggplot(data = traits.df) +
   geom_smooth(aes(x = zh, y = ow.m), method = "lm") +
@@ -535,3 +545,121 @@ ggplot(data = traits.df) +
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   scale_y_continuous(name = "Operculum mid-width (pixels)") +
   scale_x_continuous(name = "Zooid height (pixels)")
+
+#### DIFFERENCES IN TRAIT MEANS ----
+traits
+formations <- c("NKLS", "NKBS", "Tewkesbury", 
+                "Waipuru", "Upper Kai-Iwi", 
+                "Tainui", "SHCSBSB")
+## t tests
+#ln zh
+t.test(traits.df[traits.df$formation == formations[1], traits[1]],
+       traits.df[traits.df$formation == formations[2], traits[1]])
+t.test(traits.df[traits.df$formation == formations[2], traits[1]],
+       traits.df[traits.df$formation == formations[3], traits[1]])
+t.test(traits.df[traits.df$formation == formations[3], traits[1]],
+       traits.df[traits.df$formation == formations[4], traits[1]])
+t.test(traits.df[traits.df$formation == formations[4], traits[1]],
+       traits.df[traits.df$formation == formations[5], traits[1]])
+t.test(traits.df[traits.df$formation == formations[5], traits[1]],
+       traits.df[traits.df$formation == formations[6], traits[1]])
+t.test(traits.df[traits.df$formation == formations[6], traits[1]],
+       traits.df[traits.df$formation == formations[7], traits[1]])
+
+#ln.mpw.b
+t.test(traits.df[traits.df$formation == formations[1], traits[2]],
+       traits.df[traits.df$formation == formations[2], traits[2]])
+t.test(traits.df[traits.df$formation == formations[2], traits[2]],
+       traits.df[traits.df$formation == formations[3], traits[2]])
+t.test(traits.df[traits.df$formation == formations[3], traits[2]],
+       traits.df[traits.df$formation == formations[4], traits[2]])
+t.test(traits.df[traits.df$formation == formations[4], traits[2]],
+       traits.df[traits.df$formation == formations[5], traits[2]])
+t.test(traits.df[traits.df$formation == formations[5], traits[2]],
+       traits.df[traits.df$formation == formations[6], traits[2]])
+t.test(traits.df[traits.df$formation == formations[6], traits[2]],
+       traits.df[traits.df$formation == formations[7], traits[2]])
+
+#ln.cw.m
+t.test(traits.df[traits.df$formation == formations[1], traits[3]],
+       traits.df[traits.df$formation == formations[2], traits[3]])
+t.test(traits.df[traits.df$formation == formations[2], traits[3]],
+       traits.df[traits.df$formation == formations[3], traits[3]])
+t.test(traits.df[traits.df$formation == formations[3], traits[3]],
+       traits.df[traits.df$formation == formations[4], traits[3]])
+t.test(traits.df[traits.df$formation == formations[4], traits[3]],
+       traits.df[traits.df$formation == formations[5], traits[3]])
+t.test(traits.df[traits.df$formation == formations[5], traits[3]],
+       traits.df[traits.df$formation == formations[6], traits[3]])
+t.test(traits.df[traits.df$formation == formations[6], traits[3]],
+       traits.df[traits.df$formation == formations[7], traits[3]])
+
+#ln.cw.d
+t.test(traits.df[traits.df$formation == formations[1], traits[4]],
+       traits.df[traits.df$formation == formations[2], traits[4]])
+t.test(traits.df[traits.df$formation == formations[2], traits[4]],
+       traits.df[traits.df$formation == formations[3], traits[4]])
+t.test(traits.df[traits.df$formation == formations[3], traits[4]],
+       traits.df[traits.df$formation == formations[4], traits[4]])
+t.test(traits.df[traits.df$formation == formations[4], traits[4]],
+       traits.df[traits.df$formation == formations[5], traits[4]])
+t.test(traits.df[traits.df$formation == formations[5], traits[4]],
+       traits.df[traits.df$formation == formations[6], traits[4]])
+t.test(traits.df[traits.df$formation == formations[6], traits[4]],
+       traits.df[traits.df$formation == formations[7], traits[4]])
+
+#ln.ow.m
+t.test(traits.df[traits.df$formation == formations[1], traits[5]],
+       traits.df[traits.df$formation == formations[2], traits[5]])
+t.test(traits.df[traits.df$formation == formations[2], traits[5]],
+       traits.df[traits.df$formation == formations[3], traits[5]])
+t.test(traits.df[traits.df$formation == formations[3], traits[5]],
+       traits.df[traits.df$formation == formations[4], traits[5]])
+t.test(traits.df[traits.df$formation == formations[4], traits[5]],
+       traits.df[traits.df$formation == formations[5], traits[5]])
+t.test(traits.df[traits.df$formation == formations[5], traits[5]],
+       traits.df[traits.df$formation == formations[6], traits[5]])
+t.test(traits.df[traits.df$formation == formations[6], traits[5]],
+       traits.df[traits.df$formation == formations[7], traits[5]])
+
+#ln.oh
+t.test(traits.df[traits.df$formation == formations[1], traits[6]],
+       traits.df[traits.df$formation == formations[2], traits[6]])
+t.test(traits.df[traits.df$formation == formations[2], traits[6]],
+       traits.df[traits.df$formation == formations[3], traits[6]])
+t.test(traits.df[traits.df$formation == formations[3], traits[6]],
+       traits.df[traits.df$formation == formations[4], traits[6]])
+t.test(traits.df[traits.df$formation == formations[4], traits[6]],
+       traits.df[traits.df$formation == formations[5], traits[6]])
+t.test(traits.df[traits.df$formation == formations[5], traits[6]],
+       traits.df[traits.df$formation == formations[6], traits[6]])
+t.test(traits.df[traits.df$formation == formations[6], traits[6]],
+       traits.df[traits.df$formation == formations[7], traits[6]])
+
+#ln.c.side
+t.test(traits.df[traits.df$formation == formations[1], traits[7]],
+       traits.df[traits.df$formation == formations[2], traits[7]])
+t.test(traits.df[traits.df$formation == formations[2], traits[7]],
+       traits.df[traits.df$formation == formations[3], traits[7]])
+t.test(traits.df[traits.df$formation == formations[3], traits[7]],
+       traits.df[traits.df$formation == formations[4], traits[7]])
+t.test(traits.df[traits.df$formation == formations[4], traits[7]],
+       traits.df[traits.df$formation == formations[5], traits[7]])
+t.test(traits.df[traits.df$formation == formations[5], traits[7]],
+       traits.df[traits.df$formation == formations[6], traits[7]])
+t.test(traits.df[traits.df$formation == formations[6], traits[7]],
+       traits.df[traits.df$formation == formations[7], traits[7]])
+
+#ln.o.side
+t.test(traits.df[traits.df$formation == formations[1], traits[8]],
+       traits.df[traits.df$formation == formations[2], traits[8]])
+t.test(traits.df[traits.df$formation == formations[2], traits[8]],
+       traits.df[traits.df$formation == formations[3], traits[8]])
+t.test(traits.df[traits.df$formation == formations[3], traits[8]],
+       traits.df[traits.df$formation == formations[4], traits[8]])
+t.test(traits.df[traits.df$formation == formations[4], traits[8]],
+       traits.df[traits.df$formation == formations[5], traits[8]])
+t.test(traits.df[traits.df$formation == formations[5], traits[8]],
+       traits.df[traits.df$formation == formations[6], traits[8]])
+t.test(traits.df[traits.df$formation == formations[6], traits[8]],
+       traits.df[traits.df$formation == formations[7], traits[8]])
