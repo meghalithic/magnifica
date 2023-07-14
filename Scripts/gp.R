@@ -40,6 +40,8 @@ library(rgl)
 library(scales)
 library(RColorBrewer)
 library(coin)
+library(tibble)
+library(magrittr)
 
 #### LOAD DATA ----
 
@@ -883,5 +885,114 @@ plot(out_results[, 2], out_results[, 1],
      pch = 19, col = "grey")
 points(obs_melt$N, obs_melt$RS, 
        col = "#00BFC4", pch = 19) #color by formation
+
+#### EVOLVABILITY ----
+##Is morphological evolution occurring along directions of high evolvability?
+#Another question we might have is whether most changes are occurring along 
+#dimensions of higher evolvability /conditional evolvability than we would 
+#expect at random. To test that hypothesis, we can simply 
+#calculate **e** and **ce** for the vectors of change and compare it to a 
+#null distribution of **e** and **ce** derived from 10,000 random vectors. 
+
+div_form_std_mean = mean_by_formation %>%
+  magrittr::set_rownames(.$formation) %>%
+  dplyr::select(-formation, -n.col) 
+  
+Bet_form = apply(div_form_std_mean, 1, Normalize)
+colSums(Bet_form^2)#making sure they are normalized (should sum up to 1)
+
+# differences standardized by ancestral mean
+
+#split_data = split.data.frame(mean_by_formation, mean_by_formation$formation) #already age sorted
+among_std_change = -diff(as.matrix(mean_by_formation[, 3:10]))
+
+res_abs = lapply(std_change, abs)
+deltazmi_vect_trait = unlist(res_abs)
+deltazmi.norm <- lapply(std_change, function(x){colSums(t(x)^2)^0.5})
+deltazmi_vect = unlist(deltazmi.norm)/(8^0.5)
+
+Fig_deltaz.ana <- ggplot(as.data.frame(deltazmi_vect_trait), 
+                         aes(x = deltazmi_vect_trait)) + 
+  geom_histogram(color = "darkblue", fill = "lightblue") +
+  xlab("DeltaZ (%mean)")
+
+grid.arrange(Fig_deltaz.ana, 
+             nrow = 1, ncol = 1)
+
+#within formation
+split_data = split.data.frame(mean_by_formation_colony, mean_by_formation_colony$formation)
+within_std_change = lapply(split_data, function (y){
+  -diff(as.matrix(y[, 4:11]))/as.matrix(y[-1, 4:11])
+  })
+
+#w.in_form = lapply(within_std_change, function(x) {sum(x != "NA")/8}) #8 is number of
+
+w_form = lapply(within_std_change, function(x){apply(x, 1, Normalize)}) 
+lapply(w_form, function (x){colSums(x^2)})
+
+#Random correlations
+num.traits <- 8
+iterations = 400
+beta.mat <- array(rnorm(num.traits * iterations), c(num.traits,iterations))
+beta.mat <- apply(beta.mat, 2, Normalize)
+bet_corr = t(beta.mat) %*% beta.mat
+paste("95%CI for vector correlations between random vectors")
+rand_corr = quantile(as.vector(abs(bet_corr)), 0.95)
+rand_corr
+
+#Deltaz vectors + Random Vectors
+beta.mat.among = Bet_form
+beta.mat.within = w_form
+
+Gselect = Reduce("+", G_ext) / length(G_ext) #mean G to make drift tests during cladogenesis
+
+evolv_within = list()
+for (i in 1:5){
+  evolv_within[[i]] = diag(t(beta.mat.within[[i]]) %*% G_ext[[i]] %*% beta.mat.within[[i]])
+} 
+evolv_among = diag(t(beta.mat.among) %*% Gselect %*% beta.mat.among)
+
+evolv_mat_rand = diag(t(beta.mat) %*% Gselect %*% beta.mat)
+
+evolv_final = list(unlist(evolv_within), evolv_among, evolv_mat_rand)
+names(evolv_final) = c("within", "among", "random")
+evolv_melted = melt(evolv_final)
+evolv_ggp = ggplot(data = evolv_melted, aes(x = L1, y = value, fill = L1)) + 
+  geom_boxplot(alpha = 0.6) +
+  ylab("Evolvability") +
+  xlab(NULL) + 
+  theme(legend.position = 'none')
+
+c_evolv_within = list()
+for (i in 1:5){
+  c_evolv_within[[i]]=(1/diag(t(beta.mat.within[[i]]) %*% 
+                                solve(G_ext[[i]],
+                                      beta.mat.within[[i]])))
+} 
+
+c_evolv_among = (1/diag(t(beta.mat.among) %*% 
+                          solve(Gselect, 
+                                beta.mat.among)))
+
+c_evolv_mat_rand = (1/diag(t(beta.mat) %*% 
+                             solve(Gselect, 
+                                   beta.mat)))
+
+c_evolv_final = list(unlist(c_evolv_within),
+                     c_evolv_among,
+                     c_evolv_mat_rand)
+names(c_evolv_final) = c("within", "among", "random")
+c_evolv_melted = melt(c_evolv_final)
+cevol_ggp = ggplot(data = c_evolv_melted, 
+                   aes(x = L1, y = value, fill = L1)) +
+  geom_boxplot(alpha = 0.6) +
+  ylab("Conditional Evolvability") +
+  xlab(NULL) + 
+  theme(legend.position = 'none')
+
+grid.arrange(evolv_ggp, cevol_ggp, 
+             nrow = 1, ncol = 2)
+
+
 
 
