@@ -42,6 +42,8 @@ library(RColorBrewer)
 library(coin)
 library(tibble)
 library(magrittr)
+library(evoTS)
+library(paleoTS)
 
 #### LOAD DATA ----
 
@@ -992,6 +994,143 @@ cevol_ggp = ggplot(data = c_evolv_melted,
 
 grid.arrange(evolv_ggp, cevol_ggp, 
              nrow = 1, ncol = 2)
+
+
+#### TIME SERIES ----
+#### CREATE VARIABLES ----
+## add time
+df$ages <- c()
+df$ages[df$formation == "NKLS"] <- 2
+df$ages[df$formation == "NKBS"] <- 2.185
+df$ages[df$formation == "Tewkesbury"] <- 1.4
+df$ages[df$formation == "Waipuru"] <- 1.4
+df$ages[df$formation == "Upper Kai-Iwi"] <- 0.65
+df$ages[df$formation == "Tainui"] <- 0.4
+df$ages[df$formation == "SHCSBSB"] <- 0.415
+
+##### nsamp -----
+time <- as.numeric(unique(sort(df$ages, decreasing = TRUE))) #order oldest to youngest
+nsamp <- length(time)
+
+##### nvar -----
+nvar <- ncol(df[,grepl("^ln", colnames(df))])
+
+##### tt -----
+## from stegino_metadata/newMetadata/formations.csv
+
+tt <- c()
+for(i in 1:length(time)){
+  tt[i] <- time[1]-time[i] #oldest is 0
+}
+
+##### M MATRIX & S COVARIANCE -----
+M <- array(dim = c(nsamp, nvar))
+#V <- array(dim = c(nsamp, nvar))
+S <- list()
+for(i in 1:nsamp){
+  M[i,] <- colMeans(df[df$ages == time[i], grepl("^ln", colnames(df))], na.rm = TRUE)
+  #V[i,] <- diag(var(df[df$ages == time[i], grepl("^ln", colnames(df))], na.rm = TRUE))
+  S[[i]] <- cov(df[df$ages == time[i], grepl("^ln", colnames(df))])
+}
+
+colnames(M) <- colnames(df[,grepl("^ln", colnames(df))])
+nn <- unname(table(df$ages)[as.character(time)]) #samples in order oldest to youngest
+time.units <- "Myr"
+sex <- "unknown"
+reference <- "ROCKS-PARADOX"
+taxon = "Steginoporella magnifica"
+
+magnifica.timeSeries <- list(nsamp = nsamp,
+                             nvar = nvar, 
+                             M = M, 
+                             S = S, 
+                             nn = nn, 
+                             tt = tt,
+                             time.units = time.units, 
+                             taxon = taxon, 
+                             sex = sex, 
+                             reference = reference)
+
+source("check_TS.R") #from MacroEvolvability folder
+
+check_TS(magnifica.timeSeries)
+
+save(magnifica.timeSeries, file = "magnifica.timeSeries.RData")
+
+##### GO THROUGH MODELS ----
+d.var <- lapply(S, function(x){
+  diag(x)
+})
+
+d.var[[1]] #all traits, first time
+d.var.unlist <- unlist(d.var)
+unique(names(d.var.unlist))
+d.var.unlist[names(d.var.unlist) == "ln.zh"] #one trait, all times
+M[1,] #all traits, first time
+M[, 1] #one trait, all times
+
+#one trait at a time?
+#eventually turn into a list with names as traits
+magnifica.zh <- as.paleoTS(mm = M[, 1], 
+                           vv = d.var.unlist[names(d.var.unlist) == "ln.zh"], #diagonals of cov are variances 
+                           tt = tt, 
+                           nn = nn)
+
+magnifica.mpw.b <- as.paleoTS(mm = M[, 2], 
+                              vv = d.var.unlist[names(d.var.unlist) == "ln.mpw.b"], #diagonals of cov are variances 
+                              tt = tt, 
+                              nn = nn)
+
+magnifica.cw.m <- as.paleoTS(mm = M[, 3], 
+                             vv = d.var.unlist[names(d.var.unlist) == "ln.cw.m"], #diagonals of cov are variances 
+                             tt = tt, 
+                             nn = nn)
+
+magnifica.cw.d <- as.paleoTS(mm = M[, 4], 
+                             vv = d.var.unlist[names(d.var.unlist) == "ln.cw.d"], #diagonals of cov are variances 
+                             tt = tt, 
+                             nn = nn)
+
+magnifica.ow.m <- as.paleoTS(mm = M[, 5], 
+                             vv = d.var.unlist[names(d.var.unlist) == "ln.ow.m"], #diagonals of cov are variances 
+                             tt = tt, 
+                             nn = nn)
+
+magnifica.oh <- as.paleoTS(mm = M[, 6], 
+                           vv = d.var.unlist[names(d.var.unlist) == "ln.oh"], #diagonals of cov are variances 
+                           tt = tt, 
+                           nn = nn)
+
+magnifica.c.side <- as.paleoTS(mm = M[, 7], 
+                               vv = d.var.unlist[names(d.var.unlist) == "ln.c.side"], #diagonals of cov are variances 
+                               tt = tt, 
+                               nn = nn)
+
+magnifica.o.side <- as.paleoTS(mm = M[, 8], 
+                               vv = d.var.unlist[names(d.var.unlist) == "ln.o.side"], #diagonals of cov are variances 
+                               tt = tt, 
+                               nn = nn)
+
+#visualize models
+plotevoTS(magnifica.zh)
+plotevoTS(magnifica.mpw.b)
+plotevoTS(magnifica.cw.m)
+plotevoTS(magnifica.cw.d)
+plotevoTS(magnifica.ow.m)
+plotevoTS(magnifica.oh) #inverse!
+plotevoTS(magnifica.c.side)
+plotevoTS(magnifica.o.side)
+
+#fit models
+fit.all.univariate(magnifica.zh, pool = FALSE) #URW
+fit.all.univariate(magnifica.mpw.b, pool = FALSE) #URW
+fit.all.univariate(magnifica.cw.m, pool = FALSE) #URW
+fit.all.univariate(magnifica.cw.d, pool = FALSE) #URW
+fit.all.univariate(magnifica.ow.m, pool = FALSE) #URW
+fit.all.univariate(magnifica.oh, pool = FALSE) #URW
+fit.all.univariate(magnifica.c.side, pool = FALSE) #URW
+fit.all.univariate(magnifica.o.side, pool = FALSE) #URW
+
 
 
 
