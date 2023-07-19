@@ -300,6 +300,49 @@ p.zh.mag.30 <- ggplot(traits.df[traits.df$magnification == "x30",]) +
 
 #ggsave(p.zh.mag.30, file = "./Results/zooid_height_magnification_x30.png", width = 14, height = 10, units = "cm")
 
+## really convince self that these are the same individuals
+# make data more manageable by reducing it to the three formations
+# make data even more manageable by reducing it to the small hump that is seen
+nk.wa.uki <- traits.df[traits.df$formation == "NKBS" |
+                         traits.df$formation == "Waipuru" |
+                         traits.df$formation == "Upper Kai-Iwi",]
+sm.zoo <- nk.wa.uki[nk.wa.uki$ln.zh <= 6.25,]
+nrow(sm.zoo) #943 zooids
+length(unique(sm.zoo$specimenNR)) #64 colonies
+table(sm.zoo$specimenNR) #a lot of one offs, but some clusters
+## look at a couple of these:
+sm.zoo[sm.zoo$specimenNR == "003iCV",]
+
+## are these individuals from the same colony or across colonies?
+
+p.ow.zh <- ggplot(data = traits.df) +
+  geom_smooth(aes(x = zh, y = ow.m), method = "lm") +
+  geom_point(aes(x = zh, y = ow.m)) + #two clusters
+  ggtitle("Scaling of operculum mid-width with zooid height, N zooids = 18890, N colony = 891") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Operculum mid-width (pixels)") +
+  scale_x_continuous(name = "Zooid height (pixels)")
+
+#ggsave(p.ow.zh, file = "./Results/ow.zh.scaling.png", width = 14, height = 10, units = "cm")
+
+#look at 4 images:
+#2 with the largest operculum width
+#2 with the largest zooid height
+
+slice_max(traits.df, n = 2, order_by = ow.m)
+#ow.m = 1061.6501; boxID = 290_1913_523_687; imageName = 806_CV_2_10v_x30_BSE
+#ow.m = 959.4425; boxID = 927_2047_495_737; imageName = 768_CC_2_15v_x30_BSE
+
+slice_max(traits.df, n = 2, order_by = zh)
+#zh = 1498.012; boxID = 301_1136_705_1252; imageName = 511_CV_1_15v_x30_BSE
+#zh = 1363.376; boxID = 21_769_409_746; imageName = 084_CV_2_10v_x30_BSE
+
+zh.owm.model <- lm(ow.m ~ zh,
+                   data = traits.df)
+
+
+
 ##### CORRELATIONS & ALLOMETRIES -----
 ## are these coming from the same individuals??
 ## ask KLV for other metadata for sites
@@ -419,41 +462,6 @@ ggplot(data = traits.df) +
 #ln.o.side is not an issue really
 summary(lm(traits.df[, traits[7]] ~ traits.df[, traits[1]]))
 
-## really convince self that these are the same individuals
-# make data more manageable by reducing it to the three formations
-# make data even more manageable by reducing it to the small hump that is seen
-nk.wa.uki <- traits.df[traits.df$formation == "NKBS" |
-                  traits.df$formation == "Waipuru" |
-                  traits.df$formation == "Upper Kai-Iwi",]
-sm.zoo <- nk.wa.uki[nk.wa.uki$ln.zh <= 6.25,]
-
-## are these individuals from the same colony or across colonies?
-
-p.ow.zh <- ggplot(data = traits.df) +
-  geom_smooth(aes(x = zh, y = ow.m), method = "lm") +
-  geom_point(aes(x = zh, y = ow.m)) + #two clusters
-  ggtitle("Scaling of operculum mid-width with zooid height, N zooids = 18890, N colony = 891") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Operculum mid-width (pixels)") +
-  scale_x_continuous(name = "Zooid height (pixels)")
-
-#ggsave(p.ow.zh, file = "./Results/ow.zh.scaling.png", width = 14, height = 10, units = "cm")
-
-#look at 4 images:
-#2 with the largest operculum width
-#2 with the largest zooid height
-
-slice_max(traits.df, n = 2, order_by = ow.m)
-#ow.m = 1061.6501; boxID = 290_1913_523_687; imageName = 806_CV_2_10v_x30_BSE
-#ow.m = 959.4425; boxID = 927_2047_495_737; imageName = 768_CC_2_15v_x30_BSE
-
-slice_max(traits.df, n = 2, order_by = zh)
-#zh = 1498.012; boxID = 301_1136_705_1252; imageName = 511_CV_1_15v_x30_BSE
-#zh = 1363.376; boxID = 21_769_409_746; imageName = 084_CV_2_10v_x30_BSE
-
-zh.owm.model <- lm(ow.m ~ zh,
-                   data = traits.df)
 
 
 
