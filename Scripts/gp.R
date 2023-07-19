@@ -63,7 +63,12 @@ colnames(df)[colnames(df) == 'specimenNR'] <- 'colony.id'
 #Upper Kai-Iwi = #00A9FF
 #Tainui = #C77CFF
 #SHCSBSB = #FF61CC
-col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", "#00A9FF", "#C77CFF", "#FF61CC")
+col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
+             "#00A9FF", "#C77CFF", "#FF61CC")
+
+
+col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
+               "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
 
 #### MANIPULATE DATA ----
 
@@ -191,6 +196,50 @@ ggsave(ml, file = "./Results/trait.interest_distribution.png",
 
 ## most would be normal without small hump...
 
+##### NORMALITY TESTS -----
+## shapiro test; but need to subsample to be within 5000
+## if significant, then significantly different from normal (i.e., non-normal)
+
+#ln.zh
+sub.ln.zh <- sample(df[, traits[1]], 
+                    5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.zh) #p-value < 2.2e-16
+
+#ln.mpw.b
+sub.ln.mpw.b <- sample(df[, traits[2]], 
+                       5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.mpw.b) #p-value < 2.2e-16
+
+#ln.cw.m
+sub.ln.cw.m <- sample(df[, traits[3]], 
+                      5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.cw.m) #p-value < 2.2e-16
+
+#ln.cw.d
+sub.ln.cw.d <- sample(df[, traits[4]], 
+                      5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.cw.d) #p-value < 2.2e-16
+
+#ln.ow.m
+sub.ln.ow.m <- sample(df[, traits[5]], 
+                      5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.ow.m) #p-value < 2.2e-16
+
+#ln.oh
+sub.ln.oh <- sample(df[, traits[6]], 
+                    5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.oh) #p-value < 2.2e-16
+
+#ln.c.side
+sub.ln.c.side <- sample(df[, traits[7]], 
+                        5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.c.side) #p-value < 2.2e-16
+
+#ln.o.side
+sub.ln.o.side <- sample(df[, traits[8]], 
+                        5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.o.side) #p-value < 2.2e-16
+
 #### REDUCE TO TRAITS OF INTEREST ----
 trt_lg_N = c("formation", "colony.id", "zooid.id", traits)
 dat_lg_N = df[intersect(colnames(df), trt_lg_N)]
@@ -215,6 +264,8 @@ mean_by_formation_colony = dat_lg_N %>% #use this going forward
 mean_by_formation = mean_by_formation_colony %>%
   group_by(formation) %>%
   summarize(n.col = length(unique(colony.id)),
+            n.zooid = sum(n.zooid),
+            avg.zooid = mean(n.zooid),
             avg.zh = mean(avg.zh, na.rm = T),
             avg.mpw.b = mean(avg.mpw.b, na.rm = T),
             avg.cw.m = mean(avg.cw.m, na.rm = T),
@@ -601,7 +652,7 @@ diag(g.corr_mat) = 1
 paste("Random Skewers similarity matrix")
 corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 
-#### CORR OF G FOR P ----
+#### CORR OF G & P ----
 
 ##### CORR OF P & G DIAGONALS -----
 #Gmat
@@ -1131,7 +1182,28 @@ fit.all.univariate(magnifica.oh, pool = FALSE) #URW
 fit.all.univariate(magnifica.c.side, pool = FALSE) #URW
 fit.all.univariate(magnifica.o.side, pool = FALSE) #URW
 
+magnifica.mv <- make.multivar.evoTS(magnifica.zh,
+                                    magnifica.mpw.b,
+                                    magnifica.cw.m,
+                                    magnifica.cw.d,
+                                    magnifica.ow.m,
+                                    magnifica.oh,
+                                    magnifica.c.side,
+                                    magnifica.o.side)
+plotevoTS.multivariate(magnifica.mv,
+                       y_min = -4, y_max = 8,
+                       x.label = "Relative Time",
+                       col = col.traits,
+                       pch = c(20, 20, 20, 20,
+                               20, 20, 20, 20))
 
+fit.multivariate.URW(magnifica.mv, R = "diag", r = "fixed") #AICc = -175.344 WINNER; same as univariate
+fit.multivariate.URW(magnifica.mv, R = "symmetric", r = "fixed") #AICc = -244.7925
+fit.multivariate.URW(magnifica.mv, R = "symmetric", r = "accel") #AICc = -249.9289
+fit.multivariate.URW(magnifica.mv, R = "symmetric", r = "decel") #AICc = -244.7943
 
-
+fit.multivariate.OU(magnifica.mv, A.matrix = "diag", R.matrix = "symmetric") #AICc = -281.3557
+fit.multivariate.OU(magnifica.mv, A.matrix = "diag", R.matrix = "diag") #AICc = -194.1703
+fit.multivariate.OU(magnifica.mv, A.matrix = "upper.tri", R.matrix = "symmetric") #AICc = -298.1776
+fit.multivariate.OU(magnifica.mv, A.matrix = "full", R.matrix = "symmetric") #AICc = -288.2023
 
