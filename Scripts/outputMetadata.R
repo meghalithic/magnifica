@@ -14,7 +14,16 @@ require(tidyverse)
 
 #### LOAD DATA ----
 ## CHANGE DATA FILE NAME AS NEEDED
-output <- read.csv("./Data/output_21Jun2023_Stegniator.csv", header = TRUE)
+
+output.oldest <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
+nrow(output.oldest) #19346
+
+output.old <- read.csv("./Data/output_21Jun2023_Stegniator.csv", header = TRUE)
+nrow(output.old) #15783
+
+output.new <- read.csv("./Data/output_21Jul2023_Stegniator.csv", header = TRUE)
+nrow(output.new) #15783
+
 #AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
