@@ -19,10 +19,10 @@ output.oldest <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
 nrow(output.oldest) #19346
 
 output.old <- read.csv("./Data/output_21Jun2023_Stegniator.csv", header = TRUE)
-nrow(output.old) #15783
+nrow(output.old) #15783 #didn't ignore zooids, just filtered out images
 
-output.new <- read.csv("./Data/output_21Jul2023_Stegniator.csv", header = TRUE)
-nrow(output.new) #15783
+output <- read.csv("./Data/output_31jul2023_Steginator.csv", header = TRUE)
+nrow(output) #7202 #got rid of three zooids? I think I need to redo this...
 
 #AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
@@ -77,7 +77,7 @@ nrow(meta.images) #15783
 
 ## CHANGE DATE EXT EVERYTIME
 write.csv(meta.images,
-          "./Data/meta.images.22Jun2023.csv",
+          "./Data/meta.images.31Jul2023.csv",
           row.names = FALSE)
 
 #### OLD ----

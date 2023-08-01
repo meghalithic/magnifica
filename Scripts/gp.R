@@ -159,7 +159,7 @@ p.ow.m = ggplot(data = df) +
   theme(text = element_text(size = 16),
         legend.position = "none") +
   scale_x_continuous(name = traits[5]) +
-  scale_color_manual(values = col.form)
+  scale_color_manual(values = ol.form)
 
 p.oh = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[6]], 

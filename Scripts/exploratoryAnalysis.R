@@ -14,7 +14,7 @@ require(lmodel2)
 require(tidyverse)
 
 #### LOAD DATA ----
-images.meta <- read.csv("./Data/meta.images.22Jun2023.csv",
+images.meta <- read.csv("./Data/meta.images.31Jul2023.csv",
                    header = TRUE,
                    sep = ",")
 
@@ -24,7 +24,7 @@ df.filter <- read.table("./Data/filteredImages.csv",
 
 #### EXPLORE DATA ----
 nrow(df.filter) #1834
-nrow(images.meta) #15783
+nrow(images.meta) #7202
 
 #### REDUCE TO SELECTED IMAGES ####
 
@@ -34,8 +34,8 @@ for(i in 1:nrow(df.filter)){
 }
 
 images.filter <- images.meta[images.meta$fileName.tif %in% df.filter$fileName.old,]
-nrow(images.filter) #15773
-length(unique(images.filter$fileName.tif)) #1464; only 370 images removed
+nrow(images.filter) #7195
+length(unique(images.filter$fileName.tif)) #1409
 
 images.filter$formation <- factor(images.filter$formation, 
                                   levels = c("NKLS", "NKBS", "Tewkesbury",
@@ -184,7 +184,7 @@ traits.df <- data.frame(boxID = images.filter$box_id,
                         oh.ow = oh/ow.m) # similar to LO/WO 
 
 write.csv(traits.df,
-          "./Results/traits_26Jun2023.csv",
+          "./Results/traits_31Jul2023.csv",
           row.names = FALSE)
 
 ##### LN TRANSFORM -----
@@ -200,16 +200,39 @@ traits.df$ln.c.side <- log(traits.df$c.side)
 traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
                       "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
 
+##### FILTER -----
+# 5 zooid per colony minimum
+traits.df$zooid.id <- paste0(traits.df$boxID, "_", traits.df$image)
+colnames(traits.df)[colnames(traits.df) == 'specimenNR'] <- 'colony.id'
+
+mean_by_formation_colony = traits.df %>% #use this going forward
+  group_by(formation, colony.id) %>%
+  summarize(n.zooid = length(unique(zooid.id)),
+            avg.zh = mean(ln.zh, na.rm = T),
+            avg.mpw.b = mean(ln.mpw.b, na.rm = T),
+            avg.cw.m = mean(ln.cw.m, na.rm = T),
+            avg.cw.d = mean(ln.cw.d, na.rm = T),
+            avg.ow.m = mean(ln.ow.m, na.rm = T),
+            avg.oh = mean(ln.oh, na.rm = T),
+            avg.o.side = mean(ln.o.side, na.rm = T),
+            avg.c.side = mean(ln.c.side, na.rm = T)) %>%
+  as.data.frame()
+
+keep <- mean_by_formation_colony$colony.id[mean_by_formation_colony$n.zooid >= 5]
+
+df <- traits.df[traits.df$colony.id %in% keep,]
+nrow(df) #6815
+
 ##### ABOUT TRAITS -----
 
-nrow(images.filter) #15773
-nrow(traits.df) #15773
+nrow(images.filter) #7195
+nrow(df) #6815
 
-traits.melt <- melt(data = traits.df,
-                    id.vars = c("boxID","imageName", "specimenNR", "formation", "magnification"),
+traits.melt <- melt(data = df,
+                    id.vars = c("boxID", "zooid.id","imageName", "colony.id", "formation", "magnification"),
                     variable.name = "measurementType",
                     value.name = "measurementValue")
-length(unique(traits.melt$specimenNR)) #742 unique colonies
+length(unique(traits.melt$colony.id)) #604 unique colonies [previously 742]
 
 traits.stats <- traits.melt %>%
   group_by(measurementType) %>%
@@ -235,35 +258,35 @@ ggsave(p.dist, file = "./Results/trait_distribution_26Jun2023.png", width = 14, 
 
 ###### BIMODALITY ------  
 ##explore bimodality, using zooid height as an example then see if it generalizes
-p.zh <- ggplot(traits.df) +
-  geom_density(aes(x = zh)) +
-  ggtitle("Zooid height, N zooids = 18890, N colony = 891") +
+p.ln.zh <- ggplot(df) +
+  geom_density(aes(x = ln.zh)) +
+  ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(keep))) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "Zooid Height (pixels)")
+  scale_x_continuous(name = "LN Zooid Height")
 
 #ggsave(p.zh, file = "./Results/zooid_height.png", width = 14, height = 10, units = "cm")
 
 ##driven by formation?
 #all but Punneki Limestone are bimodal
-p.zh.form <- ggplot(traits.df) +
-  geom_density(aes(x = zh,
+p.zh.form <- ggplot(df) +
+  geom_density(aes(x = ln.zh,
                    group = formation,
                    col = formation)) + 
-  ggtitle("Zooid height by formation, N zooids = 18890, N colony = 891") +
+  ggtitle(paste0("Zooid height by formation, N zooids = ", nrow(df), ", N colony = ", length(keep))) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "Zooid Height (pixels)")
+  scale_x_continuous(name = "LN Zooid Height")
 
 #ggsave(p.zh.form, file = "./Results/zooid_height_by_formation.png", width = 14, height = 10, units = "cm")
 
 #only see bimodal in Waipurpu, NKBS, Upper Kai-Iwi
 
 ##seems like first hump ends around 300 pixels
-sm.traits <- traits.df[traits.df$zh < 500,]
-length(unique(sm.traits$specimenNR)) #95 images out of 891
+sm.traits <- df[df$ln.zh < 6.25,]
+length(unique(sm.traits$colony.id)) #43 out of 604; was 95 images out of 891
 
 write.csv(sm.traits,
           "./Results/small_bimodal_hump.csv",
@@ -271,15 +294,15 @@ write.csv(sm.traits,
 
 ##driven by magnification?
 #not that I can tell...
-p.zh.mag <- ggplot(traits.df) +
-  geom_density(aes(x = zh,
+p.zh.mag <- ggplot(df) +
+  geom_density(aes(x = ln.zh,
                    group = magnification,
                    col = magnification)) + 
-  ggtitle("Zooid height by magnification, N zooids = 18890, N colony = 891") +
+  ggtitle(paste0("Zooid height by magnification, N zooids = ", nrow(df), ", N colony = ", length(keep))) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "Zooid Height (pixels)")
+  scale_x_continuous(name = "LN Zooid Height")
 
 #ggsave(p.zh.mag, file = "./Results/zooid_height_by_magnification.png", width = 14, height = 10, units = "cm")
 ##doesn't seem to affect it, still get it with mag == 30 only
@@ -287,42 +310,32 @@ p.zh.mag <- ggplot(traits.df) +
 ##what does it look like if all magnification is the same?
 #still get bimodal hump
 
-nrow(traits.df[traits.df$magnification == "x30",]) #15773
-length(unique(traits.df$specimenNR[traits.df$magnification == "x30"])) #742
-
-p.zh.mag.30 <- ggplot(traits.df[traits.df$magnification == "x30",]) +
-  geom_density(aes(x = zh[traits.df$magnification == "x30"])) + 
-  ggtitle("Zooid height by magnification x30, N zooids = 18752, N colony = 884") +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "Zooid Height (pixels)")
-
-#ggsave(p.zh.mag.30, file = "./Results/zooid_height_magnification_x30.png", width = 14, height = 10, units = "cm")
+nrow(df[df$magnification == "x30",]) #6815
+length(unique(df$colony.id[df$magnification == "x30"])) #604
 
 ## really convince self that these are the same individuals
 # make data more manageable by reducing it to the three formations
 # make data even more manageable by reducing it to the small hump that is seen
-nk.wa.uki <- traits.df[traits.df$formation == "NKBS" |
-                         traits.df$formation == "Waipuru" |
-                         traits.df$formation == "Upper Kai-Iwi",]
+nk.wa.uki <- df[df$formation == "NKBS" |
+                df$formation == "Waipuru" |
+                df$formation == "Upper Kai-Iwi",]
 sm.zoo <- nk.wa.uki[nk.wa.uki$ln.zh <= 6.25,]
-nrow(sm.zoo) #943 zooids
-length(unique(sm.zoo$specimenNR)) #64 colonies
-table(sm.zoo$specimenNR) #a lot of one offs, but some clusters
+nrow(sm.zoo) #543 (was 943) zooids
+length(unique(sm.zoo$colony.id)) #36 (was 64) colonies
+table(sm.zoo$colony.id) #a lot of one offs, but some clusters
 ## look at a couple of these:
-sm.zoo[sm.zoo$specimenNR == "003iCV",]
+sm.zoo[sm.zoo$colony.id == "077CV",]
 
 ## are these individuals from the same colony or across colonies?
 
-p.ow.zh <- ggplot(data = traits.df) +
-  geom_smooth(aes(x = zh, y = ow.m), method = "lm") +
-  geom_point(aes(x = zh, y = ow.m)) + #two clusters
-  ggtitle("Scaling of operculum mid-width with zooid height, N zooids = 18890, N colony = 891") +
+p.ow.zh <- ggplot(data = df) +
+  geom_smooth(aes(x = ln.zh, y = ln.ow.m), method = "lm") +
+  geom_point(aes(x = ln.zh, y = ln.ow.m)) + #two clusters
+  ggtitle(paste0("Scaling of operculum mid-width with zooid height, N zooids = ", nrow(df), ", N colony = ", length(keep))) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Operculum mid-width (pixels)") +
-  scale_x_continuous(name = "Zooid height (pixels)")
+  scale_y_continuous(name = "LN Operculum mid-width") +
+  scale_x_continuous(name = "LN Zooid height")
 
 #ggsave(p.ow.zh, file = "./Results/ow.zh.scaling.png", width = 14, height = 10, units = "cm")
 
@@ -330,16 +343,16 @@ p.ow.zh <- ggplot(data = traits.df) +
 #2 with the largest operculum width
 #2 with the largest zooid height
 
-slice_max(traits.df, n = 2, order_by = ow.m)
+slice_max(df, n = 2, order_by = ln.ow.m)
 #ow.m = 1061.6501; boxID = 290_1913_523_687; imageName = 806_CV_2_10v_x30_BSE
 #ow.m = 959.4425; boxID = 927_2047_495_737; imageName = 768_CC_2_15v_x30_BSE
 
-slice_max(traits.df, n = 2, order_by = zh)
+slice_max(df, n = 2, order_by = lnzh)
 #zh = 1498.012; boxID = 301_1136_705_1252; imageName = 511_CV_1_15v_x30_BSE
 #zh = 1363.376; boxID = 21_769_409_746; imageName = 084_CV_2_10v_x30_BSE
 
-zh.owm.model <- lm(ow.m ~ zh,
-                   data = traits.df)
+zh.owm.model <- lm(ln.ow.m ~ ln.zh,
+                   data = df)
 
 
 
@@ -348,12 +361,22 @@ zh.owm.model <- lm(ow.m ~ zh,
 ## ask KLV for other metadata for sites
 ## OH hump is on the other side
 
-ggplot(data = traits.df) +
-  geom_smooth(aes(x = traits.df[, traits[1]],
-                  y = traits.df[, traits[2]],
+traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
+                      "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
+
+col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
+             "#00A9FF", "#C77CFF", "#FF61CC")
+
+
+col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
+               "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
+
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[2]],
                   alpha = 0.5)) +
-  geom_point(aes(x = traits.df[, traits[1]],
-                 y = traits.df[, traits[2]],
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[2]],
                  group = formation,
                  col = formation,
                  alpha = 0.5)) + 
@@ -362,14 +385,15 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[2]) +
   scale_color_manual(values = col.form)
-summary(lm(traits.df[, traits[2]] ~ traits.df[, traits[1]]))
 
-ggplot(data = traits.df) +
-  geom_smooth(aes(x = traits.df[, traits[1]],
-                  y = traits.df[, traits[3]],
+summary(lm(df[, traits[2]] ~ df[, traits[1]]))
+
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[3]],
                   alpha = 0.5)) +
-  geom_point(aes(x = traits.df[, traits[1]],
-                 y = traits.df[, traits[3]],
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[3]],
                  group = formation,
                  col = formation,
                  alpha = 0.5)) + 
@@ -378,14 +402,14 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[3]) +
   scale_color_manual(values = col.form)
-summary(lm(traits.df[, traits[3]] ~ traits.df[, traits[1]]))
+summary(lm(df[, traits[3]] ~ df[, traits[1]]))
 
-ggplot(data = traits.df) +
-  geom_smooth(aes(x = traits.df[, traits[1]],
-                  y = traits.df[, traits[4]],
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[4]],
                   alpha = 0.5)) +
-  geom_point(aes(x = traits.df[, traits[1]],
-                 y = traits.df[, traits[4]],
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[4]],
                  group = formation,
                  col = formation,
                  alpha = 0.5)) + 
@@ -394,14 +418,14 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[4]) +
   scale_color_manual(values = col.form)
-summary(lm(traits.df[, traits[4]] ~ traits.df[, traits[1]]))
+summary(lm(df[, traits[4]] ~ df[, traits[1]]))
 
-ggplot(data = traits.df) +
-  geom_smooth(aes(x = traits.df[, traits[1]],
-                  y = traits.df[, traits[5]],
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[5]],
                   alpha = 0.5)) +
-  geom_point(aes(x = traits.df[, traits[1]],
-                 y = traits.df[, traits[5]],
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[5]],
                  group = formation,
                  col = formation,
                  alpha = 0.5)) + 
@@ -410,14 +434,14 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[5]) +
   scale_color_manual(values = col.form)
-summary(lm(traits.df[, traits[5]] ~ traits.df[, traits[1]]))
+summary(lm(df[, traits[5]] ~ df[, traits[1]]))
 
-ggplot(data = traits.df) +
-  geom_smooth(aes(x = traits.df[, traits[1]],
-                  y = traits.df[, traits[6]],
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[6]],
                   alpha = 0.5)) +
-  geom_point(aes(x = traits.df[, traits[1]],
-                 y = traits.df[, traits[6]],
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[6]],
                  group = formation,
                  col = formation,
                  alpha = 0.5)) + 
@@ -426,14 +450,14 @@ ggplot(data = traits.df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[6]) +
   scale_color_manual(values = col.form)
-summary(lm(traits.df[, traits[6]] ~ traits.df[, traits[1]]))
+summary(lm(df[, traits[6]] ~ df[, traits[1]]))
 
-ggplot(data = traits.df) +
-  geom_smooth(aes(x = traits.df[, traits[1]],
-                  y = traits.df[, traits[7]],
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[7]],
                   alpha = 0.5)) +
-  geom_point(aes(x = traits.df[, traits[1]],
-                 y = traits.df[, traits[7]],
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[7]],
                  group = formation,
                  col = formation,
                  alpha = 0.5)) + 
@@ -443,14 +467,14 @@ ggplot(data = traits.df) +
   scale_y_continuous(name = traits[7]) +
   scale_color_manual(values = col.form)
 #ln.c.side is not an issue really
-summary(lm(traits.df[, traits[7]] ~ traits.df[, traits[1]]))
+summary(lm(df[, traits[7]] ~ df[, traits[1]]))
 
-ggplot(data = traits.df) +
-  geom_smooth(aes(x = traits.df[, traits[1]],
-                  y = traits.df[, traits[8]],
+ggplot(data = df) +
+  geom_smooth(aes(x = df[, traits[1]],
+                  y = df[, traits[8]],
                   alpha = 0.5)) +
-  geom_point(aes(x = traits.df[, traits[1]],
-                 y = traits.df[, traits[8]],
+  geom_point(aes(x = df[, traits[1]],
+                 y = df[, traits[8]],
                  group = formation,
                  col = formation,
                  alpha = 0.5)) + 
@@ -460,7 +484,7 @@ ggplot(data = traits.df) +
   scale_y_continuous(name = traits[8]) +
   scale_color_manual(values = col.form)
 #ln.o.side is not an issue really
-summary(lm(traits.df[, traits[7]] ~ traits.df[, traits[1]]))
+summary(lm(df[, traits[7]] ~ df[, traits[1]]))
 
 
 
