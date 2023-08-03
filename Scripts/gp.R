@@ -47,12 +47,20 @@ library(paleoTS)
 
 #### LOAD DATA ----
 
-df <- read.csv("./Results/traits_26Jun2023.csv",
+#df <- read.csv("./Results/traits_26Jun2023.csv",
+#               header = TRUE, 
+#               sep = ",",
+#               stringsAsFactors = FALSE)
+
+df <- read.csv("./Results/colonies.traits.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
-df$zooid.id <- paste0(df$boxID, "_", df$image)
-colnames(df)[colnames(df) == 'specimenNR'] <- 'colony.id'
+
+sm.df <- read.csv("./Results/small.colonies.traits.csv",
+                  header = TRUE, 
+                  sep = ",",
+                  stringsAsFactors = FALSE)
 
 #### PLOT THEME ----
 #formations and colors: 
@@ -63,6 +71,7 @@ colnames(df)[colnames(df) == 'specimenNR'] <- 'colony.id'
 #Upper Kai-Iwi = #00A9FF
 #Tainui = #C77CFF
 #SHCSBSB = #FF61CC
+
 col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
              "#00A9FF", "#C77CFF", "#FF61CC")
 
@@ -73,13 +82,12 @@ col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67",
 #### MANIPULATE DATA ----
 
 ##### CREATE ID -----
-# Extract unique elements and trait names
 
 zooid_list <- unique(df$zooid.id)
-length(zooid_list) #15773
+length(zooid_list) #6274 (was 15773)
 
 colony_list <- unique(df$colony.id)
-length(colony_list) #742
+length(colony_list) #572 (was 742)
 
 ##### FORMATIONS ----
 # arrange formations from oldest to youngest
@@ -89,15 +97,7 @@ df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury",
 formation_list <- unique(df$formation)
 length(formation_list) #7
 
-##### LN TRANSFORM -----
-df$ln.zh <- log(df$zh)
-df$ln.mpw.b <- log(df$mpw.b)
-df$ln.cw.m <- log(df$cw.m)
-df$ln.cw.d <- log(df$cw.d)
-df$ln.ow.m <- log(df$ow.m)
-df$ln.oh <- log(df$oh)
-df$ln.o.side <- log(df$o.side)
-df$ln.c.side <- log(df$c.side)
+##### TRAITS -----
 
 #same order as in df
 names(df)
@@ -159,7 +159,7 @@ p.ow.m = ggplot(data = df) +
   theme(text = element_text(size = 16),
         legend.position = "none") +
   scale_x_continuous(name = traits[5]) +
-  scale_color_manual(values = ol.form)
+  scale_color_manual(values = col.form)
 
 p.oh = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[6]], 
@@ -191,7 +191,7 @@ p.o.side = ggplot(data = df) +
 Fig = list(p.zh, p.mpw.b, p.cw.m, p.cw.d, p.ow.m, p.oh, p.c.side, p.o.side)
 ml <- marrangeGrob(Fig, nrow = 4, ncol = 2)
 ml
-ggsave(ml, file = "./Results/trait.interest_distribution.png", 
+ggsave(ml, file = "./Results/trait.interest_distribution_reg.png", 
        width = 14, height = 10, units = "cm")
 
 ## most would be normal without small hump...
@@ -213,12 +213,12 @@ shapiro.test(sub.ln.mpw.b) #p-value < 2.2e-16
 #ln.cw.m
 sub.ln.cw.m <- sample(df[, traits[3]], 
                       5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.cw.m) #p-value < 2.2e-16
+shapiro.test(sub.ln.cw.m) #p-value < 0.1432
 
 #ln.cw.d
 sub.ln.cw.d <- sample(df[, traits[4]], 
                       5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.cw.d) #p-value < 2.2e-16
+shapiro.test(sub.ln.cw.d) #p-value < 0.003805
 
 #ln.ow.m
 sub.ln.ow.m <- sample(df[, traits[5]], 
@@ -233,7 +233,7 @@ shapiro.test(sub.ln.oh) #p-value < 2.2e-16
 #ln.c.side
 sub.ln.c.side <- sample(df[, traits[7]], 
                         5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.c.side) #p-value < 2.2e-16
+shapiro.test(sub.ln.c.side) #p-value < 0.0003926
 
 #ln.o.side
 sub.ln.o.side <- sample(df[, traits[8]], 
@@ -275,6 +275,7 @@ mean_by_formation = mean_by_formation_colony %>%
             avg.o.side = mean(avg.o.side, na.rm = T),
             avg.c.side = mean(avg.c.side, na.rm = T)) %>%
   as.data.frame()
+## Grabowski & Porto claim sampling of 60 per sp...
 
 colony_means = dat_lg_N %>%
   group_by(colony.id) %>%
@@ -404,7 +405,7 @@ P_PC_dist = ggplot(p.eig_per,
   ylab("%Variation in the PC")
 P_PC_dist #none negative; none above 1!
 
-ggsave(P_PC_dist, file = "./Results/P_PC_dist_form.png", 
+ggsave(P_PC_dist, file = "./Results/P_PC_dist_form_reg.png", 
        width = 14, height = 10, units = "cm") 
 #NKBS, Waipuru, Upper Kai-Iwi 
 

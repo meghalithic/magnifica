@@ -183,9 +183,9 @@ traits.df <- data.frame(boxID = images.filter$box_id,
                         zh.zw = zh/cw.d, #similar to LZ/WZ
                         oh.ow = oh/ow.m) # similar to LO/WO 
 
-write.csv(traits.df,
-          "./Results/traits_31Jul2023.csv",
-          row.names = FALSE)
+#write.csv(traits.df,
+#          "./Results/traits_31Jul2023.csv",
+#          row.names = FALSE)
 
 ##### LN TRANSFORM -----
 traits.df$ln.zh <- log(traits.df$zh)
@@ -284,13 +284,68 @@ p.zh.form <- ggplot(df) +
 
 #only see bimodal in Waipurpu, NKBS, Upper Kai-Iwi
 
-##seems like first hump ends around 300 pixels
-sm.traits <- df[df$ln.zh < 6.25,]
-length(unique(sm.traits$colony.id)) #43 out of 604; was 95 images out of 891
+## test where hump is...
+# frequency by size bin (quarter ln bins)
+df.bins <- df %>% mutate(zh.bin = cut(ln.zh, breaks = seq(5.5, 7.5, .1)))
 
-write.csv(sm.traits,
-          "./Results/small_bimodal_hump.csv",
+df.bin.f <- df.bins %>%
+  group_by(zh.bin) %>%
+  summarise(n = n())
+View(df.bin.f)
+#(6.2,6.3]
+#6.25 like I eyeballed
+
+sm.traits <- df[df$ln.zh < 6.25,]
+sm.colonies <- unique(sm.traits$colony.id) #43 out of 604; was 95 images out of 891
+
+bins <- c("(5.5,5.6]", "(5.6,5.7]", "(5.7,5.8]",
+          "(5.8,5.9]", "(5.9,6]", "(6,6.1]", 
+          "(6.1,6.2]", "(6.2,6.3]")
+
+df.bins$zh.bin <- as.character(df.bins$zh.bin)
+
+df.bins$sm <- FALSE
+df.bins$sm[df.bins$zh.bin %in% bins] <- TRUE
+
+#look at proportions
+prop.sm <- df.bins %>% 
+  group_by(colony.id) %>%
+  summarise(n.zooid = length(zooid.id),
+            n.sm.zooid = sum(sm),
+            prop.sm = n.sm.zooid/n.zooid)
+View(prop.sm)
+
+#goes from 100% to 20%; perhaps make 20% the cut off
+rm.col <- prop.sm$colony.id[prop.sm$prop.sm == 1]
+length(rm.col) #32 colonies
+
+small.colonies <- df[df$colony.id %in% rm.col,]
+reg.colonies <- df[!(df$colony.id %in% rm.col),]
+
+write.csv(small.colonies,
+          "./Results/small.colonies.traits.csv",
           row.names = FALSE)
+
+write.csv(reg.colonies,
+          "./Results/colonies.traits.csv",
+          row.names = FALSE)
+
+#for those with 20%, see where the sizes are
+sm.zooids <- prop.sm$colony.id[prop.sm$prop.sm < 1 &
+                                 prop.sm$prop.sm > 0]
+length(sm.zooids) #21
+
+range(df$ln.zh[df$colony.id %in% sm.zooids])
+#5.800815 7.439169
+sort(df$ln.zh[df$colony.id %in% sm.zooids])
+#only 11 below 6.25, so probably fine
+
+#write.csv(sm.traits,
+#          "./Results/small_bimodal_hump.csv",
+#          row.names = FALSE)
+
+##### WRITE OUT TWO DATASETS ----
+write.csv()
 
 ##driven by magnification?
 #not that I can tell...
@@ -354,7 +409,31 @@ slice_max(df, n = 2, order_by = lnzh)
 zh.owm.model <- lm(ln.ow.m ~ ln.zh,
                    data = df)
 
+###### LOOK AT RESULTS FROM IMG J -----
+table(sm.zoo$colony.id)
+unique(sm.zoo$imageName[sm.zoo$colony.id == "077CV"]) #from images 1, 2, 3
+## image 077_CV
+imgj.res_077_1 <- read.csv("077_CV_1_Results.csv", header = TRUE)
+imgj.res_077_2 <- read.csv("077_CV_2_Results.csv", header = TRUE)
+imgj.res_077_3 <- read.csv("077_CV_3_Results.csv", header = TRUE)
+imgj_077 <- rbind(imgj.res_077_1, imgj.res_077_2, imgj.res_077_3)
+## scale
+imgj_077$scale.zh <- imgj_077$Length/.606
+## log
+imgj_077$ln.zh <- log(imgj_077$scale.zh)
+imgj_077$ln.zh # all small!!
 
+##273S
+unique(sm.zoo$imageName[sm.zoo$colony.id == "273S"]) #from images 1, 2, 3
+imgj.res_273_1 <- read.csv("273_S_1_Results.csv", header = TRUE)
+imgj.res_273_2 <- read.csv("273_S_2_Results.csv", header = TRUE)
+imgj.res_273_3 <- read.csv("273_S_3_Results.csv", header = TRUE)
+imgj_273 <- rbind(imgj.res_273_1, imgj.res_273_2, imgj.res_273_3)
+## scale
+imgj_273$scale.zh <- imgj_273$Length/.606
+## log
+imgj_273$ln.zh <- log(imgj_273$scale.zh)
+imgj_273$ln.zh #all small!
 
 ##### CORRELATIONS & ALLOMETRIES -----
 ## are these coming from the same individuals??
