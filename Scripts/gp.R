@@ -1,7 +1,7 @@
 # Meghan A. Balk
 # meghan.balk@gmail.com
 # initially created: Jun 2023
-# last updated: 11 Jul 2023
+# last updated: 4 Aug 2023
 print("update 'last updated' & set working directory!")
 # set working directory to repo "magnifica"
 
@@ -56,6 +56,7 @@ df <- read.csv("./Results/colonies.traits.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
+#already have small zooid removed and at least 5 zooids per colony
 
 sm.df <- read.csv("./Results/small.colonies.traits.csv",
                   header = TRUE, 
@@ -81,13 +82,11 @@ col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67",
 
 #### MANIPULATE DATA ----
 
-##### CREATE ID -----
-
 zooid_list <- unique(df$zooid.id)
-length(zooid_list) #6274 (was 15773)
+length(zooid_list) #5480 (was 15773)
 
 colony_list <- unique(df$colony.id)
-length(colony_list) #572 (was 742)
+length(colony_list) #541 (was 742)
 
 ##### FORMATIONS ----
 # arrange formations from oldest to youngest
@@ -208,17 +207,17 @@ shapiro.test(sub.ln.zh) #p-value < 2.2e-16
 #ln.mpw.b
 sub.ln.mpw.b <- sample(df[, traits[2]], 
                        5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.mpw.b) #p-value < 2.2e-16
+shapiro.test(sub.ln.mpw.b) #p-value = 2.001e-08
 
 #ln.cw.m
 sub.ln.cw.m <- sample(df[, traits[3]], 
                       5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.cw.m) #p-value < 0.1432
+shapiro.test(sub.ln.cw.m) #p-value < 0.06524
 
 #ln.cw.d
 sub.ln.cw.d <- sample(df[, traits[4]], 
                       5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.cw.d) #p-value < 0.003805
+shapiro.test(sub.ln.cw.d) #p-value < 7.756e-06
 
 #ln.ow.m
 sub.ln.ow.m <- sample(df[, traits[5]], 
@@ -233,7 +232,7 @@ shapiro.test(sub.ln.oh) #p-value < 2.2e-16
 #ln.c.side
 sub.ln.c.side <- sample(df[, traits[7]], 
                         5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.c.side) #p-value < 0.0003926
+shapiro.test(sub.ln.c.side) #p-value < 0.00249
 
 #ln.o.side
 sub.ln.o.side <- sample(df[, traits[8]], 
@@ -249,7 +248,7 @@ head(dat_lg_N) #traits in same order as df and traits
 
 mean_by_formation_colony = dat_lg_N %>% #use this going forward
   group_by(formation, colony.id) %>%
-  summarize(n.zooid = length(unique(zooid.id)),
+  summarize(n.zooid = length(zooid.id),
             avg.zh = mean(ln.zh, na.rm = T),
             avg.mpw.b = mean(ln.mpw.b, na.rm = T),
             avg.cw.m = mean(ln.cw.m, na.rm = T),
@@ -259,6 +258,7 @@ mean_by_formation_colony = dat_lg_N %>% #use this going forward
             avg.o.side = mean(ln.o.side, na.rm = T),
             avg.c.side = mean(ln.c.side, na.rm = T)) %>%
   as.data.frame()
+min(mean_by_formation_colony$n.zooid) #5
 
 #means of means
 mean_by_formation = mean_by_formation_colony %>%
@@ -276,6 +276,9 @@ mean_by_formation = mean_by_formation_colony %>%
             avg.c.side = mean(avg.c.side, na.rm = T)) %>%
   as.data.frame()
 ## Grabowski & Porto claim sampling of 60 per sp...
+write.csv(mean_by_formation,
+          "./Results/n.for.formations.csv",
+          row.names = FALSE)
 
 colony_means = dat_lg_N %>%
   group_by(colony.id) %>%
@@ -424,7 +427,6 @@ diag(p.corr_mat) = 1
 paste("Random Skewers similarity matrix")
 corrplot.mixed(p.corr_mat, upper = "number", lower = "pie")
 
-
 #### G MATRIX ----
 
 ##### PRIORS -----
@@ -451,7 +453,7 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 
 data.list = list(model_G, dat_lg_N, form_data, mean_by_formation_colony)
 
-save(data.list, file = "./Results/g_matrices_data_form.RData")
+save(data.list, file = "./Results/g_matrices_data_form_reg.RData")
 
 #load(file="./Results/g_matrices_data_form.RData") #load the g matrices calculated above 
 #model_G <- data.list[[1]]
@@ -628,7 +630,7 @@ G_PC_dist = ggplot(g.eig_per,
   ylab("%Variation in the PC")
 G_PC_dist #one negative; none above 1!
 
-ggsave(G_PC_dist, file = "./Results/G_PC_dist_form.png", 
+ggsave(G_PC_dist, file = "./Results/G_PC_dist_form_reg.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
@@ -672,7 +674,7 @@ plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      xlim = c(0, .05),
      ylim = c(0, .2))
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]]))) #p-value: 0.0008405 ***
+summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]]))) #p-value: 0.008756 ***
 
 plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      pch = 19, col = col.form[2],
@@ -680,7 +682,7 @@ plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      ylab = "P non-standardized diagonal",
      main = "NKBS")
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]]))) #p-value: 0.0002011 ***
+summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]]))) #p-value: 0.002378 ***
 
 plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      pch = 19, col = col.form[3],
@@ -690,7 +692,7 @@ plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      xlim = c(0, 0.01),
      ylim = c(0, 0.05))
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]]))) #p-value: 0.00396 **
+summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]]))) #p-value: 0.004631 **
 
 plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      pch = 19, col = col.form[4],
@@ -698,7 +700,7 @@ plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      ylab = "P non-standardized diagonal",
      main = "Waipuru")
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]]))) #p-value: 6.33e-05 ***
+summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]]))) #p-value: 0.0004252 ***
 
 plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      pch = 19, col = col.form[5],
@@ -706,7 +708,7 @@ plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      ylab = "P non-standardized diagonals",
      main = "Upper Kai-Iwi")
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]]))) #p-value: 2.999e-06 ***
+summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]]))) #p-value: 1.861e-05 ***
 
 plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      pch = 19, col = col.form[6],
@@ -714,7 +716,7 @@ plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      ylab = "P non-standardized diagonal",
      main = "Tainui")
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]]))) #p-value: 0.002156 **
+summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]]))) #p-value: 0.000312 ***
 
 plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      pch = 19, col = col.form[7],
@@ -724,7 +726,7 @@ plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      xlim = c(0, 0.01),
      ylim = c(0,0.05))
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) #p-value: 2.477e-05 ***
+summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) #p-value: 0.03981 ***
 
 ##### RANDOM SKEWERS OF P & G OF EACH FORMATION -----
 #NKLS
@@ -786,7 +788,7 @@ plot(g.eig_variances[[1]], p.eig_variances[[1]],
      ylab = "P standardized variances",
      main = "NKLS")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[1]] ~ g.eig_variances[[1]])) #p-value: 1.13e-05 ***
+summary(lm(p.eig_variances[[1]] ~ g.eig_variances[[1]])) #p-value: 1.489e-07 ***
 
 plot(g.eig_variances[[2]], p.eig_variances[[2]],
      pch = 19, col = col.form[2],
@@ -794,7 +796,7 @@ plot(g.eig_variances[[2]], p.eig_variances[[2]],
      ylab = "P standardized variances",
      main = "NKBS")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[2]] ~ g.eig_variances[[2]])) #p-value: 1.073e-06 ***
+summary(lm(p.eig_variances[[2]] ~ g.eig_variances[[2]])) #p-value: 1.017e-09 ***
 
 plot(g.eig_variances[[3]], p.eig_variances[[3]],
      pch = 19, col = col.form[3],
@@ -802,7 +804,7 @@ plot(g.eig_variances[[3]], p.eig_variances[[3]],
      ylab = "P standardized variances",
      main = "Tewkesbury")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[3]] ~ g.eig_variances[[3]])) #p-value: 3.526e-10 ***
+summary(lm(p.eig_variances[[3]] ~ g.eig_variances[[3]])) #p-value: 1.231e-07 ***
 
 plot(g.eig_variances[[4]], p.eig_variances[[4]],
      pch = 19, col = col.form[4],
@@ -810,7 +812,7 @@ plot(g.eig_variances[[4]], p.eig_variances[[4]],
      ylab = "P standardized variances",
      main = "Waipuru")
 abline(0, 1) # looks okay...
-summary(lm(p.eig_variances[[4]] ~ g.eig_variances[[4]])) #p-value: 1.533e-06 ***
+summary(lm(p.eig_variances[[4]] ~ g.eig_variances[[4]])) #p-value: 0.0001538 ***
 
 plot(g.eig_variances[[5]], p.eig_variances[[5]],
      pch = 19, col = col.form[5],
@@ -818,7 +820,7 @@ plot(g.eig_variances[[5]], p.eig_variances[[5]],
      ylab = "P standardized variances",
      main = "Upper Kai-Iwi")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[5]] ~ g.eig_variances[[5]])) #p-value: 7.121e-10 ***
+summary(lm(p.eig_variances[[5]] ~ g.eig_variances[[5]])) #p-value: 1.88e-07 ***
 
 plot(g.eig_variances[[6]], p.eig_variances[[6]],
      pch = 19, col = col.form[6],
@@ -826,7 +828,7 @@ plot(g.eig_variances[[6]], p.eig_variances[[6]],
      ylab = "P standardized variances",
      main = "Tainui")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[6]] ~ g.eig_variances[[6]])) #p-value: 4.171e-07 ***
+summary(lm(p.eig_variances[[6]] ~ g.eig_variances[[6]])) #p-value: 1.026e-06 ***
 
 plot(g.eig_variances[[7]], p.eig_variances[[7]],
      pch = 19, col = col.form[7],
@@ -834,7 +836,7 @@ plot(g.eig_variances[[7]], p.eig_variances[[7]],
      ylab = "P standardized variances",
      main = "SHCSBSB")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[7]] ~ g.eig_variances[[7]])) #p-value: 3.279e-05 ***
+summary(lm(p.eig_variances[[7]] ~ g.eig_variances[[7]])) #p-value: 1.971e-07 ***
 
 ##### PLOT P, E, AND G VARIATION ----
 # E = units
@@ -844,6 +846,10 @@ summary(lm(p.eig_variances[[7]] ~ g.eig_variances[[7]])) #p-value: 3.279e-05 ***
 g.eig_vectors <- lapply(Gmat, function (x) {eigen(x)$vectors})
 paste("Eigenvalue vectors")
 head(g.eig_vectors)
+
+formations <- c("NKLS", "NKBS", "Tewkesbury", 
+                "Waipuru", "Upper Kai-Iwi", 
+                "Tainui", "SHCSBSB")
 
 r.names <- c(rep(formations[1], 8),
              rep(formations[2], 8),
@@ -855,7 +861,7 @@ r.names <- c(rep(formations[1], 8),
 
 g.eig_vect_mat = do.call(rbind, g.eig_vectors)
 g.eig_vect_mat = data.frame(g.eig_vect_mat,
-                            rownames(r.names))
+                            rownames = r.names)
 g.eig_vect = melt(g.eig_vect_mat)
 ggplot(g.eig_vect,
        aes(x = variable, y = value,
@@ -865,7 +871,6 @@ ggplot(g.eig_vect,
   geom_point() +
   xlab("Principal component vector") +
   ylab("%Variation in the PC")
-G_PC_dist #one negative; none above 1!
 
 ##### RAREFACTION -----
 ##Rarefaction - 
@@ -940,271 +945,7 @@ plot(out_results[, 2], out_results[, 1],
 points(obs_melt$N, obs_melt$RS, 
        col = "#00BFC4", pch = 19) #color by formation
 
-#### EVOLVABILITY ----
-##Is morphological evolution occurring along directions of high evolvability?
-#Another question we might have is whether most changes are occurring along 
-#dimensions of higher evolvability /conditional evolvability than we would 
-#expect at random. To test that hypothesis, we can simply 
-#calculate **e** and **ce** for the vectors of change and compare it to a 
-#null distribution of **e** and **ce** derived from 10,000 random vectors. 
-
-div_form_std_mean = mean_by_formation %>%
-  magrittr::set_rownames(.$formation) %>%
-  dplyr::select(-formation, -n.col) 
-  
-Bet_form = apply(div_form_std_mean, 1, Normalize)
-colSums(Bet_form^2)#making sure they are normalized (should sum up to 1)
-
-# differences standardized by ancestral mean
-
-#split_data = split.data.frame(mean_by_formation, mean_by_formation$formation) #already age sorted
-among_std_change = -diff(as.matrix(mean_by_formation[, 3:10]))
-
-res_abs = lapply(std_change, abs)
-deltazmi_vect_trait = unlist(res_abs)
-deltazmi.norm <- lapply(std_change, function(x){colSums(t(x)^2)^0.5})
-deltazmi_vect = unlist(deltazmi.norm)/(8^0.5)
-
-Fig_deltaz.ana <- ggplot(as.data.frame(deltazmi_vect_trait), 
-                         aes(x = deltazmi_vect_trait)) + 
-  geom_histogram(color = "darkblue", fill = "lightblue") +
-  xlab("DeltaZ (%mean)")
-
-grid.arrange(Fig_deltaz.ana, 
-             nrow = 1, ncol = 1)
-
-#within formation
-split_data = split.data.frame(mean_by_formation_colony, mean_by_formation_colony$formation)
-within_std_change = lapply(split_data, function (y){
-  -diff(as.matrix(y[, 4:11]))/as.matrix(y[-1, 4:11])
-  })
-
-#w.in_form = lapply(within_std_change, function(x) {sum(x != "NA")/8}) #8 is number of
-
-w_form = lapply(within_std_change, function(x){apply(x, 1, Normalize)}) 
-lapply(w_form, function (x){colSums(x^2)})
-
-#Random correlations
-num.traits <- 8
-iterations = 400
-beta.mat <- array(rnorm(num.traits * iterations), c(num.traits,iterations))
-beta.mat <- apply(beta.mat, 2, Normalize)
-bet_corr = t(beta.mat) %*% beta.mat
-paste("95%CI for vector correlations between random vectors")
-rand_corr = quantile(as.vector(abs(bet_corr)), 0.95)
-rand_corr
-
-#Deltaz vectors + Random Vectors
-beta.mat.among = Bet_form
-beta.mat.within = w_form
-
-Gselect = Reduce("+", G_ext) / length(G_ext) #mean G to make drift tests during cladogenesis
-
-evolv_within = list()
-for (i in 1:5){
-  evolv_within[[i]] = diag(t(beta.mat.within[[i]]) %*% G_ext[[i]] %*% beta.mat.within[[i]])
-} 
-evolv_among = diag(t(beta.mat.among) %*% Gselect %*% beta.mat.among)
-
-evolv_mat_rand = diag(t(beta.mat) %*% Gselect %*% beta.mat)
-
-evolv_final = list(unlist(evolv_within), evolv_among, evolv_mat_rand)
-names(evolv_final) = c("within", "among", "random")
-evolv_melted = melt(evolv_final)
-evolv_ggp = ggplot(data = evolv_melted, aes(x = L1, y = value, fill = L1)) + 
-  geom_boxplot(alpha = 0.6) +
-  ylab("Evolvability") +
-  xlab(NULL) + 
-  theme(legend.position = 'none')
-
-c_evolv_within = list()
-for (i in 1:5){
-  c_evolv_within[[i]]=(1/diag(t(beta.mat.within[[i]]) %*% 
-                                solve(G_ext[[i]],
-                                      beta.mat.within[[i]])))
-} 
-
-c_evolv_among = (1/diag(t(beta.mat.among) %*% 
-                          solve(Gselect, 
-                                beta.mat.among)))
-
-c_evolv_mat_rand = (1/diag(t(beta.mat) %*% 
-                             solve(Gselect, 
-                                   beta.mat)))
-
-c_evolv_final = list(unlist(c_evolv_within),
-                     c_evolv_among,
-                     c_evolv_mat_rand)
-names(c_evolv_final) = c("within", "among", "random")
-c_evolv_melted = melt(c_evolv_final)
-cevol_ggp = ggplot(data = c_evolv_melted, 
-                   aes(x = L1, y = value, fill = L1)) +
-  geom_boxplot(alpha = 0.6) +
-  ylab("Conditional Evolvability") +
-  xlab(NULL) + 
-  theme(legend.position = 'none')
-
-grid.arrange(evolv_ggp, cevol_ggp, 
-             nrow = 1, ncol = 2)
+#### GLOBAL G ----
 
 
-#### TIME SERIES ----
-#### CREATE VARIABLES ----
-## add time
-df$ages <- c()
-df$ages[df$formation == "NKLS"] <- 2
-df$ages[df$formation == "NKBS"] <- 2.185
-df$ages[df$formation == "Tewkesbury"] <- 1.4
-df$ages[df$formation == "Waipuru"] <- 1.4
-df$ages[df$formation == "Upper Kai-Iwi"] <- 0.65
-df$ages[df$formation == "Tainui"] <- 0.4
-df$ages[df$formation == "SHCSBSB"] <- 0.415
-
-##### nsamp -----
-time <- as.numeric(unique(sort(df$ages, decreasing = TRUE))) #order oldest to youngest
-nsamp <- length(time)
-
-##### nvar -----
-nvar <- ncol(df[,grepl("^ln", colnames(df))])
-
-##### tt -----
-## from stegino_metadata/newMetadata/formations.csv
-
-tt <- c()
-for(i in 1:length(time)){
-  tt[i] <- time[1]-time[i] #oldest is 0
-}
-
-##### M MATRIX & S COVARIANCE -----
-M <- array(dim = c(nsamp, nvar))
-#V <- array(dim = c(nsamp, nvar))
-S <- list()
-for(i in 1:nsamp){
-  M[i,] <- colMeans(df[df$ages == time[i], grepl("^ln", colnames(df))], na.rm = TRUE)
-  #V[i,] <- diag(var(df[df$ages == time[i], grepl("^ln", colnames(df))], na.rm = TRUE))
-  S[[i]] <- cov(df[df$ages == time[i], grepl("^ln", colnames(df))])
-}
-
-colnames(M) <- colnames(df[,grepl("^ln", colnames(df))])
-nn <- unname(table(df$ages)[as.character(time)]) #samples in order oldest to youngest
-time.units <- "Myr"
-sex <- "unknown"
-reference <- "ROCKS-PARADOX"
-taxon = "Steginoporella magnifica"
-
-magnifica.timeSeries <- list(nsamp = nsamp,
-                             nvar = nvar, 
-                             M = M, 
-                             S = S, 
-                             nn = nn, 
-                             tt = tt,
-                             time.units = time.units, 
-                             taxon = taxon, 
-                             sex = sex, 
-                             reference = reference)
-
-source("check_TS.R") #from MacroEvolvability folder
-
-check_TS(magnifica.timeSeries)
-
-save(magnifica.timeSeries, file = "magnifica.timeSeries.RData")
-
-##### GO THROUGH MODELS ----
-d.var <- lapply(S, function(x){
-  diag(x)
-})
-
-d.var[[1]] #all traits, first time
-d.var.unlist <- unlist(d.var)
-unique(names(d.var.unlist))
-d.var.unlist[names(d.var.unlist) == "ln.zh"] #one trait, all times
-M[1,] #all traits, first time
-M[, 1] #one trait, all times
-
-#one trait at a time?
-#eventually turn into a list with names as traits
-magnifica.zh <- as.paleoTS(mm = M[, 1], 
-                           vv = d.var.unlist[names(d.var.unlist) == "ln.zh"], #diagonals of cov are variances 
-                           tt = tt, 
-                           nn = nn)
-
-magnifica.mpw.b <- as.paleoTS(mm = M[, 2], 
-                              vv = d.var.unlist[names(d.var.unlist) == "ln.mpw.b"], #diagonals of cov are variances 
-                              tt = tt, 
-                              nn = nn)
-
-magnifica.cw.m <- as.paleoTS(mm = M[, 3], 
-                             vv = d.var.unlist[names(d.var.unlist) == "ln.cw.m"], #diagonals of cov are variances 
-                             tt = tt, 
-                             nn = nn)
-
-magnifica.cw.d <- as.paleoTS(mm = M[, 4], 
-                             vv = d.var.unlist[names(d.var.unlist) == "ln.cw.d"], #diagonals of cov are variances 
-                             tt = tt, 
-                             nn = nn)
-
-magnifica.ow.m <- as.paleoTS(mm = M[, 5], 
-                             vv = d.var.unlist[names(d.var.unlist) == "ln.ow.m"], #diagonals of cov are variances 
-                             tt = tt, 
-                             nn = nn)
-
-magnifica.oh <- as.paleoTS(mm = M[, 6], 
-                           vv = d.var.unlist[names(d.var.unlist) == "ln.oh"], #diagonals of cov are variances 
-                           tt = tt, 
-                           nn = nn)
-
-magnifica.c.side <- as.paleoTS(mm = M[, 7], 
-                               vv = d.var.unlist[names(d.var.unlist) == "ln.c.side"], #diagonals of cov are variances 
-                               tt = tt, 
-                               nn = nn)
-
-magnifica.o.side <- as.paleoTS(mm = M[, 8], 
-                               vv = d.var.unlist[names(d.var.unlist) == "ln.o.side"], #diagonals of cov are variances 
-                               tt = tt, 
-                               nn = nn)
-
-#visualize models
-plotevoTS(magnifica.zh)
-plotevoTS(magnifica.mpw.b)
-plotevoTS(magnifica.cw.m)
-plotevoTS(magnifica.cw.d)
-plotevoTS(magnifica.ow.m)
-plotevoTS(magnifica.oh) #inverse!
-plotevoTS(magnifica.c.side)
-plotevoTS(magnifica.o.side)
-
-#fit models
-fit.all.univariate(magnifica.zh, pool = FALSE) #URW
-fit.all.univariate(magnifica.mpw.b, pool = FALSE) #URW
-fit.all.univariate(magnifica.cw.m, pool = FALSE) #URW
-fit.all.univariate(magnifica.cw.d, pool = FALSE) #URW
-fit.all.univariate(magnifica.ow.m, pool = FALSE) #URW
-fit.all.univariate(magnifica.oh, pool = FALSE) #URW
-fit.all.univariate(magnifica.c.side, pool = FALSE) #URW
-fit.all.univariate(magnifica.o.side, pool = FALSE) #URW
-
-magnifica.mv <- make.multivar.evoTS(magnifica.zh,
-                                    magnifica.mpw.b,
-                                    magnifica.cw.m,
-                                    magnifica.cw.d,
-                                    magnifica.ow.m,
-                                    magnifica.oh,
-                                    magnifica.c.side,
-                                    magnifica.o.side)
-plotevoTS.multivariate(magnifica.mv,
-                       y_min = -4, y_max = 8,
-                       x.label = "Relative Time",
-                       col = col.traits,
-                       pch = c(20, 20, 20, 20,
-                               20, 20, 20, 20))
-
-fit.multivariate.URW(magnifica.mv, R = "diag", r = "fixed") #AICc = -175.344 WINNER; same as univariate
-fit.multivariate.URW(magnifica.mv, R = "symmetric", r = "fixed") #AICc = -244.7925
-fit.multivariate.URW(magnifica.mv, R = "symmetric", r = "accel") #AICc = -249.9289
-fit.multivariate.URW(magnifica.mv, R = "symmetric", r = "decel") #AICc = -244.7943
-
-fit.multivariate.OU(magnifica.mv, A.matrix = "diag", R.matrix = "symmetric") #AICc = -281.3557
-fit.multivariate.OU(magnifica.mv, A.matrix = "diag", R.matrix = "diag") #AICc = -194.1703
-fit.multivariate.OU(magnifica.mv, A.matrix = "upper.tri", R.matrix = "symmetric") #AICc = -298.1776
-fit.multivariate.OU(magnifica.mv, A.matrix = "full", R.matrix = "symmetric") #AICc = -288.2023
-
+#### NOW INCLUDE SM ZOOIDS ----

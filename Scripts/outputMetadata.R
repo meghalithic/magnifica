@@ -15,14 +15,18 @@ require(tidyverse)
 #### LOAD DATA ----
 ## CHANGE DATA FILE NAME AS NEEDED
 
-output.oldest <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
-nrow(output.oldest) #19346
+#output.oldest <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
+#nrow(output.oldest) #19346
 
-output.old <- read.csv("./Data/output_21Jun2023_Stegniator.csv", header = TRUE)
-nrow(output.old) #15783 #didn't ignore zooids, just filtered out images
+#output.old <- read.csv("./Data/output_21Jun2023_Stegniator.csv", header = TRUE)
+#nrow(output.old) #15783 #didn't ignore zooids, just filtered out images
 
-output <- read.csv("./Data/output_31jul2023_Steginator.csv", header = TRUE)
-nrow(output) #7202 #got rid of three zooids? I think I need to redo this...
+#output <- read.csv("./Data/output_31jul2023_Steginator.csv", header = TRUE)
+#nrow(output) #7202 
+
+output <- read.csv("./Data/output_4Aug2023_done.csv", header = TRUE)
+nrow(output) #6443 
+
 
 #AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
@@ -33,7 +37,7 @@ bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
 
 nrow(bryo.meta) #1890
 
-nrow(output) #15783
+nrow(output) #6443
 colnames(output)
 output$id[1]
 
@@ -72,12 +76,12 @@ meta.images <- merge(output, bryo.meta.trim,
                      by.x = "image", by.y = "imageName",
                      all.x = TRUE, all.y = FALSE)
 
-nrow(meta.images) #15783
+nrow(meta.images) #6443
 
 
 ## CHANGE DATE EXT EVERYTIME
 write.csv(meta.images,
-          "./Data/meta.images.31Jul2023.csv",
+          "./Data/meta.images.4Aug2023.csv",
           row.names = FALSE)
 
 #### OLD ----

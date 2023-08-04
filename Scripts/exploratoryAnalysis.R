@@ -14,7 +14,7 @@ require(lmodel2)
 require(tidyverse)
 
 #### LOAD DATA ----
-images.meta <- read.csv("./Data/meta.images.31Jul2023.csv",
+images.meta <- read.csv("./Data/meta.images.4Aug2023.csv",
                    header = TRUE,
                    sep = ",")
 
@@ -24,7 +24,7 @@ df.filter <- read.table("./Data/filteredImages.csv",
 
 #### EXPLORE DATA ----
 nrow(df.filter) #1834
-nrow(images.meta) #7202
+nrow(images.meta) #6443
 
 #### REDUCE TO SELECTED IMAGES ####
 
@@ -34,8 +34,8 @@ for(i in 1:nrow(df.filter)){
 }
 
 images.filter <- images.meta[images.meta$fileName.tif %in% df.filter$fileName.old,]
-nrow(images.filter) #7195
-length(unique(images.filter$fileName.tif)) #1409
+nrow(images.filter) #6438
+length(unique(images.filter$fileName.tif)) #1394
 
 images.filter$formation <- factor(images.filter$formation, 
                                   levels = c("NKLS", "NKBS", "Tewkesbury",
@@ -103,8 +103,18 @@ o.side.l <- sqrt(((o.side.l.x)^2 + (o.side.l.y)^2))
 ## Operculum average side length:
 o.side.avg <- rowMeans(cbind(o.side.r, o.side.l))
 
-plot(o.side.l, o.side.r)
-summary(lm(o.side.r ~ o.side.l)) #basically 1
+p.o.side.rl <- ggplot() +
+  geom_point(aes(x = o.side.l, y = o.side.r)) +
+  ggtitle("Operculum Side Length, N zooids = 18890, N colony = 891") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Operculum Length Right Side (pixels)") +
+  scale_x_continuous(name = "Operculum Length Left Side (pixels)")
+
+#ggsave(p.o.side.rl, file = "./Results/operculum_length.png", width = 14, height = 10, units = "cm")
+
+summary(lm(o.side.r ~ o.side.l)) 
+# slope = 0.912352; p-value < 2.2e-16; r2 = 0.9494
 
 ## Operculum height
 oh <- (.5/ow.b)*sqrt(ow.b+oh.r+oh.l)
@@ -142,11 +152,21 @@ c.side.l <- sqrt(((c.side.l.x)^2 + (c.side.l.y)^2))
 ## Cryptocyst average side length:
 c.side.avg <- rowMeans(cbind(c.side.r, c.side.l))
 
-plot(c.side.l, c.side.r)
-summary(lm(c.side.r ~ c.side.l)) #basically 1
+p.c.side.rl <- ggplot() +
+  geom_point(aes(x = c.side.l, y = c.side.l)) +
+  ggtitle("Cryptocyst Side Length, N zooids = 18890, N colony = 891") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Cryptocyst Length Right Side (pixels)") +
+  scale_x_continuous(name = "Cryptocyst Length Left Side (pixels)")
+
+#ggsave(p.c.side.rl, file = "./Results/cryptocyst_length.png", width = 14, height = 10, units = "cm")
+
+summary(lm(c.side.r ~ c.side.l)) 
+# slope = 0.867776; p-value: < 2.2e-16; r2 = 0.7858
 
 ## right v left side of operculum
-p.oh.rl <- ggplot(data = traits.df) +
+p.oh.rl <- ggplot() +
   geom_point(aes(x = oh.l, y = oh.r)) +
   ggtitle("Operculum Height, N zooids = 18890, N colony = 891") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -155,7 +175,6 @@ p.oh.rl <- ggplot(data = traits.df) +
   scale_x_continuous(name = "Operculum Height Left Side (pixels)")
 
 oh.model <- lmodel2(formula = oh.r ~ oh.l,
-                    data = traits.df,
                     range.x = "relative", 
                     range.y = "relative")
 oh.model$regression.results #slope = 1, no asymmetry
@@ -184,7 +203,7 @@ traits.df <- data.frame(boxID = images.filter$box_id,
                         oh.ow = oh/ow.m) # similar to LO/WO 
 
 #write.csv(traits.df,
-#          "./Results/traits_31Jul2023.csv",
+#          "./Results/traits_4Aug2023.csv",
 #          row.names = FALSE)
 
 ##### LN TRANSFORM -----
@@ -197,8 +216,8 @@ traits.df$ln.oh <- log(traits.df$oh)
 traits.df$ln.o.side <- log(traits.df$o.side)
 traits.df$ln.c.side <- log(traits.df$c.side)
 
-traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
-                      "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
+traits = names(traits.df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
+                             "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
 
 ##### FILTER -----
 # 5 zooid per colony minimum
@@ -217,22 +236,24 @@ mean_by_formation_colony = traits.df %>% #use this going forward
             avg.o.side = mean(ln.o.side, na.rm = T),
             avg.c.side = mean(ln.c.side, na.rm = T)) %>%
   as.data.frame()
+nrow(mean_by_formation_colony) #731
 
 keep <- mean_by_formation_colony$colony.id[mean_by_formation_colony$n.zooid >= 5]
+length(keep) #572 colonies
 
 df <- traits.df[traits.df$colony.id %in% keep,]
-nrow(df) #6815
+nrow(df) #5971
 
 ##### ABOUT TRAITS -----
 
-nrow(images.filter) #7195
-nrow(df) #6815
+nrow(images.filter) #6438
+nrow(df) #5971
 
 traits.melt <- melt(data = df,
                     id.vars = c("boxID", "zooid.id","imageName", "colony.id", "formation", "magnification"),
                     variable.name = "measurementType",
                     value.name = "measurementValue")
-length(unique(traits.melt$colony.id)) #604 unique colonies [previously 742]
+length(unique(traits.melt$colony.id)) #572 unique colonies [previously 742]
 
 traits.stats <- traits.melt %>%
   group_by(measurementType) %>%
@@ -254,7 +275,7 @@ p.dist <- ggplot(traits.melt) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN trait measurement (pixels)")
 
-ggsave(p.dist, file = "./Results/trait_distribution_26Jun2023.png", width = 14, height = 10, units = "cm")
+ggsave(p.dist, file = "./Results/trait_distribution_4Aug2023.png", width = 14, height = 10, units = "cm")
 
 ###### BIMODALITY ------  
 ##explore bimodality, using zooid height as an example then see if it generalizes
@@ -266,9 +287,9 @@ p.ln.zh <- ggplot(df) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN Zooid Height")
 
-#ggsave(p.zh, file = "./Results/zooid_height.png", width = 14, height = 10, units = "cm")
+#ggsave(p.zh, file = "./Results/zooid_height_4Aug2023.png", width = 14, height = 10, units = "cm")
 
-##driven by formation?
+##driven by FORMATION?
 #all but Punneki Limestone are bimodal
 p.zh.form <- ggplot(df) +
   geom_density(aes(x = ln.zh,
@@ -280,74 +301,12 @@ p.zh.form <- ggplot(df) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN Zooid Height")
 
-#ggsave(p.zh.form, file = "./Results/zooid_height_by_formation.png", width = 14, height = 10, units = "cm")
+#ggsave(p.zh.form, file = "./Results/zooid_height_by_formation_4Aug2023.png", width = 14, height = 10, units = "cm")
 
 #only see bimodal in Waipurpu, NKBS, Upper Kai-Iwi
 
-## test where hump is...
-# frequency by size bin (quarter ln bins)
-df.bins <- df %>% mutate(zh.bin = cut(ln.zh, breaks = seq(5.5, 7.5, .1)))
-
-df.bin.f <- df.bins %>%
-  group_by(zh.bin) %>%
-  summarise(n = n())
-View(df.bin.f)
-#(6.2,6.3]
-#6.25 like I eyeballed
-
-sm.traits <- df[df$ln.zh < 6.25,]
-sm.colonies <- unique(sm.traits$colony.id) #43 out of 604; was 95 images out of 891
-
-bins <- c("(5.5,5.6]", "(5.6,5.7]", "(5.7,5.8]",
-          "(5.8,5.9]", "(5.9,6]", "(6,6.1]", 
-          "(6.1,6.2]", "(6.2,6.3]")
-
-df.bins$zh.bin <- as.character(df.bins$zh.bin)
-
-df.bins$sm <- FALSE
-df.bins$sm[df.bins$zh.bin %in% bins] <- TRUE
-
-#look at proportions
-prop.sm <- df.bins %>% 
-  group_by(colony.id) %>%
-  summarise(n.zooid = length(zooid.id),
-            n.sm.zooid = sum(sm),
-            prop.sm = n.sm.zooid/n.zooid)
-View(prop.sm)
-
-#goes from 100% to 20%; perhaps make 20% the cut off
-rm.col <- prop.sm$colony.id[prop.sm$prop.sm == 1]
-length(rm.col) #32 colonies
-
-small.colonies <- df[df$colony.id %in% rm.col,]
-reg.colonies <- df[!(df$colony.id %in% rm.col),]
-
-write.csv(small.colonies,
-          "./Results/small.colonies.traits.csv",
-          row.names = FALSE)
-
-write.csv(reg.colonies,
-          "./Results/colonies.traits.csv",
-          row.names = FALSE)
-
-#for those with 20%, see where the sizes are
-sm.zooids <- prop.sm$colony.id[prop.sm$prop.sm < 1 &
-                                 prop.sm$prop.sm > 0]
-length(sm.zooids) #21
-
-range(df$ln.zh[df$colony.id %in% sm.zooids])
-#5.800815 7.439169
-sort(df$ln.zh[df$colony.id %in% sm.zooids])
-#only 11 below 6.25, so probably fine
-
-#write.csv(sm.traits,
-#          "./Results/small_bimodal_hump.csv",
-#          row.names = FALSE)
-
-##### WRITE OUT TWO DATASETS ----
-write.csv()
-
-##driven by magnification?
+##driven by MAGNIFICATION?
+#note: previously had different magnifications, this is not the case anymore
 #not that I can tell...
 p.zh.mag <- ggplot(df) +
   geom_density(aes(x = ln.zh,
@@ -368,6 +327,7 @@ p.zh.mag <- ggplot(df) +
 nrow(df[df$magnification == "x30",]) #6815
 length(unique(df$colony.id[df$magnification == "x30"])) #604
 
+##SAME INDIVIDUALS & COLONIES?
 ## really convince self that these are the same individuals
 # make data more manageable by reducing it to the three formations
 # make data even more manageable by reducing it to the small hump that is seen
@@ -399,12 +359,8 @@ p.ow.zh <- ggplot(data = df) +
 #2 with the largest zooid height
 
 slice_max(df, n = 2, order_by = ln.ow.m)
-#ow.m = 1061.6501; boxID = 290_1913_523_687; imageName = 806_CV_2_10v_x30_BSE
-#ow.m = 959.4425; boxID = 927_2047_495_737; imageName = 768_CC_2_15v_x30_BSE
 
-slice_max(df, n = 2, order_by = lnzh)
-#zh = 1498.012; boxID = 301_1136_705_1252; imageName = 511_CV_1_15v_x30_BSE
-#zh = 1363.376; boxID = 21_769_409_746; imageName = 084_CV_2_10v_x30_BSE
+slice_max(df, n = 2, order_by = ln.zh)
 
 zh.owm.model <- lm(ln.ow.m ~ ln.zh,
                    data = df)
@@ -413,9 +369,9 @@ zh.owm.model <- lm(ln.ow.m ~ ln.zh,
 table(sm.zoo$colony.id)
 unique(sm.zoo$imageName[sm.zoo$colony.id == "077CV"]) #from images 1, 2, 3
 ## image 077_CV
-imgj.res_077_1 <- read.csv("077_CV_1_Results.csv", header = TRUE)
-imgj.res_077_2 <- read.csv("077_CV_2_Results.csv", header = TRUE)
-imgj.res_077_3 <- read.csv("077_CV_3_Results.csv", header = TRUE)
+imgj.res_077_1 <- read.csv("./Data/ImgJ/077_CV_1_Results.csv", header = TRUE)
+imgj.res_077_2 <- read.csv("./Data/ImgJ/077_CV_2_Results.csv", header = TRUE)
+imgj.res_077_3 <- read.csv("./Data/ImgJ/077_CV_3_Results.csv", header = TRUE)
 imgj_077 <- rbind(imgj.res_077_1, imgj.res_077_2, imgj.res_077_3)
 ## scale
 imgj_077$scale.zh <- imgj_077$Length/.606
@@ -425,9 +381,9 @@ imgj_077$ln.zh # all small!!
 
 ##273S
 unique(sm.zoo$imageName[sm.zoo$colony.id == "273S"]) #from images 1, 2, 3
-imgj.res_273_1 <- read.csv("273_S_1_Results.csv", header = TRUE)
-imgj.res_273_2 <- read.csv("273_S_2_Results.csv", header = TRUE)
-imgj.res_273_3 <- read.csv("273_S_3_Results.csv", header = TRUE)
+imgj.res_273_1 <- read.csv("./Data/ImgJ/273_S_1_Results.csv", header = TRUE)
+imgj.res_273_2 <- read.csv("./Data/ImgJ/273_S_2_Results.csv", header = TRUE)
+imgj.res_273_3 <- read.csv("./Data/ImgJ/273_S_3_Results.csv", header = TRUE)
 imgj_273 <- rbind(imgj.res_273_1, imgj.res_273_2, imgj.res_273_3)
 ## scale
 imgj_273$scale.zh <- imgj_273$Length/.606
@@ -435,13 +391,78 @@ imgj_273$scale.zh <- imgj_273$Length/.606
 imgj_273$ln.zh <- log(imgj_273$scale.zh)
 imgj_273$ln.zh #all small!
 
+#### SMALL HUMP ----
+# know that these are all related, use zh as test
+## test where hump is...
+# frequency by size bin (quarter ln bins)
+df.bins <- df %>% 
+  mutate(zh.bin = cut(ln.zh, breaks = seq(5.5, 7.5, .1))) %>%
+  as.data.frame()
+
+df.bin.f <- df.bins %>%
+  group_by(zh.bin) %>%
+  summarise(n = n()) %>%
+  as.data.frame()
+View(df.bin.f)
+#(6.2,6.3]
+#6.25 like I eyeballed
+write.csv(df.bin.f,
+          "./Results/zh.bin.frequency.csv",
+          row.names = FALSE)
+
+sm.traits <- df[df$ln.zh < 6.25,]
+sm.colonies <- unique(sm.traits$colony.id) #41; was 95 images out of 891
+
+bins <- c("(5.5,5.6]", "(5.6,5.7]", "(5.7,5.8]",
+          "(5.8,5.9]", "(5.9,6]", "(6,6.1]", 
+          "(6.1,6.2]", "(6.2,6.3]")
+
+df.bins$zh.bin <- as.character(df.bins$zh.bin)
+
+df.bins$sm <- FALSE
+df.bins$sm[df.bins$zh.bin %in% bins] <- TRUE
+
+#look at proportions
+prop.sm <- df.bins %>% 
+  group_by(colony.id) %>%
+  summarise(n.zooid = length(zooid.id),
+            n.sm.zooid = sum(sm),
+            prop.sm = n.sm.zooid/n.zooid)
+View(prop.sm)
+write.csv(prop.sm,
+          "./Results/proportion.small.colonies.csv",
+          row.names = FALSE)
+
+#goes from 100% to 20%; perhaps make 20% the cut off
+rm.col <- prop.sm$colony.id[prop.sm$prop.sm == 1]
+length(rm.col) #31 colonies
+
+small.colonies <- df[df$colony.id %in% rm.col,]
+reg.colonies <- df[!(df$colony.id %in% rm.col),]
+
+#for those with 20%, see where the sizes are
+sm.zooids <- prop.sm$colony.id[prop.sm$prop.sm < 1 &
+                                 prop.sm$prop.sm > 0]
+length(sm.zooids) #19
+
+range(df$ln.zh[df$colony.id %in% sm.zooids])
+#5.800815 7.439169
+sort(df$ln.zh[df$colony.id %in% sm.zooids])
+#only 11 below 6.25, so probably fine
+
+##### WRITE OUT TWO DATASETS ----
+write.csv(small.colonies,
+          "./Results/small.colonies.traits.csv",
+          row.names = FALSE)
+
+write.csv(reg.colonies,
+          "./Results/colonies.traits.csv",
+          row.names = FALSE)
+
 ##### CORRELATIONS & ALLOMETRIES -----
 ## are these coming from the same individuals??
 ## ask KLV for other metadata for sites
 ## OH hump is on the other side
-
-traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
-                      "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
 
 col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
              "#00A9FF", "#C77CFF", "#FF61CC")
@@ -464,8 +485,8 @@ ggplot(data = df) +
   scale_x_continuous(name = traits[1]) +
   scale_y_continuous(name = traits[2]) +
   scale_color_manual(values = col.form)
-
 summary(lm(df[, traits[2]] ~ df[, traits[1]]))
+#slope = 0.79460; p-value < 2.2e-16; r2 = 0.4722
 
 ggplot(data = df) +
   geom_smooth(aes(x = df[, traits[1]],
@@ -482,6 +503,7 @@ ggplot(data = df) +
   scale_y_continuous(name = traits[3]) +
   scale_color_manual(values = col.form)
 summary(lm(df[, traits[3]] ~ df[, traits[1]]))
+#slope = 0.72434; p-value < 2.2e-16; r2 = 0.3684
 
 ggplot(data = df) +
   geom_smooth(aes(x = df[, traits[1]],
@@ -498,6 +520,7 @@ ggplot(data = df) +
   scale_y_continuous(name = traits[4]) +
   scale_color_manual(values = col.form)
 summary(lm(df[, traits[4]] ~ df[, traits[1]]))
+#slope = 0.758859; p-value < 2.2e-16; r2 = 0.503
 
 ggplot(data = df) +
   geom_smooth(aes(x = df[, traits[1]],
@@ -514,6 +537,7 @@ ggplot(data = df) +
   scale_y_continuous(name = traits[5]) +
   scale_color_manual(values = col.form)
 summary(lm(df[, traits[5]] ~ df[, traits[1]]))
+#slope = 0.772476; p-value < 2.2e-16; r2 = 0.642
 
 ggplot(data = df) +
   geom_smooth(aes(x = df[, traits[1]],
@@ -530,6 +554,7 @@ ggplot(data = df) +
   scale_y_continuous(name = traits[6]) +
   scale_color_manual(values = col.form)
 summary(lm(df[, traits[6]] ~ df[, traits[1]]))
+#slope = 0.345976; p-value < 2.2e-16; r2 = 0.325
 
 ggplot(data = df) +
   geom_smooth(aes(x = df[, traits[1]],
@@ -547,6 +572,7 @@ ggplot(data = df) +
   scale_color_manual(values = col.form)
 #ln.c.side is not an issue really
 summary(lm(df[, traits[7]] ~ df[, traits[1]]))
+#slope = 1.092931; p-value < 2.2e-16; r2 = 0.8933
 
 ggplot(data = df) +
   geom_smooth(aes(x = df[, traits[1]],
@@ -564,7 +590,7 @@ ggplot(data = df) +
   scale_color_manual(values = col.form)
 #ln.o.side is not an issue really
 summary(lm(df[, traits[7]] ~ df[, traits[1]]))
-
+#slope = 1.092931; p-value < 2.2e-16; r2 = 0.8933
 
 
 
