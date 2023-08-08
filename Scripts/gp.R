@@ -23,27 +23,26 @@ print("update 'last updated' & set working directory!")
 # Voje et al. used a 4 zooid/colony minimum; perhaps we should too
 
 #### LOAD LIBRARIES ----
-library(ggplot2)
+library(coin)
+library(corrplot)
 library(data.table)
-library(evolqg)
 library(dplyr)
-library(nse)
+library(evolqg)
+library(evolvability)
+library(ggplot2)
 library(grid)
 library(gridBase)
 library(gridExtra)
-library(MCMCglmm)
-library(corrplot)
+library(magrittr)
 library(MASS)
+library(MCMCglmm)
+library(nse)
+library(RColorBrewer)
 library(reshape2)
-library(scatterplot3d)
 library(rgl)
 library(scales)
-library(RColorBrewer)
-library(coin)
+library(scatterplot3d)
 library(tibble)
-library(magrittr)
-library(evoTS)
-library(paleoTS)
 
 #### LOAD DATA ----
 
@@ -479,7 +478,6 @@ plot(model_G[[7]]$VCV) #catepillar!
 #formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", "Waipuru", 
 #                                    "Upper Kai-Iwi", "SHCSBSB", "Tainui"
 
-
 ##### CHECK P IS BIGGER THAN G -----
 
 ###### PRIORS ------
@@ -674,7 +672,7 @@ plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      xlim = c(0, .05),
      ylim = c(0, .2))
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]]))) #p-value: 0.008756 ***
+summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]]))) #p-value: 0.01675 *
 
 plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      pch = 19, col = col.form[2],
@@ -682,7 +680,7 @@ plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      ylab = "P non-standardized diagonal",
      main = "NKBS")
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]]))) #p-value: 0.002378 ***
+summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]]))) #p-value: 0.004617 **
 
 plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      pch = 19, col = col.form[3],
@@ -692,7 +690,7 @@ plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      xlim = c(0, 0.01),
      ylim = c(0, 0.05))
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]]))) #p-value: 0.004631 **
+summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]]))) #p-value: 0.0003241 ***
 
 plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      pch = 19, col = col.form[4],
@@ -700,7 +698,7 @@ plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      ylab = "P non-standardized diagonal",
      main = "Waipuru")
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]]))) #p-value: 0.0004252 ***
+summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]]))) #p-value: 0.01508 *
 
 plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      pch = 19, col = col.form[5],
@@ -708,7 +706,7 @@ plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      ylab = "P non-standardized diagonals",
      main = "Upper Kai-Iwi")
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]]))) #p-value: 1.861e-05 ***
+summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]]))) #p-value: 0.001084 **
 
 plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      pch = 19, col = col.form[6],
@@ -716,7 +714,7 @@ plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      ylab = "P non-standardized diagonal",
      main = "Tainui")
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]]))) #p-value: 0.000312 ***
+summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]]))) #p-value: 0.0003324 ***
 
 plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      pch = 19, col = col.form[7],
@@ -726,7 +724,7 @@ plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      xlim = c(0, 0.01),
      ylim = c(0,0.05))
 abline(0, 1) # looks good!
-summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) #p-value: 0.03981 ***
+summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) #p-value: 0.01981 *
 
 ##### RANDOM SKEWERS OF P & G OF EACH FORMATION -----
 #NKLS
@@ -788,7 +786,7 @@ plot(g.eig_variances[[1]], p.eig_variances[[1]],
      ylab = "P standardized variances",
      main = "NKLS")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[1]] ~ g.eig_variances[[1]])) #p-value: 1.489e-07 ***
+summary(lm(p.eig_variances[[1]] ~ g.eig_variances[[1]])) #p-value: 2.727e-08 ***
 
 plot(g.eig_variances[[2]], p.eig_variances[[2]],
      pch = 19, col = col.form[2],
@@ -796,7 +794,7 @@ plot(g.eig_variances[[2]], p.eig_variances[[2]],
      ylab = "P standardized variances",
      main = "NKBS")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[2]] ~ g.eig_variances[[2]])) #p-value: 1.017e-09 ***
+summary(lm(p.eig_variances[[2]] ~ g.eig_variances[[2]])) #p-value: 1.287e-08 ***
 
 plot(g.eig_variances[[3]], p.eig_variances[[3]],
      pch = 19, col = col.form[3],
@@ -804,7 +802,7 @@ plot(g.eig_variances[[3]], p.eig_variances[[3]],
      ylab = "P standardized variances",
      main = "Tewkesbury")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[3]] ~ g.eig_variances[[3]])) #p-value: 1.231e-07 ***
+summary(lm(p.eig_variances[[3]] ~ g.eig_variances[[3]])) #p-value: 1.477e-08 ***
 
 plot(g.eig_variances[[4]], p.eig_variances[[4]],
      pch = 19, col = col.form[4],
@@ -812,7 +810,7 @@ plot(g.eig_variances[[4]], p.eig_variances[[4]],
      ylab = "P standardized variances",
      main = "Waipuru")
 abline(0, 1) # looks okay...
-summary(lm(p.eig_variances[[4]] ~ g.eig_variances[[4]])) #p-value: 0.0001538 ***
+summary(lm(p.eig_variances[[4]] ~ g.eig_variances[[4]])) #p-value: 4.228e-06 ***
 
 plot(g.eig_variances[[5]], p.eig_variances[[5]],
      pch = 19, col = col.form[5],
@@ -820,7 +818,7 @@ plot(g.eig_variances[[5]], p.eig_variances[[5]],
      ylab = "P standardized variances",
      main = "Upper Kai-Iwi")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[5]] ~ g.eig_variances[[5]])) #p-value: 1.88e-07 ***
+summary(lm(p.eig_variances[[5]] ~ g.eig_variances[[5]])) #p-value: 1.639e-09 ***
 
 plot(g.eig_variances[[6]], p.eig_variances[[6]],
      pch = 19, col = col.form[6],
@@ -828,7 +826,7 @@ plot(g.eig_variances[[6]], p.eig_variances[[6]],
      ylab = "P standardized variances",
      main = "Tainui")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[6]] ~ g.eig_variances[[6]])) #p-value: 1.026e-06 ***
+summary(lm(p.eig_variances[[6]] ~ g.eig_variances[[6]])) #p-value: 1.461e-07 ***
 
 plot(g.eig_variances[[7]], p.eig_variances[[7]],
      pch = 19, col = col.form[7],
@@ -836,7 +834,7 @@ plot(g.eig_variances[[7]], p.eig_variances[[7]],
      ylab = "P standardized variances",
      main = "SHCSBSB")
 abline(0, 1) # looks good!
-summary(lm(p.eig_variances[[7]] ~ g.eig_variances[[7]])) #p-value: 1.971e-07 ***
+summary(lm(p.eig_variances[[7]] ~ g.eig_variances[[7]])) #p-value: 4.839e-08 ***
 
 ##### PLOT P, E, AND G VARIATION ----
 # E = units
@@ -945,7 +943,316 @@ plot(out_results[, 2], out_results[, 1],
 points(obs_melt$N, obs_melt$RS, 
        col = "#00BFC4", pch = 19) #color by formation
 
+#### COMPARE Gs ----
+
+# Function to convert vector to norm length 
+f.normalize_vector <- function(vector) {
+  norm_length <- sqrt(sum(vector^2))
+  normalized_vector <- vector / norm_length
+  return(normalized_vector)
+}
+
+#trait means by time
+mean_by_formation
+#order of formations:
+# "NKLS"  "NKBS" "Tewkesbury"  "Waipuru" "Upper Kai-Iwi" "Tainui" "SHCSBSB"
+
+### Calculate the vector that defines the observed divergence between sample/formation 1 an 2
+
+NKLS <- as.numeric(mean_by_formation[1, 5:12]) # A vector containing trait means from sample/formation 1 
+NKBS <- as.numeric(mean_by_formation[2, 5:12]) # A vector containing trait means from sample/formation 2 
+tewk <- as.numeric(mean_by_formation[3, 5:12]) # A vector containing trait means from sample/formation 3
+wai <- as.numeric(mean_by_formation[4, 5:12]) # A vector containing trait means from sample/formation 4
+uki <- as.numeric(mean_by_formation[5, 5:12]) # A vector containing trait means from sample/formation 5 
+tai <- as.numeric(mean_by_formation[6, 5:12]) # A vector containing trait means from sample/formation 6 
+SHCSBSB <- as.numeric(mean_by_formation[7, 5:12]) # A vector containing trait means from sample/formation 7
+
+#second - first
+#t1 = NKBS - NKLS
+#t2 = tewk - NKLS
+#t3 = wai - tewk
+#t4 = uki - wai
+#t5 = tai - uki
+#t6 = SHCSBSB - tai
+
+## really need to learn how to name things in functions...
+evolved_difference_unit_length_t1 <- f.normalize_vector(NKBS - NKLS)
+evolved_difference_unit_length_t2 <- f.normalize_vector(tewk - NKBS)
+evolved_difference_unit_length_t3 <- f.normalize_vector(wai - tewk)
+evolved_difference_unit_length_t4 <- f.normalize_vector(uki - wai)
+evolved_difference_unit_length_t5 <- f.normalize_vector(tai - uki)
+evolved_difference_unit_length_t6 <- f.normalize_vector(SHCSBSB - tai)
+
+G_matrix_NKLS = Gmat[[1]] # The G matrix estimated for sample/formation 1
+G_matrix_NKBS = Gmat[[2]] # The G matrix estimated for sample/formation 2
+G_matrix_tewk = Gmat[[3]] # The G matrix estimated for sample/formation 3
+G_matrix_wai = Gmat[[4]] # The G matrix estimated for sample/formation 4
+G_matrix_uki = Gmat[[5]] # The G matrix estimated for sample/formation 5
+G_matrix_tai = Gmat[[6]] # The G matrix estimated for sample/formation 6
+G_matrix_SHCSBSB = Gmat[[7]] # The G matrix estimated for sample/formation 7
+
+### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
+#observed_evolvability_in_direction_of_change<-t(evolved_difference_unit_length)%*%as.matrix(G_matrix_1)%*%evolved_difference_unit_length
+observed_evolvability_in_direction_of_change_t1 <- t(evolved_difference_unit_length_t1)%*%as.matrix(G_matrix_NKLS)%*%evolved_difference_unit_length_t1
+observed_evolvability_in_direction_of_change_t2 <- t(evolved_difference_unit_length_t2)%*%as.matrix(G_matrix_NKBS)%*%evolved_difference_unit_length_t2
+observed_evolvability_in_direction_of_change_t3 <- t(evolved_difference_unit_length_t3)%*%as.matrix(G_matrix_tewk)%*%evolved_difference_unit_length_t3
+observed_evolvability_in_direction_of_change_t4 <- t(evolved_difference_unit_length_t4)%*%as.matrix(G_matrix_wai)%*%evolved_difference_unit_length_t4
+observed_evolvability_in_direction_of_change_t5 <- t(evolved_difference_unit_length_t5)%*%as.matrix(G_matrix_uki)%*%evolved_difference_unit_length_t5
+observed_evolvability_in_direction_of_change_t6 <- t(evolved_difference_unit_length_t6)%*%as.matrix(G_matrix_tai)%*%evolved_difference_unit_length_t6
+
+### The conditional evolvability in the direction of divergence
+#observed_conditional_evolvability_in_direction_of_change<-1/(t(evolved_difference_unit_length)%*%solve(as.matrix(G_matrix_1))%*%evolved_difference_unit_length)
+observed_conditional_evolvability_in_direction_of_change_t1 <- 1/(t(evolved_difference_unit_length_t1)%*%solve(as.matrix(G_matrix_NKLS))%*%evolved_difference_unit_length_t1)
+observed_conditional_evolvability_in_direction_of_change_t2 <- 1/(t(evolved_difference_unit_length_t2)%*%solve(as.matrix(G_matrix_NKBS))%*%evolved_difference_unit_length_t2)
+observed_conditional_evolvability_in_direction_of_change_t3 <- 1/(t(evolved_difference_unit_length_t3)%*%solve(as.matrix(G_matrix_tewk))%*%evolved_difference_unit_length_t3)
+observed_conditional_evolvability_in_direction_of_change_t4 <- 1/(t(evolved_difference_unit_length_t4)%*%solve(as.matrix(G_matrix_wai))%*%evolved_difference_unit_length_t4)
+observed_conditional_evolvability_in_direction_of_change_t5 <- 1/(t(evolved_difference_unit_length_t5)%*%solve(as.matrix(G_matrix_uki))%*%evolved_difference_unit_length_t5)
+observed_conditional_evolvability_in_direction_of_change_t6 <- 1/(t(evolved_difference_unit_length_t6)%*%solve(as.matrix(G_matrix_tai))%*%evolved_difference_unit_length_t6)
+
+### Generate 10,000 selection gradients in random directions in the n-dimensional space
+n_dimensions <- 8 # number of traits in G matrix
+Beta <- randomBeta(10000, n_dimensions)
+
+# Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
+X_t1 <- evolvabilityBeta(as.matrix(G_matrix_NKLS), Beta)
+sumX_t1 <- summary(X_t1) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+
+X_t2 <- evolvabilityBeta(as.matrix(G_matrix_NKBS), Beta)
+sumX_t2 <- summary(X_t2) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+
+X_t3 <- evolvabilityBeta(as.matrix(G_matrix_tewk), Beta)
+sumX_t3 <- summary(X_t3) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+
+X_t4 <- evolvabilityBeta(as.matrix(G_matrix_wai), Beta)
+sumX_t4 <- summary(X_t4) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+
+X_t5 <- evolvabilityBeta(as.matrix(G_matrix_uki), Beta)
+sumX_t5 <- summary(X_t5) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+
+X_t6 <- evolvabilityBeta(as.matrix(G_matrix_tai), Beta)
+sumX_t6 <- summary(X_t6) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+
+X_t7 <- evolvabilityBeta(as.matrix(G_matrix_SHCSBSB), Beta)
+sumX_t7 <- summary(X_t7) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+
+X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sumX_t3$Averages[[3]],
+                                sumX_t4$Averages[[3]], sumX_t5$Averages[[3]], sumX_t6$Averages[[3]], 
+                                sumX_t7$Averages[[3]]),
+                    c.min = c(sumX_t1$Minimum[[3]], sumX_t2$Minimum[[3]], sumX_t3$Minimum[[3]],
+                               sumX_t4$Minimum[[3]], sumX_t5$Minimum[[3]], sumX_t6$Minimum[[3]],
+                               sumX_t7$Minimum[[3]]),
+                    c.max = c(sumX_t1$Maximum[[3]], sumX_t2$Maximum[[3]], sumX_t3$Maximum[[3]],
+                               sumX_t4$Maximum[[3]], sumX_t5$Maximum[[3]], sumX_t6$Maximum[[3]],
+                               sumX_t7$Maximum[[3]]),
+                    e.mean = c(sumX_t1$Averages[[1]], sumX_t2$Averages[[1]], sumX_t3$Averages[[1]],
+                                sumX_t4$Averages[[1]], sumX_t5$Averages[[1]], sumX_t6$Averages[[1]],
+                                sumX_t7$Averages[[1]]),
+                    e.min = c(sumX_t1$Minimum[[1]], sumX_t2$Minimum[[1]], sumX_t3$Minimum[[1]],
+                               sumX_t4$Minimum[[1]], sumX_t5$Minimum[[1]], sumX_t6$Minimum[[1]],
+                               sumX_t7$Minimum[[1]]),
+                    e.max = c(sumX_t1$Maximum[[1]], sumX_t2$Maximum[[1]], sumX_t3$Maximum[[1]],
+                               sumX_t4$Maximum[[1]], sumX_t5$Maximum[[1]], sumX_t6$Maximum[[1]],
+                               sumX_t7$Maximum[[1]]),
+                    row.names = formation_list)
+
+write.csv(X_sum,
+          "./Results/evolvability_summary.csv",
+          row.names = FALSE)
+
+# By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
+
+### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
+#eigen(as.matrix(G_matrix_1))$values[1]/sum(eigen(as.matrix(G_matrix_1))$values)
+eigen(as.matrix(G_matrix_NKLS))$values[1]/sum(eigen(as.matrix(G_matrix_NKLS))$values)
+eigen(as.matrix(G_matrix_NKBS))$values[1]/sum(eigen(as.matrix(G_matrix_NKBS))$values)
+eigen(as.matrix(G_matrix_tewk))$values[1]/sum(eigen(as.matrix(G_matrix_tewk))$values)
+eigen(as.matrix(G_matrix_wai))$values[1]/sum(eigen(as.matrix(G_matrix_wai))$values)
+eigen(as.matrix(G_matrix_uki))$values[1]/sum(eigen(as.matrix(G_matrix_uki))$values)
+eigen(as.matrix(G_matrix_tai))$values[1]/sum(eigen(as.matrix(G_matrix_tai))$values)
+eigen(as.matrix(G_matrix_SHCSBSB))$values[1]/sum(eigen(as.matrix(G_matrix_SHCSBSB))$values)
+
+### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
+
+Gmax_NKLS <- eigen(G_matrix_NKLS)$vectors[,1]
+Gmax_NKBS <- eigen(G_matrix_NKBS)$vectors[,1] #WHY IS THIS 2??
+Gmax_tewk <- eigen(G_matrix_tewk)$vectors[,1]
+Gmax_wai <- eigen(G_matrix_wai)$vectors[,1]
+Gmax_uki <- eigen(G_matrix_uki)$vectors[,1]
+Gmax_tai <- eigen(G_matrix_tai)$vectors[,1]
+Gmax_SHCSBSB <- eigen(G_matrix_SHCSBSB)$vectors[,1]
+
+# Put Gmax to norm length
+Gmax_NKLS_norm <- f.normalize_vector(Gmax_NKLS)
+Gmax_NKBS_norm <- f.normalize_vector(Gmax_NKBS)
+Gmax_tewk_norm <- f.normalize_vector(Gmax_tewk)
+Gmax_wai_norm <- f.normalize_vector(Gmax_wai)
+Gmax_uki_norm <- f.normalize_vector(Gmax_uki)
+Gmax_tai_norm <- f.normalize_vector(Gmax_tai)
+Gmax_SHCSBSB_norm <- f.normalize_vector(Gmax_SHCSBSB)
+
+##Compute angles
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_NKLS_NKBS <- acos(dot_product.Gmax_NKLS_NKBS)
+# Convert the angle to degrees
+angle_degrees.Gmax_NKLS_NKBS <- angle_radians.Gmax_NKLS_NKBS * (180 / pi)
+#5.25
+
+dot_product.Gmax_NKBS_tewk <- sum(Gmax_NKBS_norm * Gmax_tewk_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_NKBS_tewk <- acos(dot_product.Gmax_NKBS_tewk)
+# Convert the angle to degrees
+angle_degrees.Gmax_NKBS_tewk <- angle_radians.Gmax_NKBS_tewk * (180 / pi)
+#5.47
+
+dot_product.Gmax_tewk_wai <- sum(Gmax_tewk_norm * Gmax_wai_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_tewk_wai <- acos(dot_product.Gmax_tewk_wai)
+# Convert the angle to degrees
+angle_degrees.Gmax_tewk_wai <- angle_radians.Gmax_tewk_wai * (180 / pi)
+#23.74
+
+dot_product.Gmax_wai_uki <- sum(Gmax_wai_norm * Gmax_uki_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_wai_uki <- acos(dot_product.Gmax_wai_uki)
+# Convert the angle to degrees
+angle_degrees.Gmax_wai_uki <- angle_radians.Gmax_wai_uki * (180 / pi)
+#27.52
+
+dot_product.Gmax_uki_tai <- sum(Gmax_uki_norm * Gmax_tai_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_uki_tai <- acos(dot_product.Gmax_uki_tai)
+# Convert the angle to degrees
+angle_degrees.Gmax_uki_tai <- angle_radians.Gmax_uki_tai * (180 / pi)
+#32.69
+
+dot_product.Gmax_tai_SHCSBSB <- sum(Gmax_tai_norm * Gmax_SHCSBSB_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
+# Convert the angle to degrees
+angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
+#23.03
+
 #### GLOBAL G ----
 
+##### PRIORS -----
+#same as p.cov
+phen.var.glob = cov(dat_lg_N[, 4:11]) #traits of ALL; correct for colony and formation later
+prior.glob = list(G = list(G1 = list(V = 0.5, nu = 0.005), # phen.var.glob/2, nu = 2),
+                           G2 = list(V = 0.5, nu = 0.004)),#phen.var.glob/4, nu = 2)),
+                  R = list(V = phen.var.glob/4, nu = 2))
+
+##### MCMC -----
+#Running the MCMC chain
+
+model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
+                               ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1,
+                         #account for variation w/in colony:
+                         random = ~us(trait):colony.id + us(trait):formation, #the number of these determines # of Gs #+ us(trait):formation
+                         rcov = ~us(trait):units,
+                         family = rep("gaussian", 8), #num of traits
+                         data = dat_lg_N,
+                         nitt = 1500000, thin = 1000, burnin = 500000,
+                         prior = prior.glob, verbose = TRUE)
+
+data.list.global = list(model_Global)
+
+save(data.list.global, file = "./Results/global_matrices_data_form_reg.RData")
+
+#load(file="./Results/g_matrices_data_form.RData") #load the g matrices calculated above 
+#model_G <- data.list[[1]]
+
+##### CHECK MODELS -----
+formation_list #order of formations
+summary(model_G[[1]])
+summary(model_G[[2]])
+summary(model_G[[3]])
+summary(model_G[[4]])
+summary(model_G[[5]])
+summary(model_G[[6]])
+summary(model_G[[7]])
+
+##plots to see where sampling from:
+plot(model_G[[1]]$VCV) #catepillar!
+plot(model_G[[2]]$VCV) #catepillar!
+plot(model_G[[3]]$VCV) #catepillar!
+plot(model_G[[4]]$VCV) #catepillar!
+plot(model_G[[5]]$VCV) #catepillar!
+plot(model_G[[6]]$VCV) #catepillar!
+plot(model_G[[7]]$VCV) #catepillar!
+#formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", "Waipuru", 
+#                                    "Upper Kai-Iwi", "SHCSBSB", "Tainui"
+
+###### POSTERIOR G MATRIX ------
+#Retrieving G from posterior
+g.model = model_G
+ntraits = 8
+Gmat = lapply(g.model, function (x) { 
+  matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
+#label lists as formations
+names(Gmat) = names(by_form) #formation_list or form_data
+#traits in Gmat are in different order than Pmat based on VCV 
+
+# why aren't traits labeled??
+for (i in seq_along(Gmat)){
+  colnames(Gmat[[i]]) <- traits
+}
+for (i in seq_along(Gmat)){
+  rownames(Gmat[[i]]) <- traits
+}
+
+##### G VARIANCES -----
+lapply(Gmat, isSymmetric)  #is.symmetric.matrix
+g.variances = lapply(Gmat, diag)
+paste("Trait variances")
+head(g.variances)
+
+###### G EIGEN ------
+g.eig_variances = lapply(Gmat, function (x) {eigen(x)$values})
+paste("Eigenvalue variances")
+head(g.eig_variances)
+
+g.eig_percent = lapply(g.eig_variances, function (x) {x/sum(x)})
+g.eig_per_mat = do.call(rbind, g.eig_percent)
+g.eig_per_mat = data.frame(g.eig_per_mat, rownames(g.eig_per_mat))
+g.eig_per = melt(g.eig_per_mat)
+#dev.off()
+G_PC_dist = ggplot(g.eig_per,
+                   aes(x = variable, y = value,
+                       group = rownames.g.eig_per_mat.,
+                       colour = rownames.g.eig_per_mat.)) +
+  geom_line(aes(linetype = rownames.g.eig_per_mat.)) +
+  geom_point() +
+  xlab("Principal component rank") +
+  ylab("%Variation in the PC")
+G_PC_dist #one negative; none above 1!
+
+ggsave(G_PC_dist, file = "./Results/G_PC_dist_form_reg.png", 
+       width = 14, height = 10, units = "cm")
+
+#Note that some matrices have negative eigenvalues. 
+#This can cause a lot of trouble in analyses involving inverted matrices.
+#Solution from evolqg Marroig et al. 2012
+
+###### G NOISE ------
+##Controlling for noise
+#Extend G
+G_ext = lapply(Gmat, function (x){ ExtendMatrix(x, ret.dim = 6)$ExtMat}) #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+lapply(G_ext, isSymmetric)  
+Ext_std_variances = lapply(G_ext, diag)
+Ext_eig_variances = lapply(G_ext, function (x) {eigen(x)$values})
+##need to create random cov.m for comparison
+#cov.m <- RandomMatrix(8, 1, 1, 100) 
+#G_list <- list(G_ext)
+
+g.comp_mat = RandomSkewers(G_ext) #need at least
+g.corr_mat = g.comp_mat$correlations + t(g.comp_mat$correlations) 
+diag(g.corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
+
+#### COMPARE TO GLOBAL G ----
 
 #### NOW INCLUDE SM ZOOIDS ----
