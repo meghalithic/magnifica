@@ -1134,9 +1134,11 @@ angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #23.03
 
-  #### GLOBAL G ----
+#### GLOBAL G ----
 
 ##### PRIORS -----
+#save(dat_lg_N, file = "./Results/dat_lg_N.RData")
+
 dat_lg_N.com = dat_lg_N[complete.cases(dat_lg_N),] #didn't fix anything
 phen.var.glob = cov(dat_lg_N.com[, 4:11]) #traits of ALL; correct for colony and formation later
 prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 2), #0.5, nu = 0.005), 
@@ -1156,9 +1158,7 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
                          nitt = 1500000, thin = 1000, burnin = 500000,
                          prior = prior.glob, verbose = TRUE)
 
-data.list.global = list(model_Global)
-
-save(data.list.global, file = "./Results/global_matrices_data_form_reg.RData")
+save(model_Global, file = "./Results/global_matrices_data_form_reg.RData")
 
 #load(file="./Results/g_matrices_data_form.RData") #load the g matrices calculated above 
 #model_G <- data.list[[1]]
