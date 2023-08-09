@@ -206,17 +206,17 @@ shapiro.test(sub.ln.zh) #p-value < 2.2e-16
 #ln.mpw.b
 sub.ln.mpw.b <- sample(df[, traits[2]], 
                        5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.mpw.b) #p-value = 2.001e-08
+shapiro.test(sub.ln.mpw.b) #p-value = 1.391e-07
 
 #ln.cw.m
 sub.ln.cw.m <- sample(df[, traits[3]], 
                       5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.cw.m) #p-value < 0.06524
+shapiro.test(sub.ln.cw.m) #p-value = 0.02664
 
 #ln.cw.d
 sub.ln.cw.d <- sample(df[, traits[4]], 
                       5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.cw.d) #p-value < 7.756e-06
+shapiro.test(sub.ln.cw.d) #p-value = 1.302e-05
 
 #ln.ow.m
 sub.ln.ow.m <- sample(df[, traits[5]], 
@@ -231,7 +231,7 @@ shapiro.test(sub.ln.oh) #p-value < 2.2e-16
 #ln.c.side
 sub.ln.c.side <- sample(df[, traits[7]], 
                         5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.c.side) #p-value < 0.00249
+shapiro.test(sub.ln.c.side) #p-value = 0.001001
 
 #ln.o.side
 sub.ln.o.side <- sample(df[, traits[8]], 
@@ -262,8 +262,8 @@ min(mean_by_formation_colony$n.zooid) #5
 #means of means
 mean_by_formation = mean_by_formation_colony %>%
   group_by(formation) %>%
-  summarize(n.col = length(unique(colony.id)),
-            n.zooid = sum(n.zooid),
+  summarize(num.col = length(unique(colony.id)),
+            num.zooid = sum(n.zooid),
             avg.zooid = mean(n.zooid),
             avg.zh = mean(avg.zh, na.rm = T),
             avg.mpw.b = mean(avg.mpw.b, na.rm = T),
@@ -1134,13 +1134,13 @@ angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #23.03
 
-#### GLOBAL G ----
+  #### GLOBAL G ----
 
 ##### PRIORS -----
-#same as p.cov
-phen.var.glob = cov(dat_lg_N[, 4:11]) #traits of ALL; correct for colony and formation later
-prior.glob = list(G = list(G1 = list(V = 0.5, nu = 0.005), # phen.var.glob/2, nu = 2),
-                           G2 = list(V = 0.5, nu = 0.004)),#phen.var.glob/4, nu = 2)),
+dat_lg_N.com = dat_lg_N[complete.cases(dat_lg_N),] #didn't fix anything
+phen.var.glob = cov(dat_lg_N.com[, 4:11]) #traits of ALL; correct for colony and formation later
+prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 2), #0.5, nu = 0.005), 
+                           G2 = list(V = phen.var.glob/4, nu = 2)), #0.5, nu = 0.004)),
                   R = list(V = phen.var.glob/4, nu = 2))
 
 ##### MCMC -----
