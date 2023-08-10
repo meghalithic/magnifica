@@ -1139,11 +1139,11 @@ angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 ##### PRIORS -----
 #save(dat_lg_N, file = "./Results/dat_lg_N.RData")
 
-dat_lg_N.com = dat_lg_N[complete.cases(dat_lg_N),] #didn't fix anything
+#dat_lg_N.com = dat_lg_N[complete.cases(dat_lg_N),] #didn't fix anything
 phen.var.glob = cov(dat_lg_N.com[, 4:11]) #traits of ALL; correct for colony and formation later
-prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 2), #0.5, nu = 0.005), 
-                           G2 = list(V = phen.var.glob/4, nu = 2)), #0.5, nu = 0.004)),
-                  R = list(V = phen.var.glob/4, nu = 2))
+prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 10), #V same as individual G matrices; nu is different
+                           G2 = list(V = phen.var.glob/2, nu = 10)), #additional V, made same as above
+                  R = list(V = phen.var.glob/4, nu = 5)) #V same as individual G matrices
 
 ##### MCMC -----
 #Running the MCMC chain
