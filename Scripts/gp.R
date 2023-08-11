@@ -1141,14 +1141,14 @@ angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 
 #dat_lg_N.com = dat_lg_N[complete.cases(dat_lg_N),] #didn't fix anything
 phen.var.glob = cov(dat_lg_N.com[, 4:11]) #traits of ALL; correct for colony and formation later
-prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 10), #V same as individual G matrices; nu is different
+prior.glob2 = list(G = list(G1 = list(V = phen.var.glob/2, nu = 10), #V same as individual G matrices; nu is different
                            G2 = list(V = phen.var.glob/2, nu = 10)), #additional V, made same as above
                   R = list(V = phen.var.glob/4, nu = 5)) #V same as individual G matrices
 
 ##### MCMC -----
 #Running the MCMC chain
 
-model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
+model_Global2 <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
                                ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1,
                          #account for variation w/in colony:
                          random = ~us(trait):colony.id + us(trait):formation, #the number of these determines # of Gs #+ us(trait):formation
@@ -1156,7 +1156,7 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
                          family = rep("gaussian", 8), #num of traits
                          data = dat_lg_N,
                          nitt = 1500000, thin = 1000, burnin = 500000,
-                         prior = prior.glob, verbose = TRUE)
+                         prior = prior.glob2, verbose = TRUE)
 
 save(model_Global, file = "./Results/global_matrices_data_form_reg.RData")
 
