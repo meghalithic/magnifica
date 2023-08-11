@@ -1158,77 +1158,49 @@ model_Global2 <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order a
                          nitt = 1500000, thin = 1000, burnin = 500000,
                          prior = prior.glob2, verbose = TRUE)
 
-save(model_Global, file = "./Results/global_matrices_data_form_reg.RData")
+save(model_Global2, file = "./Results/global_matrices_data_form_reg.RData")
 
 #load(file="./Results/g_matrices_data_form.RData") #load the g matrices calculated above 
 #model_G <- data.list[[1]]
 
 ##### CHECK MODELS -----
 formation_list #order of formations
-summary(model_G[[1]])
-summary(model_G[[2]])
-summary(model_G[[3]])
-summary(model_G[[4]])
-summary(model_G[[5]])
-summary(model_G[[6]])
-summary(model_G[[7]])
+summary(model_Global2)
 
 ##plots to see where sampling from:
-plot(model_G[[1]]$VCV) #catepillar!
-plot(model_G[[2]]$VCV) #catepillar!
-plot(model_G[[3]]$VCV) #catepillar!
-plot(model_G[[4]]$VCV) #catepillar!
-plot(model_G[[5]]$VCV) #catepillar!
-plot(model_G[[6]]$VCV) #catepillar!
-plot(model_G[[7]]$VCV) #catepillar!
-#formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", "Waipuru", 
-#                                    "Upper Kai-Iwi", "SHCSBSB", "Tainui"
+plot(model_Global2$VCV) #catepillar!
 
 ###### POSTERIOR G MATRIX ------
 #Retrieving G from posterior
-g.model = model_G
+glob.model = model_Global2
 ntraits = 8
-Gmat = lapply(g.model, function (x) { 
-  matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
-#label lists as formations
-names(Gmat) = names(by_form) #formation_list or form_data
-#traits in Gmat are in different order than Pmat based on VCV 
-
-# why aren't traits labeled??
-for (i in seq_along(Gmat)){
-  colnames(Gmat[[i]]) <- traits
-}
-for (i in seq_along(Gmat)){
-  rownames(Gmat[[i]]) <- traits
-}
+glob.Gmat = matrix(posterior.mode(glob.model$VCV)[1:ntraits^2], ntraits, ntraits)
 
 ##### G VARIANCES -----
-lapply(Gmat, isSymmetric)  #is.symmetric.matrix
-g.variances = lapply(Gmat, diag)
+isSymmetric(glob.Gmat)  #is.symmetric.matrix
+glob.variances = diag(glob.Gmat)
 paste("Trait variances")
-head(g.variances)
+head(glob.variances)
 
 ###### G EIGEN ------
-g.eig_variances = lapply(Gmat, function (x) {eigen(x)$values})
+glob.eig_variances = eigen(glob.Gmat)$values
 paste("Eigenvalue variances")
-head(g.eig_variances)
+head(glob.eig_variances)
 
-g.eig_percent = lapply(g.eig_variances, function (x) {x/sum(x)})
-g.eig_per_mat = do.call(rbind, g.eig_percent)
-g.eig_per_mat = data.frame(g.eig_per_mat, rownames(g.eig_per_mat))
-g.eig_per = melt(g.eig_per_mat)
+glob.eig_percent = glob.eig_variances/sum(glob.eig_variances) 
+glob.eig_per_mat = data.frame(glob.eig_percent)
+#glob.eig_per = melt(glob.eig_per_mat)
+glob.eig_per_mat$PC <- 1:nrow(glob.eig_per_mat)
 #dev.off()
-G_PC_dist = ggplot(g.eig_per,
-                   aes(x = variable, y = value,
-                       group = rownames.g.eig_per_mat.,
-                       colour = rownames.g.eig_per_mat.)) +
-  geom_line(aes(linetype = rownames.g.eig_per_mat.)) +
+Glob_PC_dist = ggplot(glob.eig_per_mat,
+                   aes(x = PC, y = glob.eig_percent)) +
+  geom_line() +
   geom_point() +
   xlab("Principal component rank") +
   ylab("%Variation in the PC")
-G_PC_dist #one negative; none above 1!
+Glob_PC_dist #one negative; none above 1!
 
-ggsave(G_PC_dist, file = "./Results/G_PC_dist_form_reg.png", 
+ggsave(Glob_PC_dist, file = "./Results/Global_G_PC_dist_form_reg.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
@@ -1238,21 +1210,195 @@ ggsave(G_PC_dist, file = "./Results/G_PC_dist_form_reg.png",
 ###### G NOISE ------
 ##Controlling for noise
 #Extend G
-G_ext = lapply(Gmat, function (x){ ExtendMatrix(x, ret.dim = 6)$ExtMat}) #not 8 because last eigen value (#8) was negative
+Glob_ext = ExtendMatrix(glob.Gmat, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
 #ignore warning from above
-lapply(G_ext, isSymmetric)  
-Ext_std_variances = lapply(G_ext, diag)
-Ext_eig_variances = lapply(G_ext, function (x) {eigen(x)$values})
-##need to create random cov.m for comparison
-#cov.m <- RandomMatrix(8, 1, 1, 100) 
-#G_list <- list(G_ext)
-
-g.comp_mat = RandomSkewers(G_ext) #need at least
-g.corr_mat = g.comp_mat$correlations + t(g.comp_mat$correlations) 
-diag(g.corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
+isSymmetric(Glob_ext)
+Glob_Ext_std_variances = diag(Glob_ext) 
+Glob_Ext_eig_variances = eigen(Glob_ext)$values
 
 #### COMPARE TO GLOBAL G ----
 
+### Calculate the vector that defines the observed divergence between sample/formation 1 an 2
+global <- as.numeric(means)
+#NKLS
+#NKBS
+#tewk
+#wai
+#uki
+#tai
+#SHCSBSB
+
+evolved_difference_unit_length_NKLS_glob <- f.normalize_vector(NKLS - global)
+evolved_difference_unit_length_NKBS_glob <- f.normalize_vector(NKBS - global)
+evolved_difference_unit_length_tewk_glob <- f.normalize_vector(tewk - global)
+evolved_difference_unit_length_wai_glob <- f.normalize_vector(wai - global)
+evolved_difference_unit_length_uki_glob <- f.normalize_vector(uki - global)
+evolved_difference_unit_length_tai_glob <- f.normalize_vector(tai - global)
+evolved_difference_unit_length_SCHSBSB_glob <- f.normalize_vector(SHCSBSB-global)
+
+G_matrix_glob = glob.Gmat 
+#G_matrix_NKLS
+#G_matrix_NKBS
+#G_matrix_tewk
+#G_matrix_wai
+#G_matrix_uki
+#G_matrix_tai
+#G_matrix_SHCSBSB
+
+### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
+observed_evolvability_in_direction_of_change_NKLS <- t(evolved_difference_unit_length_NKLS_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_NKLS_glob
+observed_evolvability_in_direction_of_change_NKBS <- t(evolved_difference_unit_length_NKBS_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_NKBS_glob
+observed_evolvability_in_direction_of_change_tewk <- t(evolved_difference_unit_length_tewk_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_tewk_glob
+observed_evolvability_in_direction_of_change_wai <- t(evolved_difference_unit_length_wai_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_wai_glob
+observed_evolvability_in_direction_of_change_uki <- t(evolved_difference_unit_length_uki_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_uki_glob
+observed_evolvability_in_direction_of_change_tai <- t(evolved_difference_unit_length_tai_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_tai_glob
+observed_evolvability_in_direction_of_change_SHCSBSB <- t(evolved_difference_unit_length_SCHSBSB_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_SCHSBSB_glob
+
+### The conditional evolvability in the direction of divergence
+observed_conditional_evolvability_in_direction_of_change_NKLS <- 1/(t(evolved_difference_unit_length_NKLS_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_NKLS_glob)
+observed_conditional_evolvability_in_direction_of_change_NKBS <- 1/(t(evolved_difference_unit_length_NKBS_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_NKBS_glob)
+observed_conditional_evolvability_in_direction_of_change_tewk <- 1/(t(evolved_difference_unit_length_tewk_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_tewk_glob)
+observed_conditional_evolvability_in_direction_of_change_wai <- 1/(t(evolved_difference_unit_length_wai_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_wai_glob)
+observed_conditional_evolvability_in_direction_of_change_uki <- 1/(t(evolved_difference_unit_length_uki_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_uki_glob)
+observed_conditional_evolvability_in_direction_of_change_tai <- 1/(t(evolved_difference_unit_length_tai_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_tai_glob)
+observed_conditional_evolvability_in_direction_of_change_SCHSBSB <- 1/(t(evolved_difference_unit_length_SCHSBSB_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_SCHSBSB_glob)
+
+### Generate 10,000 selection gradients in random directions in the n-dimensional space
+#n_dimensions <- 8 # number of traits in G matrix
+#Beta <- randomBeta(10000, n_dimensions)
+
+# Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
+X_glob <- evolvabilityBeta(as.matrix(G_matrix_glob), Beta)
+summary(X_glob) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+#e_mean 0.00664551
+#c_mean -0.00010400
+#e_min 1.237089e-04
+#c_min -2.428818e-01
+#e_max 0.02531620
+#c_max 0.33979277
+
+#X_t1 
+#X_t2
+#X_t3 
+#X_t4 
+#X_t5 
+#X_t6 
+#X_t7 
+
+# By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
+
+### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
+eigen(as.matrix(G_matrix_glob))$values[1]/sum(eigen(as.matrix(G_matrix_glob))$values)
+#0.5231812
+
+### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
+
+Gmax_glob <- eigen(G_matrix_glob)$vectors[,1]
+
+#Gmax_NKLS
+#Gmax_NKBS
+#Gmax_tewk
+#Gmax_wai
+#Gmax_uki
+#Gmax_tai
+#Gmax_SCHSBSB
+
+# Put Gmax to norm length
+Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
+
+#Gmax_NKLS_norm
+#Gmax_NKBS_norm
+#Gmax_tewk_norm
+#Gmax_wai_norm
+#Gmax_uki_norm
+#Gmax_tai_norm
+#Gmax_SCHSBSB_norm
+
+##Compute angles
+
+## NKLS
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_glob_NKLS <- sum(Gmax_glob_norm * Gmax_NKLS_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_glob_NKLS <- acos(dot_product.Gmax_glob_NKLS)
+# Convert the angle to degrees
+angle_degrees.Gmax_glob_NKLS <- angle_radians.Gmax_glob_NKLS * (180 / pi)
+#7.29
+
+## NKBS
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_glob_NKBS <- sum(Gmax_glob_norm * Gmax_NKBS_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_glob_NKBS <- acos(dot_product.Gmax_glob_NKBS)
+# Convert the angle to degrees
+angle_degrees.Gmax_glob_NKBS <- angle_radians.Gmax_glob_NKBS * (180 / pi)
+#3.17
+
+## Tewksbury
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_glob_tewk <- sum(Gmax_glob_norm * Gmax_tewk_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_glob_tewk <- acos(dot_product.Gmax_glob_tewk)
+# Convert the angle to degrees
+angle_degrees.Gmax_glob_tewk <- angle_radians.Gmax_glob_tewk * (180 / pi)
+#6.24
+
+## Waipuru
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_glob_wai <- sum(Gmax_glob_norm * Gmax_wai_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_glob_wai <- acos(dot_product.Gmax_glob_wai)
+# Convert the angle to degrees
+angle_degrees.Gmax_glob_wai <- angle_radians.Gmax_glob_wai * (180 / pi)
+#19.41
+
+## Upper Kai-Iwi
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_glob_uki <- sum(Gmax_glob_norm * Gmax_uki_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_glob_uki <- acos(dot_product.Gmax_glob_uki)
+# Convert the angle to degrees
+angle_degrees.Gmax_glob_uki <- angle_radians.Gmax_glob_uki * (180 / pi)
+#17.85
+
+## Tainui
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_glob_tai <- sum(Gmax_glob_norm * Gmax_tai_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_glob_tai <- acos(dot_product.Gmax_glob_tai)
+# Convert the angle to degrees
+angle_degrees.Gmax_glob_tai <- angle_radians.Gmax_glob_tai * (180 / pi)
+#21.40
+
+## SHCSBSB
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_glob_SHCSBSB <- sum(Gmax_glob_norm * Gmax_SHCSBSB_norm)
+# Calculate the angle in radians
+angle_radians.Gmax_glob_SHCSBSB <- acos(dot_product.Gmax_glob_SHCSBSB)
+# Convert the angle to degrees
+angle_degrees.Gmax_glob_SHCSBSB <- angle_radians.Gmax_glob_SHCSBSB * (180 / pi)
+#10.27
+
 #### NOW INCLUDE SM ZOOIDS ----
+
+df.sm.trim <- sm.df %>%
+  dplyr::select(zooid.id, colony.id, formation, matches(traits))
+
+sm.df = as.data.frame(df.sm.trim)
+
+##### COMBINE -----
+
+all.df <- rbind(df, sm.df)
+
+##### REMAKE THINGS -----
+zooid_list.all <- unique(all.df$zooid.id)
+length(zooid_list.all) #5971
+
+colony_list.all <- unique(all.df$colony.id)
+length(colony_list.all) #572
+
+# arrange formations from oldest to youngest
+all.df$formation <- factor(all.df$formation, 
+                           levels = c("NKLS", "NKBS", "Tewkesbury", 
+                                      "Waipuru", "Upper Kai-Iwi", 
+                                      "Tainui", "SHCSBSB")) 
