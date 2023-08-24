@@ -23,3 +23,7 @@ for (i in 1:length(formations)){
 O18 = cbind(cbind(med.O18, sd.med.O18, n.O18), cbind(bottom, top))
 O18 = as.data.frame(O18)
 rownames(O18) = formations
+
+temp.NKBS = oxy.18$d18O[which(oxy.18$Time <= bottom[2] & oxy.18$Time >= top[2])]
+temp.wai = oxy.18$d18O[which(oxy.18$Time <= bottom[4] & oxy.18$Time >= top[4])]
+temp.uki = oxy.18$d18O[which(oxy.18$Time <= bottom[5] & oxy.18$Time >= top[5])]
