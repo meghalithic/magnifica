@@ -249,15 +249,47 @@ mean_by_formation_colony = dat_lg_N %>% #use this going forward
   group_by(formation, colony.id) %>%
   summarize(n.zooid = length(zooid.id),
             avg.zh = mean(ln.zh, na.rm = T),
+            sd.zh = sd(ln.zh, na.rm = T),
             avg.mpw.b = mean(ln.mpw.b, na.rm = T),
+            sd.mpw.b = sd(ln.mpw.b, na.rm = T),
             avg.cw.m = mean(ln.cw.m, na.rm = T),
+            sd.cw.m = sd(ln.cw.m, na.rm = T),
             avg.cw.d = mean(ln.cw.d, na.rm = T),
+            sd.cw.d = sd(ln.cw.d, na.rm = T),
             avg.ow.m = mean(ln.ow.m, na.rm = T),
+            sd.ow.m = sd(ln.ow.m, na.rm = T),
             avg.oh = mean(ln.oh, na.rm = T),
+            sd.oh = sd(ln.oh, na.rm = T),
             avg.o.side = mean(ln.o.side, na.rm = T),
-            avg.c.side = mean(ln.c.side, na.rm = T)) %>%
+            sd.o.side = sd(ln.o.side, na.rm = T),
+            avg.c.side = mean(ln.c.side, na.rm = T),
+            sd.c.side = sd(ln.c.side, na.rm = T)) %>%
   as.data.frame()
 min(mean_by_formation_colony$n.zooid) #5
+
+mean(mean_by_formation_colony1$sd.zh) #0.09225405
+range(mean_by_formation_colony1$sd.zh) #0.02640565 0.57287376
+
+mean(mean_by_formation_colony1$sd.mpw.b) #0.1217314
+range(mean_by_formation_colony1$sd.mpw.b) #0.03438424 0.36673432
+
+mean(mean_by_formation_colony1$sd.cw.m) #0.1490322
+range(mean_by_formation_colony1$sd.cw.m) #0.01840786 0.36565782
+
+mean(mean_by_formation_colony1$sd.cw.d) #0.1103786
+range(mean_by_formation_colony1$sd.cw.d) #0.0219327 0.3552131
+
+mean(mean_by_formation_colony1$sd.ow.m) #0.07753377
+range(mean_by_formation_colony1$sd.ow.m) #0.01233698 0.31205832
+
+mean(mean_by_formation_colony1$sd.oh) #0.075358
+range(mean_by_formation_colony1$sd.oh) #0.0139018 0.2877568
+
+mean(mean_by_formation_colony1$sd.o.side) #0.08611018
+range(mean_by_formation_colony1$sd.o.side) #0.01430516 0.58861649
+
+mean(mean_by_formation_colony1$sd.c.side) #0.132877
+range(mean_by_formation_colony1$sd.c.side) #0.0353629 0.4793441
 
 #means of means
 mean_by_formation = mean_by_formation_colony %>%
