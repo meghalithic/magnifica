@@ -486,8 +486,11 @@ data.list = list(model_G, dat_lg_N, form_data, mean_by_formation_colony)
 
 save(data.list, file = "./Results/g_matrices_data_form_reg.RData")
 
-#load(file="./Results/g_matrices_data_form.RData") #load the g matrices calculated above 
-#model_G <- data.list[[1]]
+load(file="./Results/g_matrices_data_form_reg.RData") #load the g matrices calculated above 
+model_G <- data.list[[1]]
+dat_lg_N <- data.list[[2]]
+form_data <- data.list[[3]]
+mean_by_formation_colony <- data.list[[4]]
 
 ##### CHECK MODELS -----
 formation_list #order of formations
@@ -1001,7 +1004,7 @@ SHCSBSB <- as.numeric(mean_by_formation[7, 5:12]) # A vector containing trait me
 
 #second - first
 #t1 = NKBS - NKLS
-#t2 = tewk - NKLS
+#t2 = tewk - NKBS
 #t3 = wai - tewk
 #t4 = uki - wai
 #t5 = tai - uki
@@ -1045,6 +1048,16 @@ observed_conditional_evolvability_in_direction_of_change_t6 <- 1/(t(evolved_diff
 n_dimensions <- 8 # number of traits in G matrix
 Beta <- randomBeta(10000, n_dimensions)
 
+#outputs e, r, c, a, i
+#e = evolvability
+#r = respondability
+#c = conditional evolvability
+#a = autonomy of each selection gradient
+#i = integration
+#Beta = matrix of selection gradients
+#e and c are calculating variances of means; should not be negative
+#conditional must be equal to or smaller than e; often much small
+
 # Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
 X_t1 <- evolvabilityBeta(as.matrix(G_matrix_NKLS), Beta)
 sumX_t1 <- summary(X_t1) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
@@ -1068,23 +1081,23 @@ X_t7 <- evolvabilityBeta(as.matrix(G_matrix_SHCSBSB), Beta)
 sumX_t7 <- summary(X_t7) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 
 X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sumX_t3$Averages[[3]],
-                                sumX_t4$Averages[[3]], sumX_t5$Averages[[3]], sumX_t6$Averages[[3]], 
-                                sumX_t7$Averages[[3]]),
+                               sumX_t4$Averages[[3]], sumX_t5$Averages[[3]], sumX_t6$Averages[[3]], 
+                               sumX_t7$Averages[[3]]),
                     c.min = c(sumX_t1$Minimum[[3]], sumX_t2$Minimum[[3]], sumX_t3$Minimum[[3]],
-                               sumX_t4$Minimum[[3]], sumX_t5$Minimum[[3]], sumX_t6$Minimum[[3]],
-                               sumX_t7$Minimum[[3]]),
+                              sumX_t4$Minimum[[3]], sumX_t5$Minimum[[3]], sumX_t6$Minimum[[3]],
+                              sumX_t7$Minimum[[3]]),
                     c.max = c(sumX_t1$Maximum[[3]], sumX_t2$Maximum[[3]], sumX_t3$Maximum[[3]],
-                               sumX_t4$Maximum[[3]], sumX_t5$Maximum[[3]], sumX_t6$Maximum[[3]],
-                               sumX_t7$Maximum[[3]]),
+                              sumX_t4$Maximum[[3]], sumX_t5$Maximum[[3]], sumX_t6$Maximum[[3]],
+                              sumX_t7$Maximum[[3]]),
                     e.mean = c(sumX_t1$Averages[[1]], sumX_t2$Averages[[1]], sumX_t3$Averages[[1]],
-                                sumX_t4$Averages[[1]], sumX_t5$Averages[[1]], sumX_t6$Averages[[1]],
-                                sumX_t7$Averages[[1]]),
+                               sumX_t4$Averages[[1]], sumX_t5$Averages[[1]], sumX_t6$Averages[[1]],
+                               sumX_t7$Averages[[1]]),
                     e.min = c(sumX_t1$Minimum[[1]], sumX_t2$Minimum[[1]], sumX_t3$Minimum[[1]],
-                               sumX_t4$Minimum[[1]], sumX_t5$Minimum[[1]], sumX_t6$Minimum[[1]],
-                               sumX_t7$Minimum[[1]]),
+                              sumX_t4$Minimum[[1]], sumX_t5$Minimum[[1]], sumX_t6$Minimum[[1]],
+                              sumX_t7$Minimum[[1]]),
                     e.max = c(sumX_t1$Maximum[[1]], sumX_t2$Maximum[[1]], sumX_t3$Maximum[[1]],
-                               sumX_t4$Maximum[[1]], sumX_t5$Maximum[[1]], sumX_t6$Maximum[[1]],
-                               sumX_t7$Maximum[[1]]),
+                              sumX_t4$Maximum[[1]], sumX_t5$Maximum[[1]], sumX_t6$Maximum[[1]],
+                              sumX_t7$Maximum[[1]]),
                     row.names = formation_list)
 
 write.csv(X_sum,
