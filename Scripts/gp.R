@@ -1224,6 +1224,55 @@ angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #23.03
 
+### See if change is in direction of G max
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1)
+# Calculate the angle in radians
+angle_radians.Gmax_NKLS_max <- acos(dot_product.Gmax_NKLS_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_NKLS_max <- angle_radians.Gmax_NKLS_max * (180 / pi)
+#73.14529
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_NKBS_max <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2)
+# Calculate the angle in radians
+angle_radians.Gmax_NKBS_max <- acos(dot_product.Gmax_NKBS_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_NKBS_max <- angle_radians.Gmax_NKBS_max * (180 / pi)
+#36.81499
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_tewk_max <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3)
+# Calculate the angle in radians
+angle_radians.Gmax_tewk_max <- acos(dot_product.Gmax_tewk_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_tewk_max <- angle_radians.Gmax_tewk_max * (180 / pi)
+#112.5576
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_wai_max <- sum(Gmax_wai_norm * evolved_difference_unit_length_t4)
+# Calculate the angle in radians
+angle_radians.Gmax_wai_max <- acos(dot_product.Gmax_wai_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_wai_max <- angle_radians.Gmax_wai_max * (180 / pi)
+#153.9498
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t5)
+# Calculate the angle in radians
+angle_radians.Gmax_uki_max <- acos(dot_product.Gmax_uki_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_uki_max <- angle_radians.Gmax_uki_max * (180 / pi)
+#156.753
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_tai_max <- sum(Gmax_tai_norm * evolved_difference_unit_length_t6)
+# Calculate the angle in radians
+angle_radians.Gmax_tai_max <- acos(dot_product.Gmax_tai_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_tai_max <- angle_radians.Gmax_tai_max * (180 / pi)
+#53.85211
+
 #### GLOBAL G ----
 
 ##### PRIORS -----
