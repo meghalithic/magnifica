@@ -1,7 +1,7 @@
 # Meghan A. Balk
 # meghan.balk@gmail.com
 # initially created: Jun 2023
-# last updated: 4 Aug 2023
+# last updated: 29 Aug 2023
 print("update 'last updated' & set working directory!")
 # set working directory to repo "magnifica"
 
@@ -43,6 +43,7 @@ library(rgl)
 library(scales)
 library(scatterplot3d)
 library(tibble)
+library(matrixcalc)
 
 #### LOAD DATA ----
 
@@ -515,10 +516,10 @@ plot(model_G[[7]]$VCV) #catepillar!
 
 ##### CHECK P IS BIGGER THAN G -----
 
-###### PRIORS ------
 # diagonals of p.cov to priors
 ## chekcing NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
 
+# PRIORS
 # NKBS
 diag(phen.var[[2]]) #all larger
 diag(prior$NKBS$G$G1$V)
@@ -534,7 +535,7 @@ diag(phen.var[[5]]) #all larger
 diag(prior$`Upper Kai-Iwi`$G$G1$V)
 diag(prior$`Upper Kai-Iwi`$R$V)
 
-###### RETRIEVE THE P MATRIX FROM THE MCMC OBJECT ------
+#RETRIEVE THE P MATRIX FROM THE MCMC OBJECT
 # p matrix for each formation (maybe colony?)
 ## chekcing NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
 
@@ -690,11 +691,9 @@ corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 
 #### CORR OF G & P ----
 
-##### CORR OF P & G DIAGONALS -----
 #Gmat
 #Pmat
 
-###### REORDER TRAITS -----
 formation_list
 
 ###### PLOT DIAGONALS -----
@@ -1048,6 +1047,40 @@ observed_conditional_evolvability_in_direction_of_change_t6 <- 1/(t(evolved_diff
 n_dimensions <- 8 # number of traits in G matrix
 Beta <- randomBeta(10000, n_dimensions)
 
+## check positive definite
+# round to 10 decimals to make it symmetric
+# to make it positive definite, use extended matrix to fill in
+is.symmetric.matrix(Beta)
+is.positive.definite(Beta)
+
+G_mat_NKLS <- round(as.matrix(G_matrix_NKLS), 10)
+is.symmetric.matrix(G_mat_NKLS) #TRUE
+is.positive.definite(G_mat_NKLS) #FALSE
+
+G_mat_NKBS <- round(as.matrix(G_matrix_NKBS), 10)
+is.symmetric.matrix(G_mat_NKBS) #TRUE
+is.positive.definite(G_mat_NKBS) #FALSE
+
+G_mat_tewk <- round(as.matrix(G_matrix_tewk), 10)
+is.symmetric.matrix(G_mat_tewk) #TRUE
+is.positive.definite(G_mat_tewk) #FALSE
+
+G_mat_wai <- round(as.matrix(G_matrix_wai), 10)
+is.symmetric.matrix(G_mat_wai) #TRUE
+is.positive.definite(G_mat_wai) #FALSE
+
+G_mat_uki <- round(as.matrix(G_matrix_uki), 10)
+is.symmetric.matrix(G_mat_uki) #TRUE
+is.positive.definite(G_mat_uki) #FALSE
+
+G_mat_tai <- round(as.matrix(G_matrix_tai), 10)
+is.symmetric.matrix(G_mat_tai) #TRUE
+is.positive.definite(G_mat_tai) #FALSE
+
+G_mat_SHCSBSB <- round(as.matrix(G_matrix_SHCSBSB), 10)
+is.symmetric.matrix(G_mat_SHCSBSB) #TRUE
+is.positive.definite(G_mat_SHCSBSB) #FALSE
+
 #outputs e, r, c, a, i
 #e = evolvability
 #r = respondability
@@ -1121,18 +1154,17 @@ write.csv(X_sum,
 
 ### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
 #eigen(as.matrix(G_matrix_1))$values[1]/sum(eigen(as.matrix(G_matrix_1))$values)
-eigen(as.matrix(G_matrix_NKLS))$values[1]/sum(eigen(as.matrix(G_matrix_NKLS))$values)
-eigen(as.matrix(G_matrix_NKBS))$values[1]/sum(eigen(as.matrix(G_matrix_NKBS))$values)
-eigen(as.matrix(G_matrix_tewk))$values[1]/sum(eigen(as.matrix(G_matrix_tewk))$values)
-eigen(as.matrix(G_matrix_wai))$values[1]/sum(eigen(as.matrix(G_matrix_wai))$values)
-eigen(as.matrix(G_matrix_uki))$values[1]/sum(eigen(as.matrix(G_matrix_uki))$values)
-eigen(as.matrix(G_matrix_tai))$values[1]/sum(eigen(as.matrix(G_matrix_tai))$values)
-eigen(as.matrix(G_matrix_SHCSBSB))$values[1]/sum(eigen(as.matrix(G_matrix_SHCSBSB))$values)
+eigen(as.matrix(G_matrix_NKLS))$values[1]/sum(eigen(as.matrix(G_matrix_NKLS))$values) #0.4676502
+eigen(as.matrix(G_matrix_NKBS))$values[1]/sum(eigen(as.matrix(G_matrix_NKBS))$values) #0.5220323
+eigen(as.matrix(G_matrix_tewk))$values[1]/sum(eigen(as.matrix(G_matrix_tewk))$values) #0.5024787
+eigen(as.matrix(G_matrix_wai))$values[1]/sum(eigen(as.matrix(G_matrix_wai))$values) #0.400385
+eigen(as.matrix(G_matrix_uki))$values[1]/sum(eigen(as.matrix(G_matrix_uki))$values) #0.7530483
+eigen(as.matrix(G_matrix_tai))$values[1]/sum(eigen(as.matrix(G_matrix_tai))$values) #0.4238095
+eigen(as.matrix(G_matrix_SHCSBSB))$values[1]/sum(eigen(as.matrix(G_matrix_SHCSBSB))$values) #0.5006772
 
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
-
 Gmax_NKLS <- eigen(G_matrix_NKLS)$vectors[,1]
-Gmax_NKBS <- eigen(G_matrix_NKBS)$vectors[,1] #WHY IS THIS 2??
+Gmax_NKBS <- eigen(G_matrix_NKBS)$vectors[,1]
 Gmax_tewk <- eigen(G_matrix_tewk)$vectors[,1]
 Gmax_wai <- eigen(G_matrix_wai)$vectors[,1]
 Gmax_uki <- eigen(G_matrix_uki)$vectors[,1]
@@ -1198,15 +1230,15 @@ angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #save(dat_lg_N, file = "./Results/dat_lg_N.RData")
 
 #dat_lg_N.com = dat_lg_N[complete.cases(dat_lg_N),] #didn't fix anything
-phen.var.glob = cov(dat_lg_N.com[, 4:11]) #traits of ALL; correct for colony and formation later
-prior.glob2 = list(G = list(G1 = list(V = phen.var.glob/2, nu = 10), #V same as individual G matrices; nu is different
+phen.var.glob = cov(dat_lg_N[, 4:11]) #traits of ALL; correct for colony and formation later
+prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 10), #V same as individual G matrices; nu is different
                            G2 = list(V = phen.var.glob/2, nu = 10)), #additional V, made same as above
                   R = list(V = phen.var.glob/4, nu = 5)) #V same as individual G matrices
 
 ##### MCMC -----
 #Running the MCMC chain
 
-model_Global2 <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
+model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
                                ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1,
                          #account for variation w/in colony:
                          random = ~us(trait):colony.id + us(trait):formation, #the number of these determines # of Gs #+ us(trait):formation
@@ -1214,23 +1246,23 @@ model_Global2 <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order a
                          family = rep("gaussian", 8), #num of traits
                          data = dat_lg_N,
                          nitt = 1500000, thin = 1000, burnin = 500000,
-                         prior = prior.glob2, verbose = TRUE)
+                         prior = prior.glob, verbose = TRUE)
 
-save(model_Global2, file = "./Results/global_matrices_data_form_reg.RData")
+save(model_Global, file = "./Results/global_matrices_data_form_reg.RData")
 
-#load(file="./Results/g_matrices_data_form.RData") #load the g matrices calculated above 
-#model_G <- data.list[[1]]
+#load(file="./Results/global_matrices_data_form_reg.RData") #load the g matrices calculated above 
+#model_Global <- data.list[[1]]
 
 ##### CHECK MODELS -----
 formation_list #order of formations
-summary(model_Global2)
+summary(model_Global)
 
 ##plots to see where sampling from:
-plot(model_Global2$VCV) #catepillar!
+plot(model_Global$VCV) #catepillar!
 
 ###### POSTERIOR G MATRIX ------
 #Retrieving G from posterior
-glob.model = model_Global2
+glob.model = model_Global
 ntraits = 8
 glob.Gmat = matrix(posterior.mode(glob.model$VCV)[1:ntraits^2], ntraits, ntraits)
 
@@ -1347,7 +1379,7 @@ summary(X_glob) #provides you with info on mean, minimum and maximum evolvabilit
 
 ### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
 eigen(as.matrix(G_matrix_glob))$values[1]/sum(eigen(as.matrix(G_matrix_glob))$values)
-#0.5231812
+#0.5229979
 
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
 
@@ -1381,7 +1413,7 @@ dot_product.Gmax_glob_NKLS <- sum(Gmax_glob_norm * Gmax_NKLS_norm)
 angle_radians.Gmax_glob_NKLS <- acos(dot_product.Gmax_glob_NKLS)
 # Convert the angle to degrees
 angle_degrees.Gmax_glob_NKLS <- angle_radians.Gmax_glob_NKLS * (180 / pi)
-#7.29
+#7.953553
 
 ## NKBS
 # Calculate the dot product of the unit vectors
@@ -1390,7 +1422,7 @@ dot_product.Gmax_glob_NKBS <- sum(Gmax_glob_norm * Gmax_NKBS_norm)
 angle_radians.Gmax_glob_NKBS <- acos(dot_product.Gmax_glob_NKBS)
 # Convert the angle to degrees
 angle_degrees.Gmax_glob_NKBS <- angle_radians.Gmax_glob_NKBS * (180 / pi)
-#3.17
+#3.790778
 
 ## Tewksbury
 # Calculate the dot product of the unit vectors
@@ -1399,7 +1431,7 @@ dot_product.Gmax_glob_tewk <- sum(Gmax_glob_norm * Gmax_tewk_norm)
 angle_radians.Gmax_glob_tewk <- acos(dot_product.Gmax_glob_tewk)
 # Convert the angle to degrees
 angle_degrees.Gmax_glob_tewk <- angle_radians.Gmax_glob_tewk * (180 / pi)
-#6.24
+#5.831842
 
 ## Waipuru
 # Calculate the dot product of the unit vectors
@@ -1408,7 +1440,7 @@ dot_product.Gmax_glob_wai <- sum(Gmax_glob_norm * Gmax_wai_norm)
 angle_radians.Gmax_glob_wai <- acos(dot_product.Gmax_glob_wai)
 # Convert the angle to degrees
 angle_degrees.Gmax_glob_wai <- angle_radians.Gmax_glob_wai * (180 / pi)
-#19.41
+#20.70651
 
 ## Upper Kai-Iwi
 # Calculate the dot product of the unit vectors
@@ -1417,7 +1449,7 @@ dot_product.Gmax_glob_uki <- sum(Gmax_glob_norm * Gmax_uki_norm)
 angle_radians.Gmax_glob_uki <- acos(dot_product.Gmax_glob_uki)
 # Convert the angle to degrees
 angle_degrees.Gmax_glob_uki <- angle_radians.Gmax_glob_uki * (180 / pi)
-#17.85
+#17.58378
 
 ## Tainui
 # Calculate the dot product of the unit vectors
@@ -1426,7 +1458,7 @@ dot_product.Gmax_glob_tai <- sum(Gmax_glob_norm * Gmax_tai_norm)
 angle_radians.Gmax_glob_tai <- acos(dot_product.Gmax_glob_tai)
 # Convert the angle to degrees
 angle_degrees.Gmax_glob_tai <- angle_radians.Gmax_glob_tai * (180 / pi)
-#21.40
+#22.45352
 
 ## SHCSBSB
 # Calculate the dot product of the unit vectors
@@ -1435,7 +1467,7 @@ dot_product.Gmax_glob_SHCSBSB <- sum(Gmax_glob_norm * Gmax_SHCSBSB_norm)
 angle_radians.Gmax_glob_SHCSBSB <- acos(dot_product.Gmax_glob_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Gmax_glob_SHCSBSB <- angle_radians.Gmax_glob_SHCSBSB * (180 / pi)
-#10.27
+#10.81873
 
 #### NOW INCLUDE SM ZOOIDS ----
 
