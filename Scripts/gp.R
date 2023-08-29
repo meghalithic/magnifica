@@ -246,8 +246,8 @@ head(dat_lg_N) #traits in same order as df and traits
 #### SUMMARY STATISTICS ----
 
 mean_by_formation_colony = dat_lg_N %>% #use this going forward
-  group_by(formation, colony.id) %>%
-  summarize(n.zooid = length(zooid.id),
+  dplyr::group_by(formation, colony.id) %>%
+  dplyr::summarize(n.zooid = length(zooid.id),
             avg.zh = mean(ln.zh, na.rm = T),
             sd.zh = sd(ln.zh, na.rm = T),
             avg.mpw.b = mean(ln.mpw.b, na.rm = T),
@@ -267,34 +267,34 @@ mean_by_formation_colony = dat_lg_N %>% #use this going forward
   as.data.frame()
 min(mean_by_formation_colony$n.zooid) #5
 
-mean(mean_by_formation_colony1$sd.zh) #0.09225405
-range(mean_by_formation_colony1$sd.zh) #0.02640565 0.57287376
+mean(mean_by_formation_colony$sd.zh) #0.09225405
+range(mean_by_formation_colony$sd.zh) #0.02640565 0.57287376
 
-mean(mean_by_formation_colony1$sd.mpw.b) #0.1217314
-range(mean_by_formation_colony1$sd.mpw.b) #0.03438424 0.36673432
+mean(mean_by_formation_colony$sd.mpw.b) #0.1217314
+range(mean_by_formation_colony$sd.mpw.b) #0.03438424 0.36673432
 
-mean(mean_by_formation_colony1$sd.cw.m) #0.1490322
-range(mean_by_formation_colony1$sd.cw.m) #0.01840786 0.36565782
+mean(mean_by_formation_colony$sd.cw.m) #0.1490322
+range(mean_by_formation_colony$sd.cw.m) #0.01840786 0.36565782
 
-mean(mean_by_formation_colony1$sd.cw.d) #0.1103786
-range(mean_by_formation_colony1$sd.cw.d) #0.0219327 0.3552131
+mean(mean_by_formation_colony$sd.cw.d) #0.1103786
+range(mean_by_formation_colony$sd.cw.d) #0.0219327 0.3552131
 
-mean(mean_by_formation_colony1$sd.ow.m) #0.07753377
-range(mean_by_formation_colony1$sd.ow.m) #0.01233698 0.31205832
+mean(mean_by_formation_colony$sd.ow.m) #0.07753377
+range(mean_by_formation_colony$sd.ow.m) #0.01233698 0.31205832
 
-mean(mean_by_formation_colony1$sd.oh) #0.075358
-range(mean_by_formation_colony1$sd.oh) #0.0139018 0.2877568
+mean(mean_by_formation_colony$sd.oh) #0.075358
+range(mean_by_formation_colony$sd.oh) #0.0139018 0.2877568
 
-mean(mean_by_formation_colony1$sd.o.side) #0.08611018
-range(mean_by_formation_colony1$sd.o.side) #0.01430516 0.58861649
+mean(mean_by_formation_colony$sd.o.side) #0.08611018
+range(mean_by_formation_colony$sd.o.side) #0.01430516 0.58861649
 
-mean(mean_by_formation_colony1$sd.c.side) #0.132877
-range(mean_by_formation_colony1$sd.c.side) #0.0353629 0.4793441
+mean(mean_by_formation_colony$sd.c.side) #0.132877
+range(mean_by_formation_colony$sd.c.side) #0.0353629 0.4793441
 
 #means of means
 mean_by_formation = mean_by_formation_colony %>%
-  group_by(formation) %>%
-  summarize(num.col = length(unique(colony.id)),
+  dplyr::group_by(formation) %>%
+  dplyr::summarize(num.col = length(unique(colony.id)),
             num.zooid = sum(n.zooid),
             avg.zooid = mean(n.zooid),
             avg.zh = mean(avg.zh, na.rm = T),
@@ -312,8 +312,8 @@ write.csv(mean_by_formation,
           row.names = FALSE)
 
 colony_means = dat_lg_N %>%
-  group_by(colony.id) %>%
-  summarize(formation = formation[1],
+  dplyr::group_by(colony.id) %>%
+  dplyr::summarize(formation = formation[1],
             n.zooid = length(unique(zooid.id)),
             avg.zh = mean(ln.zh, na.rm = T),
             avg.mpw.b = mean(ln.mpw.b, na.rm = T),
@@ -326,7 +326,7 @@ colony_means = dat_lg_N %>%
   as.data.frame()
 
 means = dat_lg_N %>%
-  summarize(avg.zh = mean(ln.zh, na.rm = T),
+  dplyr::summarize(avg.zh = mean(ln.zh, na.rm = T),
             avg.mpw.b = mean(ln.mpw.b, na.rm = T),
             avg.cw.m = mean(ln.cw.m, na.rm = T),
             avg.cw.d = mean(ln.cw.d, na.rm = T),
@@ -368,7 +368,7 @@ means = dat_lg_N %>%
 #### CHECK SAMPLE SIZES ----
 ## number of zooids per colony
 range(mean_by_formation_colony$n.zooid)
-#4 53
+#5 24
 
 #check number of zooids NOT colonies:
 # by colonies use mean_by_formation_colony
@@ -898,9 +898,9 @@ g.eig_vect_mat = data.frame(g.eig_vect_mat,
 g.eig_vect = melt(g.eig_vect_mat)
 ggplot(g.eig_vect,
        aes(x = variable, y = value,
-           group = rep.rownames.g.eig_per_mat...8.,
-           colour = rep.rownames.g.eig_per_mat...8.)) +
-  geom_line(aes(linetype = rep.rownames.g.eig_per_mat...8.)) +
+           group = rownames,
+           colour = rownames)) +
+  geom_line(aes(linetype = rownames)) +
   geom_point() +
   xlab("Principal component vector") +
   ylab("%Variation in the PC")
@@ -1098,11 +1098,24 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
                     e.max = c(sumX_t1$Maximum[[1]], sumX_t2$Maximum[[1]], sumX_t3$Maximum[[1]],
                               sumX_t4$Maximum[[1]], sumX_t5$Maximum[[1]], sumX_t6$Maximum[[1]],
                               sumX_t7$Maximum[[1]]),
+                    observed_e = c(observed_evolvability_in_direction_of_change_t1,
+                                   observed_evolvability_in_direction_of_change_t2,
+                                   observed_evolvability_in_direction_of_change_t3,
+                                   observed_evolvability_in_direction_of_change_t4,
+                                   observed_evolvability_in_direction_of_change_t5,
+                                   observed_evolvability_in_direction_of_change_t6,
+                                   ""),
+                    observed_c = c(observed_conditional_evolvability_in_direction_of_change_t1,
+                                   observed_conditional_evolvability_in_direction_of_change_t2,
+                                   observed_conditional_evolvability_in_direction_of_change_t3,
+                                   observed_conditional_evolvability_in_direction_of_change_t4,
+                                   observed_conditional_evolvability_in_direction_of_change_t5,
+                                   observed_conditional_evolvability_in_direction_of_change_t6,
+                                   ""),
                     row.names = formation_list)
 
 write.csv(X_sum,
-          "./Results/evolvability_summary.csv",
-          row.names = FALSE)
+          "./Results/evolvability_summary.csv")
 
 # By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
 
