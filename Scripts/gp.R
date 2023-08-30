@@ -1081,6 +1081,24 @@ G_mat_SHCSBSB <- round(as.matrix(G_matrix_SHCSBSB), 10)
 is.symmetric.matrix(G_mat_SHCSBSB) #TRUE
 is.positive.definite(G_mat_SHCSBSB) #FALSE
 
+## correct for not being positive definite
+
+# Compute the Eigen decomposition of matrix X:
+eigen_decomp_NKLS <- eigen(G_mat_NKLS)
+
+# Modify eigenvalues:
+new_eigenvalues_NKLS <- eigen_decomp_NKLS$values
+new_eigenvalues_NKLS[7] <- 0
+new_eigenvalues_NKLS[8] <- 0
+
+# Create a new matrix with modified eigenvalues:
+modified_NKLS <- eigen_decomp_NKLS$vectors %*% diag(new_eigenvalues_NKLS) %*% solve(eigen_decomp_NKLS$vectors)
+
+# Back rotate the modified matrix to the original direction:
+restored_NKLS <- round(eigen_decomp_NKLS$vectors %*% diag(new_eigenvalues_NKLS) %*% solve(eigen_decomp_NKLS$vectors), 6)
+is.positive.definite(restored_NKLS) #FALSE
+
+
 #outputs e, r, c, a, i
 #e = evolvability
 #r = respondability
