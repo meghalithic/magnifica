@@ -63,6 +63,11 @@ sm.df <- read.csv("./Results/small.colonies.traits.csv",
                   sep = ",",
                   stringsAsFactors = FALSE)
 
+form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv",
+                      header = TRUE,
+                      sep = ",",
+                      stringsAsFactors = FALSE)
+
 #### PLOT THEME ----
 #formations and colors: 
 #NKLS = #F8766D
@@ -1047,68 +1052,42 @@ observed_conditional_evolvability_in_direction_of_change_t6 <- 1/(t(evolved_diff
 n_dimensions <- 8 # number of traits in G matrix
 Beta <- randomBeta(10000, n_dimensions)
 
+###### POSITIVE DEFINITE ------
 ## check positive definite
 # round to 10 decimals to make it symmetric
 # to make it positive definite, use extended matrix to fill in
 is.symmetric.matrix(Beta)
 is.positive.definite(Beta)
 
-G_mat_NKLS <- round(as.matrix(G_matrix_NKLS), 10)
+G_mat_NKLS <- round(as.matrix(G_matrix_NKLS), 6) #6 works better than 10
 is.symmetric.matrix(G_mat_NKLS) #TRUE
 is.positive.definite(G_mat_NKLS) #FALSE
 
-saveRDS(G_matrix_NKLS, file = "~/Desktop/NKLS_G_matrix.rds")
+#saveRDS(G_matrix_NKLS, file = "~/Desktop/NKLS_G_matrix.rds")
 
-G_mat_NKBS <- round(as.matrix(G_matrix_NKBS), 10)
+G_mat_NKBS <- round(as.matrix(G_matrix_NKBS), 6)
 is.symmetric.matrix(G_mat_NKBS) #TRUE
 is.positive.definite(G_mat_NKBS) #FALSE
 
-G_mat_tewk <- round(as.matrix(G_matrix_tewk), 10)
+G_mat_tewk <- round(as.matrix(G_matrix_tewk), 6)
 is.symmetric.matrix(G_mat_tewk) #TRUE
 is.positive.definite(G_mat_tewk) #FALSE
 
-G_mat_wai <- round(as.matrix(G_matrix_wai), 10)
+G_mat_wai <- round(as.matrix(G_matrix_wai), 6)
 is.symmetric.matrix(G_mat_wai) #TRUE
 is.positive.definite(G_mat_wai) #FALSE
 
-G_mat_uki <- round(as.matrix(G_matrix_uki), 10)
+G_mat_uki <- round(as.matrix(G_matrix_uki), 6)
 is.symmetric.matrix(G_mat_uki) #TRUE
 is.positive.definite(G_mat_uki) #FALSE
 
-G_mat_tai <- round(as.matrix(G_matrix_tai), 10)
+G_mat_tai <- round(as.matrix(G_matrix_tai), 6)
 is.symmetric.matrix(G_mat_tai) #TRUE
 is.positive.definite(G_mat_tai) #FALSE
 
-G_mat_SHCSBSB <- round(as.matrix(G_matrix_SHCSBSB), 10)
+G_mat_SHCSBSB <- round(as.matrix(G_matrix_SHCSBSB), 6)
 is.symmetric.matrix(G_mat_SHCSBSB) #TRUE
 is.positive.definite(G_mat_SHCSBSB) #FALSE
-
-###### POSITIVE DEFINITE ------
-## correct for not being positive definite
-
-# Compute the Eigen decomposition of matrix X:
-eigen_decomp_NKLS <- eigen(G_matrix_NKLS)
-
-# Modify eigenvalues:
-new_eigenvalues_NKLS <- eigen_decomp_NKLS$values
-new_eigenvalues_NKLS[7] <- 0
-new_eigenvalues_NKLS[8] <- 0
-new_eigenvalues_NKLS
-
-# Create a new matrix with modified eigenvalues and with the same rotation:
-modified_NKLS <- eigen_decomp_NKLS$vectors %*% diag(new_eigenvalues_NKLS) %*% solve(eigen_decomp_NKLS$vectors)
-#has negative values...
-eigen(modified_NKLS)
-#has negative values...
-modified_NKLS.sym <- round(as.matrix(modified_NKLS), 10) #still need to round it...
-is.positive.definite(modified_NKLS.sym) #FALSE
-
-# Create a new matrix with modified eigenvalues:
-modified_NKLS <- eigen_decomp_NKLS$vectors %*% diag(new_eigenvalues_NKLS) %*% solve(eigen_decomp_NKLS$vectors)
-
-# Back rotate the modified matrix to the original direction:
-restored_NKLS <- round(eigen_decomp_NKLS$vectors %*% diag(new_eigenvalues_NKLS) %*% solve(eigen_decomp_NKLS$vectors), 6)
-is.positive.definite(restored_NKLS) #FALSE
 
 #outputs e, r, c, a, i
 #e = evolvability
@@ -1209,7 +1188,7 @@ Gmax_uki_norm <- f.normalize_vector(Gmax_uki)
 Gmax_tai_norm <- f.normalize_vector(Gmax_tai)
 Gmax_SHCSBSB_norm <- f.normalize_vector(Gmax_SHCSBSB)
 
-##Compute angles
+###### ANGLES BETWEEN Gs ------
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm)
 # Calculate the angle in radians
@@ -1253,6 +1232,7 @@ angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #23.03
 
+###### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
 ### See if change is in direction of G max
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1)
@@ -1301,6 +1281,46 @@ angle_radians.Gmax_tai_max <- acos(dot_product.Gmax_tai_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai_max <- angle_radians.Gmax_tai_max * (180 / pi)
 #53.85211
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+# Calculate the angle in radians
+angle_radians.Gmax_SHCSBSB_max <- acos(dot_product.Gmax_SHCSBSB_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_SHCSBSB_max <- angle_radians.Gmax_SHCSBSB_max * (180 / pi)
+#57.73785
+
+angle_diff_Gmax_to_G <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_max,
+                          angle_degrees.Gmax_tewk_max, angle_degrees.Gmax_wai_max,
+                          angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
+                          angle_degrees.Gmax_SHCSBSB_max)
+
+form.meta$mean.age <- ""
+for(i in 1:nrow(form.meta)){
+  form.meta$mean.age[i] <- mean(form.meta$minAge[i], form.meta$maxAge[i])
+}
+
+age <- form.meta$mean.age[1:7]
+time.interval <- form.meta$ageRange[1:7]
+form <- c("NKBS", "NKLS","Tewksbury", "SHCSBSB",
+          "Tainui", "Upper Kai-Iwi", "Waipuru")
+
+phen.zh <- c(mean_by_formation$avg.zh[2], mean_by_formation$avg.zh[1], #put in order of formation data
+             mean_by_formation$avg.zh[3], mean_by_formation$avg.zh[7],
+             mean_by_formation$avg.zh[6], mean_by_formation$avg.zh[5],
+             mean_by_formation$avg.zh[4])
+
+df.diff <- as.data.frame(cbind(angle_diff_Gmax_to_G, phen.zh,
+                               age, time.interval, form))
+
+ggplot(data = df.diff) +
+  geom_point(aes(x = time.interval, y = angle_diff_Gmax_to_G))
+
+ggplot(data = df.diff) +
+  geom_point(aes(x = age, y = angle_diff_Gmax_to_G))
+
+ggplot(data = df.diff) +
+  geom_point(aes(x = time.interval, y = phen.zh))
 
 #### GLOBAL G ----
 
@@ -1482,7 +1502,7 @@ Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
 #Gmax_tai_norm
 #Gmax_SCHSBSB_norm
 
-##Compute angles
+###### ANGLES COMPARED TO GLOBAL G ------
 
 ## NKLS
 # Calculate the dot product of the unit vectors
