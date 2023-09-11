@@ -50,7 +50,11 @@ output$image <- gsub(".jpg",
                      output$fileName)
 
 zz <- output[duplicated(output$box_id),]
-nrow(zz) #13
+nrow(zz) #3
+zz
+#82_1405_433_617
+#598_1024_434_666
+#880_646_517_625
 
 output$new.id <- paste0(output$box_id, "_", output$image)
 xx <- output[duplicated(output$new.id),]
@@ -81,7 +85,7 @@ nrow(meta.images) #6443
 
 ## CHANGE DATE EXT EVERYTIME
 write.csv(meta.images,
-          "./Data/meta.images.4Aug2023.csv",
+          "./Data/meta.images.8Sept2023.csv",
           row.names = FALSE)
 
 #### OLD ----

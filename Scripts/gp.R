@@ -297,20 +297,27 @@ range(mean_by_formation_colony$sd.o.side) #0.01430516 0.58861649
 mean(mean_by_formation_colony$sd.c.side) #0.132877
 range(mean_by_formation_colony$sd.c.side) #0.0353629 0.4793441
 
-#means of means
-mean_by_formation = mean_by_formation_colony %>%
+mean_by_formation = traits.df %>%
   dplyr::group_by(formation) %>%
   dplyr::summarize(num.col = length(unique(colony.id)),
-            num.zooid = sum(n.zooid),
-            avg.zooid = mean(n.zooid),
-            avg.zh = mean(avg.zh, na.rm = T),
-            avg.mpw.b = mean(avg.mpw.b, na.rm = T),
-            avg.cw.m = mean(avg.cw.m, na.rm = T),
-            avg.cw.d = mean(avg.cw.d, na.rm = T),
-            avg.ow.m = mean(avg.ow.m, na.rm = T),
-            avg.oh = mean(avg.oh, na.rm = T),
-            avg.o.side = mean(avg.o.side, na.rm = T),
-            avg.c.side = mean(avg.c.side, na.rm = T)) %>%
+                   num.zooid = length(unique(zooid.id)),
+                   avg.zooid = ceiling(num.zooid/num.col), #round up to nearest integer
+                   avg.zh = mean(ln.zh, na.rm = T),
+                   sd.zh = sd(ln.zh, na.rm = T),
+                   avg.mpw.b = mean(ln.mpw.b, na.rm = T),
+                   sd.mpw.b = sd(ln.mpw.b, na.rm = T),
+                   avg.cw.m = mean(ln.cw.m, na.rm = T),
+                   sd.cw.m = sd(ln.cw.m, na.rm = T),
+                   avg.cw.d = mean(ln.cw.d, na.rm = T),
+                   sd.cw.d = sd(ln.cw.d, na.rm = T),
+                   avg.ow.m = mean(ln.ow.m, na.rm = T),
+                   sd.ow.m = sd(ln.ow.m, na.rm = T),
+                   avg.oh = mean(ln.oh, na.rm = T),
+                   sd.oh = sd(ln.oh, na.rm = T),
+                   avg.o.side = mean(ln.o.side, na.rm = T),
+                   sd.o.side = sd(ln.o.side, na.rm = T),
+                   avg.c.side = mean(ln.c.side, na.rm = T),
+                   sd.c.side = sd(ln.c.side, na.rm = T)) %>%
   as.data.frame()
 ## Grabowski & Porto claim sampling of 60 per sp...
 write.csv(mean_by_formation,
@@ -1056,8 +1063,6 @@ Beta <- randomBeta(10000, n_dimensions)
 ## check positive definite
 # round to 10 decimals to make it symmetric
 # to make it positive definite, use extended matrix to fill in
-is.symmetric.matrix(Beta)
-is.positive.definite(Beta)
 
 G_mat_NKLS <- round(as.matrix(G_matrix_NKLS), 6) #6 works better than 10
 is.symmetric.matrix(G_mat_NKLS) #TRUE
@@ -1089,6 +1094,49 @@ G_mat_SHCSBSB <- round(as.matrix(G_matrix_SHCSBSB), 6)
 is.symmetric.matrix(G_mat_SHCSBSB) #TRUE
 is.positive.definite(G_mat_SHCSBSB) #FALSE
 
+#Extend matrices
+G_matrix_NKLS_ext = ExtendMatrix(G_matrix_NKLS, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+G_mat_NKLS_ext <- round(as.matrix(G_matrix_NKLS_ext), 6)
+is.symmetric.matrix(G_mat_NKLS_ext) #TRUE
+is.positive.definite(G_mat_NKLS_ext) #TRUE
+
+G_matrix_NKBS_ext = ExtendMatrix(G_matrix_NKBS, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+G_mat_NKBS_ext <- round(as.matrix(G_matrix_NKBS_ext), 6)
+is.symmetric.matrix(G_mat_NKBS_ext) #TRUE
+is.positive.definite(G_mat_NKBS_ext) #TRUE
+
+G_matrix_tewk_ext = ExtendMatrix(G_matrix_tewk, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+G_mat_tewk_ext <- round(as.matrix(G_matrix_tewk_ext), 6)
+is.symmetric.matrix(G_mat_tewk_ext) #TRUE
+is.positive.definite(G_mat_tewk_ext) #TRUE
+
+G_matrix_wai_ext = ExtendMatrix(G_matrix_wai, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+G_mat_wai_ext <- round(as.matrix(G_matrix_wai_ext), 6)
+is.symmetric.matrix(G_mat_wai_ext) #TRUE
+is.positive.definite(G_mat_wai_ext) #TRUE
+
+G_matrix_uki_ext = ExtendMatrix(G_matrix_uki, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+G_mat_uki_ext <- round(as.matrix(G_matrix_uki_ext), 6)
+is.symmetric.matrix(G_mat_uki_ext) #TRUE
+is.positive.definite(G_mat_uki_ext) #TRUE
+
+G_matrix_tai_ext = ExtendMatrix(G_matrix_tai, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+G_mat_tai_ext <- round(as.matrix(G_matrix_tai_ext), 6)
+is.symmetric.matrix(G_mat_tai_ext) #TRUE
+is.positive.definite(G_mat_tai_ext) #TRUE
+
+G_matrix_SHCSBSB_ext = ExtendMatrix(G_matrix_SHCSBSB, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+G_mat_SHCSBSB_ext <- round(as.matrix(G_matrix_SHCSBSB_ext), 6)
+is.symmetric.matrix(G_mat_SHCSBSB_ext) #TRUE
+is.positive.definite(G_mat_SHCSBSB_ext) #TRUE
+
 #outputs e, r, c, a, i
 #e = evolvability
 #r = respondability
@@ -1100,25 +1148,25 @@ is.positive.definite(G_mat_SHCSBSB) #FALSE
 #conditional must be equal to or smaller than e; often much small
 
 # Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
-X_t1 <- evolvabilityBeta(as.matrix(G_matrix_NKLS), Beta)
+X_t1 <- evolvabilityBeta(as.matrix(G_mat_NKLS_ext), Beta)
 sumX_t1 <- summary(X_t1) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 
-X_t2 <- evolvabilityBeta(as.matrix(G_matrix_NKBS), Beta)
+X_t2 <- evolvabilityBeta(as.matrix(G_mat_NKBS_ext), Beta)
 sumX_t2 <- summary(X_t2) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 
-X_t3 <- evolvabilityBeta(as.matrix(G_matrix_tewk), Beta)
+X_t3 <- evolvabilityBeta(as.matrix(G_mat_tewk_ext), Beta)
 sumX_t3 <- summary(X_t3) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 
-X_t4 <- evolvabilityBeta(as.matrix(G_matrix_wai), Beta)
+X_t4 <- evolvabilityBeta(as.matrix(G_mat_wai_ext), Beta)
 sumX_t4 <- summary(X_t4) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 
-X_t5 <- evolvabilityBeta(as.matrix(G_matrix_uki), Beta)
+X_t5 <- evolvabilityBeta(as.matrix(G_mat_uki_ext), Beta)
 sumX_t5 <- summary(X_t5) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 
-X_t6 <- evolvabilityBeta(as.matrix(G_matrix_tai), Beta)
+X_t6 <- evolvabilityBeta(as.matrix(G_mat_tai_ext), Beta)
 sumX_t6 <- summary(X_t6) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 
-X_t7 <- evolvabilityBeta(as.matrix(G_matrix_SHCSBSB), Beta)
+X_t7 <- evolvabilityBeta(as.matrix(G_mat_SHCSBSB_ext), Beta)
 sumX_t7 <- summary(X_t7) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 
 X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sumX_t3$Averages[[3]],
@@ -1154,6 +1202,7 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
                                    observed_conditional_evolvability_in_direction_of_change_t6,
                                    ""),
                     row.names = formation_list)
+#ONE NEGATIVE VALUE
 
 write.csv(X_sum,
           "./Results/evolvability_summary.csv")
@@ -1162,22 +1211,22 @@ write.csv(X_sum,
 
 ### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
 #eigen(as.matrix(G_matrix_1))$values[1]/sum(eigen(as.matrix(G_matrix_1))$values)
-eigen(as.matrix(G_matrix_NKLS))$values[1]/sum(eigen(as.matrix(G_matrix_NKLS))$values) #0.4676502
-eigen(as.matrix(G_matrix_NKBS))$values[1]/sum(eigen(as.matrix(G_matrix_NKBS))$values) #0.5220323
-eigen(as.matrix(G_matrix_tewk))$values[1]/sum(eigen(as.matrix(G_matrix_tewk))$values) #0.5024787
-eigen(as.matrix(G_matrix_wai))$values[1]/sum(eigen(as.matrix(G_matrix_wai))$values) #0.400385
-eigen(as.matrix(G_matrix_uki))$values[1]/sum(eigen(as.matrix(G_matrix_uki))$values) #0.7530483
-eigen(as.matrix(G_matrix_tai))$values[1]/sum(eigen(as.matrix(G_matrix_tai))$values) #0.4238095
-eigen(as.matrix(G_matrix_SHCSBSB))$values[1]/sum(eigen(as.matrix(G_matrix_SHCSBSB))$values) #0.5006772
+eigen(as.matrix(G_mat_NKLS_ext))$values[1]/sum(eigen(as.matrix(G_mat_NKLS_ext))$values) #0.454485
+eigen(as.matrix(G_mat_NKBS_ext))$values[1]/sum(eigen(as.matrix(G_mat_NKBS_ext))$values) #0.5171315
+eigen(as.matrix(G_mat_tewk_ext))$values[1]/sum(eigen(as.matrix(G_mat_tewk_ext))$values) #0.4937812
+eigen(as.matrix(G_mat_wai_ext))$values[1]/sum(eigen(as.matrix(G_mat_wai_ext))$values) #0.3932543
+eigen(as.matrix(G_mat_uki_ext))$values[1]/sum(eigen(as.matrix(G_mat_uki_ext))$values) #0.7154235
+eigen(as.matrix(G_mat_tai_ext))$values[1]/sum(eigen(as.matrix(G_mat_tai_ext))$values) #0.4080192
+eigen(as.matrix(G_mat_SHCSBSB_ext))$values[1]/sum(eigen(as.matrix(G_mat_SHCSBSB_ext))$values) #0.4837174
 
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
-Gmax_NKLS <- eigen(G_matrix_NKLS)$vectors[,1]
-Gmax_NKBS <- eigen(G_matrix_NKBS)$vectors[,1]
-Gmax_tewk <- eigen(G_matrix_tewk)$vectors[,1]
-Gmax_wai <- eigen(G_matrix_wai)$vectors[,1]
-Gmax_uki <- eigen(G_matrix_uki)$vectors[,1]
-Gmax_tai <- eigen(G_matrix_tai)$vectors[,1]
-Gmax_SHCSBSB <- eigen(G_matrix_SHCSBSB)$vectors[,1]
+Gmax_NKLS <- eigen(G_mat_NKLS_ext)$vectors[,1]
+Gmax_NKBS <- eigen(G_mat_NKBS_ext)$vectors[,1]
+Gmax_tewk <- eigen(G_mat_tewk_ext)$vectors[,1]
+Gmax_wai <- eigen(G_mat_wai_ext)$vectors[,1]
+Gmax_uki <- eigen(G_mat_uki_ext)$vectors[,1]
+Gmax_tai <- eigen(G_mat_tai_ext)$vectors[,1]
+Gmax_SHCSBSB <- eigen(G_mat_SHCSBSB_ext)$vectors[,1]
 
 # Put Gmax to norm length
 Gmax_NKLS_norm <- f.normalize_vector(Gmax_NKLS)
@@ -1223,14 +1272,14 @@ dot_product.Gmax_uki_tai <- sum(Gmax_uki_norm * Gmax_tai_norm)
 angle_radians.Gmax_uki_tai <- acos(dot_product.Gmax_uki_tai)
 # Convert the angle to degrees
 angle_degrees.Gmax_uki_tai <- angle_radians.Gmax_uki_tai * (180 / pi)
-#32.69
+#32.69 THIS ONE CHANGED A BUNGE TO 147.30...?? (opposite of 180?)
 
 dot_product.Gmax_tai_SHCSBSB <- sum(Gmax_tai_norm * Gmax_SHCSBSB_norm)
 # Calculate the angle in radians
 angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
-#23.03
+#23.03 #AS DID THIS ONE 156.9671 (opposite of 180?)
 
 ###### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
 ### See if change is in direction of G max
@@ -1240,7 +1289,7 @@ dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length
 angle_radians.Gmax_NKLS_max <- acos(dot_product.Gmax_NKLS_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKLS_max <- angle_radians.Gmax_NKLS_max * (180 / pi)
-#73.14529
+#73.15
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_NKBS_max <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2)
@@ -1248,7 +1297,7 @@ dot_product.Gmax_NKBS_max <- sum(Gmax_NKBS_norm * evolved_difference_unit_length
 angle_radians.Gmax_NKBS_max <- acos(dot_product.Gmax_NKBS_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKBS_max <- angle_radians.Gmax_NKBS_max * (180 / pi)
-#36.81499
+#36.81
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_tewk_max <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3)
@@ -1256,7 +1305,7 @@ dot_product.Gmax_tewk_max <- sum(Gmax_tewk_norm * evolved_difference_unit_length
 angle_radians.Gmax_tewk_max <- acos(dot_product.Gmax_tewk_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_tewk_max <- angle_radians.Gmax_tewk_max * (180 / pi)
-#112.5576
+#112.56
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_wai_max <- sum(Gmax_wai_norm * evolved_difference_unit_length_t4)
@@ -1264,7 +1313,7 @@ dot_product.Gmax_wai_max <- sum(Gmax_wai_norm * evolved_difference_unit_length_t
 angle_radians.Gmax_wai_max <- acos(dot_product.Gmax_wai_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_wai_max <- angle_radians.Gmax_wai_max * (180 / pi)
-#153.9498
+#153.95
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t5)
@@ -1272,7 +1321,7 @@ dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t
 angle_radians.Gmax_uki_max <- acos(dot_product.Gmax_uki_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_uki_max <- angle_radians.Gmax_uki_max * (180 / pi)
-#156.753
+#156.75
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_tai_max <- sum(Gmax_tai_norm * evolved_difference_unit_length_t6)
@@ -1280,7 +1329,7 @@ dot_product.Gmax_tai_max <- sum(Gmax_tai_norm * evolved_difference_unit_length_t
 angle_radians.Gmax_tai_max <- acos(dot_product.Gmax_tai_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai_max <- angle_radians.Gmax_tai_max * (180 / pi)
-#53.85211
+#53.85 (NOW 126.15)
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
@@ -1288,27 +1337,26 @@ dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_
 angle_radians.Gmax_SHCSBSB_max <- acos(dot_product.Gmax_SHCSBSB_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_SHCSBSB_max <- angle_radians.Gmax_SHCSBSB_max * (180 / pi)
-#57.73785
+#57.74
 
 angle_diff_Gmax_to_G <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_max,
                           angle_degrees.Gmax_tewk_max, angle_degrees.Gmax_wai_max,
                           angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
                           angle_degrees.Gmax_SHCSBSB_max)
 
-form.meta$mean.age <- ""
-for(i in 1:nrow(form.meta)){
-  form.meta$mean.age[i] <- mean(form.meta$minAge[i], form.meta$maxAge[i])
+
+##### LOOK AT TRENDS AS A FUNCTION OF TIME ------
+form.df <- form.meta[1:7,] #in same order as mean_by_formation
+
+for(i in 1:nrow(form.df)){
+  form.df$mean.age[i] <- mean(form.df$Start_age[i], form.df$End_age[i], na.rm = TRUE)
 }
 
-age <- form.meta$mean.age[1:7]
-time.interval <- form.meta$ageRange[1:7]
-form <- c("NKBS", "NKLS","Tewksbury", "SHCSBSB",
-          "Tainui", "Upper Kai-Iwi", "Waipuru")
-
-phen.zh <- c(mean_by_formation$avg.zh[2], mean_by_formation$avg.zh[1], #put in order of formation data
-             mean_by_formation$avg.zh[3], mean_by_formation$avg.zh[7],
-             mean_by_formation$avg.zh[6], mean_by_formation$avg.zh[5],
-             mean_by_formation$avg.zh[4])
+form.df$age.range <- ""
+for(i in 1:nrow(form.df)){
+  form.df$age.range[i] <- form.df$Start_age[i] - form.df$End_age[i]
+}
+form.df$age.range <- as.numeric(form.df$age.range)
 
 df.diff <- as.data.frame(cbind(angle_diff_Gmax_to_G, phen.zh,
                                age, time.interval, form))
@@ -1318,9 +1366,6 @@ ggplot(data = df.diff) +
 
 ggplot(data = df.diff) +
   geom_point(aes(x = age, y = angle_diff_Gmax_to_G))
-
-ggplot(data = df.diff) +
-  geom_point(aes(x = time.interval, y = phen.zh))
 
 #### GLOBAL G ----
 

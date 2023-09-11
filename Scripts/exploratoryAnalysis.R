@@ -13,14 +13,32 @@ require(reshape2)
 require(lmodel2)
 require(tidyverse)
 
+#### SET UP ENV ----
+
+col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
+             "#00A9FF", "#C77CFF", "#FF61CC")
+
+
+col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
+               "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
+
 #### LOAD DATA ----
-images.meta <- read.csv("./Data/meta.images.4Aug2023.csv",
+images.meta <- read.csv("./Data/meta.images.8Sept2023.csv",
                    header = TRUE,
                    sep = ",")
 
 df.filter <- read.table("./Data/filteredImages.csv",
                         header = TRUE,
                         sep = ";")
+
+form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv",
+                      header = TRUE)
+
+oxy.18 <- read.csv("Data/∂18O.csv",
+                   header = TRUE)
+
+locality.df <- read.csv("Data/All.NZ.Samples_EDM_31.07.2023_sheet1.csv",
+                        header = TRUE)
 
 #### EXPLORE DATA ----
 nrow(df.filter) #1834
@@ -111,7 +129,7 @@ p.o.side.rl <- ggplot() +
   scale_y_continuous(name = "Operculum Length Right Side (pixels)") +
   scale_x_continuous(name = "Operculum Length Left Side (pixels)")
 
-#ggsave(p.o.side.rl, file = "./Results/operculum_length.png", width = 14, height = 10, units = "cm")
+ggsave(p.o.side.rl, file = "./Results/operculum_length.png", width = 14, height = 10, units = "cm")
 
 summary(lm(o.side.r ~ o.side.l)) 
 # slope = 0.912352; p-value < 2.2e-16; r2 = 0.9494
@@ -160,7 +178,7 @@ p.c.side.rl <- ggplot() +
   scale_y_continuous(name = "Cryptocyst Length Right Side (pixels)") +
   scale_x_continuous(name = "Cryptocyst Length Left Side (pixels)")
 
-#ggsave(p.c.side.rl, file = "./Results/cryptocyst_length.png", width = 14, height = 10, units = "cm")
+ggsave(p.c.side.rl, file = "./Results/cryptocyst_length.png", width = 14, height = 10, units = "cm")
 
 summary(lm(c.side.r ~ c.side.l)) 
 # slope = 0.867776; p-value: < 2.2e-16; r2 = 0.7858
@@ -202,10 +220,6 @@ traits.df <- data.frame(boxID = images.filter$box_id,
                         zh.zw = zh/cw.d, #similar to LZ/WZ
                         oh.ow = oh/ow.m) # similar to LO/WO 
 
-#write.csv(traits.df,
-#          "./Results/traits_4Aug2023.csv",
-#          row.names = FALSE)
-
 ##### LN TRANSFORM -----
 traits.df$ln.zh <- log(traits.df$zh)
 traits.df$ln.mpw.b <- log(traits.df$mpw.b)
@@ -216,25 +230,37 @@ traits.df$ln.oh <- log(traits.df$oh)
 traits.df$ln.o.side <- log(traits.df$o.side)
 traits.df$ln.c.side <- log(traits.df$c.side)
 
+#write.csv(traits.df,
+#          "./Results/traits_8Sept2023.csv",
+#          row.names = FALSE)
+
 traits = names(traits.df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
                              "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
 
-##### FILTER -----
+##### SUMMARY STATS & FILTER -----
 # 5 zooid per colony minimum
 traits.df$zooid.id <- paste0(traits.df$boxID, "_", traits.df$image)
 colnames(traits.df)[colnames(traits.df) == 'specimenNR'] <- 'colony.id'
 
 mean_by_formation_colony = traits.df %>% #use this going forward
-  group_by(formation, colony.id) %>%
-  summarize(n.zooid = length(unique(zooid.id)),
+  dplyr::group_by(formation, colony.id) %>%
+  dplyr::summarize(n.zooid = length(unique(zooid.id)),
             avg.zh = mean(ln.zh, na.rm = T),
+            sd.zh = sd(ln.zh, na.rm = T),
             avg.mpw.b = mean(ln.mpw.b, na.rm = T),
+            sd.mpw.b = sd(ln.mpw.b, na.rm = T),
             avg.cw.m = mean(ln.cw.m, na.rm = T),
+            sd.cw.m = sd(ln.cw.m, na.rm = T),
             avg.cw.d = mean(ln.cw.d, na.rm = T),
+            sd.cw.d = sd(ln.cw.d, na.rm = T),
             avg.ow.m = mean(ln.ow.m, na.rm = T),
+            sd.ow.m = sd(ln.ow.m, na.rm = T),
             avg.oh = mean(ln.oh, na.rm = T),
+            sd.oh = sd(ln.oh, na.rm = T),
             avg.o.side = mean(ln.o.side, na.rm = T),
-            avg.c.side = mean(ln.c.side, na.rm = T)) %>%
+            sd.o.side = sd(ln.o.side, na.rm = T),
+            avg.c.side = mean(ln.c.side, na.rm = T),
+            sd.c.side = sd(ln.c.side, na.rm = T)) %>%
   as.data.frame()
 nrow(mean_by_formation_colony) #731
 
@@ -244,16 +270,81 @@ length(keep) #572 colonies
 df <- traits.df[traits.df$colony.id %in% keep,]
 nrow(df) #5971
 
+mean_by_formation_colony.keep <- mean_by_formation_colony[mean_by_formation_colony$n.zooid >= 5,]
+
+mean_by_formation = df %>%
+  dplyr::group_by(formation) %>%
+  dplyr::summarize(num.col = length(unique(colony.id)),
+                   num.zooid = length(unique(zooid.id)),
+                   avg.zooid = ceiling(num.zooid/num.col), #round up to nearest integer
+                   avg.zh = mean(ln.zh, na.rm = T),
+                   sd.zh = sd(ln.zh, na.rm = T),
+                   avg.mpw.b = mean(ln.mpw.b, na.rm = T),
+                   sd.mpw.b = sd(ln.mpw.b, na.rm = T),
+                   avg.cw.m = mean(ln.cw.m, na.rm = T),
+                   sd.cw.m = sd(ln.cw.m, na.rm = T),
+                   avg.cw.d = mean(ln.cw.d, na.rm = T),
+                   sd.cw.d = sd(ln.cw.d, na.rm = T),
+                   avg.ow.m = mean(ln.ow.m, na.rm = T),
+                   sd.ow.m = sd(ln.ow.m, na.rm = T),
+                   avg.oh = mean(ln.oh, na.rm = T),
+                   sd.oh = sd(ln.oh, na.rm = T),
+                   avg.o.side = mean(ln.o.side, na.rm = T),
+                   sd.o.side = sd(ln.o.side, na.rm = T),
+                   avg.c.side = mean(ln.c.side, na.rm = T),
+                   sd.c.side = sd(ln.c.side, na.rm = T)) %>%
+  as.data.frame()
+
 ##### ABOUT TRAITS -----
+###### RANGE -------
+range(df$zh)
+#266.3675 1701.3353
+range(df$zh[df$formation == "NKLS"]) #450.4467 1701.3353; smallest are 26% of biggest
+range(df$zh[df$formation == "NKBS"]) #266.3675 1495.0723; smallest are 17% size of biggest
+range(df$zh[df$formation == "Tewkesbury"]) #330.5689 1668.3389; smallest are 19% size of biggest
+range(df$zh[df$formation == "Waipuru"]) #326.9368 1361.0060; smallest are 24% size of biggest
+range(df$zh[df$formation == "Upper Kai-Iwi"]) #331.6873 1362.1250; smallest are 24% size of biggest
+range(df$zh[df$formation == "Tainui"]) #592.3886 1203.1921; smallest are 50% size of biggest
+range(df$zh[df$formation == "SHCSBSB"]) #418.482 1333.873; smallest are 30% size of biggest
 
-nrow(images.filter) #6438
-nrow(df) #5971
+mean(df$zh)
+median(df$zh)
 
+mean(df$zh[df$formation == "NKLS"])
+median(df$zh[df$formation == "NKLS"])
+
+mean(df$zh[df$formation == "NKBS"])
+median(df$zh[df$formation == "NKBS"])
+
+mean(df$zh[df$formation == "Tewkesbury"])
+median(df$zh[df$formation == "Tewkesbury"])
+
+mean(df$zh[df$formation == "Waipuru"])
+median(df$zh[df$formation == "Waipuru"])
+
+mean(df$zh[df$formation == "Upper Kai-Iwi"])
+median(df$zh[df$formation == "Upper Kai-Iwi"])
+
+mean(df$zh[df$formation == "Tainui"])
+median(df$zh[df$formation == "Tainui"])
+
+mean(df$zh[df$formation == "SHCSBSB"])
+median(df$zh[df$formation == "SHCSBSB"])
+
+#colonies with little humps: MORE THAN HALF THE SIZE
+#NKBS --> 17% size of biggest
+#Waipuru --> 24% size of biggest
+#Upper Kai-Iwi --> 24% size of biggest
+#NKLS are also small, but don't see hump....
+#for a size difference of 1228.705, would need a temp diff of 204.7842C??? Doesn't make sense
+#based that calculation off of temp.R in Dropbox/ROCKS-PARADOX/Bryozoans
+
+###### DISTRIBUTION ------
 traits.melt <- melt(data = df,
                     id.vars = c("boxID", "zooid.id","imageName", "colony.id", "formation", "magnification"),
                     variable.name = "measurementType",
                     value.name = "measurementValue")
-length(unique(traits.melt$colony.id)) #572 unique colonies [previously 742]
+length(unique(traits.melt$colony.id)) #731 unique colonies [previously 742]
 
 traits.stats <- traits.melt %>%
   group_by(measurementType) %>%
@@ -263,7 +354,6 @@ traits.stats.form <- traits.melt %>%
   group_by(measurementType, formation) %>%
   summarise(avg = mean(measurementValue))
 
-##### HISTOGRAM -----
 
 p.dist <- ggplot(traits.melt) +
   geom_density(aes(x = log(measurementValue),
@@ -275,9 +365,9 @@ p.dist <- ggplot(traits.melt) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN trait measurement (pixels)")
 
-ggsave(p.dist, file = "./Results/trait_distribution_4Aug2023.png", width = 14, height = 10, units = "cm")
+ggsave(p.dist, file = "./Results/trait_distribution_8Sept2023.png", width = 14, height = 10, units = "cm")
 
-###### BIMODALITY ------  
+##### BIMODALITY -----
 ##explore bimodality, using zooid height as an example then see if it generalizes
 p.ln.zh <- ggplot(df) +
   geom_density(aes(x = ln.zh)) +
@@ -287,7 +377,7 @@ p.ln.zh <- ggplot(df) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN Zooid Height")
 
-#ggsave(p.zh, file = "./Results/zooid_height_4Aug2023.png", width = 14, height = 10, units = "cm")
+#ggsave(p.zh, file = "./Results/zooid_height_8Sept2023.png", width = 14, height = 10, units = "cm")
 
 ##driven by FORMATION?
 #all but Punneki Limestone are bimodal
@@ -301,33 +391,11 @@ p.zh.form <- ggplot(df) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN Zooid Height")
 
-#ggsave(p.zh.form, file = "./Results/zooid_height_by_formation_4Aug2023.png", width = 14, height = 10, units = "cm")
+#ggsave(p.zh.form, file = "./Results/zooid_height_by_formation_8Sept2023.png", width = 14, height = 10, units = "cm")
 
 #only see bimodal in Waipurpu, NKBS, Upper Kai-Iwi
 
-##driven by MAGNIFICATION?
-#note: previously had different magnifications, this is not the case anymore
-#not that I can tell...
-p.zh.mag <- ggplot(df) +
-  geom_density(aes(x = ln.zh,
-                   group = magnification,
-                   col = magnification)) + 
-  ggtitle(paste0("Zooid height by magnification, N zooids = ", nrow(df), ", N colony = ", length(keep))) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  scale_y_continuous(name = "Density") +
-  scale_x_continuous(name = "LN Zooid Height")
-
-#ggsave(p.zh.mag, file = "./Results/zooid_height_by_magnification.png", width = 14, height = 10, units = "cm")
-##doesn't seem to affect it, still get it with mag == 30 only
-
-##what does it look like if all magnification is the same?
-#still get bimodal hump
-
-nrow(df[df$magnification == "x30",]) #6815
-length(unique(df$colony.id[df$magnification == "x30"])) #604
-
-##SAME INDIVIDUALS & COLONIES?
+###### SAME INDIVIDUALS & COLONIES? ------
 ## really convince self that these are the same individuals
 # make data more manageable by reducing it to the three formations
 # make data even more manageable by reducing it to the small hump that is seen
@@ -335,8 +403,8 @@ nk.wa.uki <- df[df$formation == "NKBS" |
                 df$formation == "Waipuru" |
                 df$formation == "Upper Kai-Iwi",]
 sm.zoo <- nk.wa.uki[nk.wa.uki$ln.zh <= 6.25,]
-nrow(sm.zoo) #543 (was 943) zooids
-length(unique(sm.zoo$colony.id)) #36 (was 64) colonies
+nrow(sm.zoo) #492 (was 943) zooids
+length(unique(sm.zoo$colony.id)) #34 (was 64) colonies
 table(sm.zoo$colony.id) #a lot of one offs, but some clusters
 ## look at a couple of these:
 sm.zoo[sm.zoo$colony.id == "077CV",]
@@ -391,7 +459,7 @@ imgj_273$scale.zh <- imgj_273$Length/.606
 imgj_273$ln.zh <- log(imgj_273$scale.zh)
 imgj_273$ln.zh #all small!
 
-#### SMALL HUMP ----
+##### SMALL HUMP -----
 # know that these are all related, use zh as test
 ## test where hump is...
 # frequency by size bin (quarter ln bins)
@@ -400,14 +468,14 @@ df.bins <- df %>%
   as.data.frame()
 
 df.bin.f <- df.bins %>%
-  group_by(zh.bin) %>%
-  summarise(n = n()) %>%
+  dplyr::group_by(zh.bin) %>%
+  dplyr::summarise(n = n()) %>%
   as.data.frame()
 View(df.bin.f)
 #(6.2,6.3]
 #6.25 like I eyeballed
 write.csv(df.bin.f,
-          "./Results/zh.bin.frequency.csv",
+          "./Results/zh.bin.frequency_8Sept2023.csv",
           row.names = FALSE)
 
 sm.traits <- df[df$ln.zh < 6.25,]
@@ -424,13 +492,13 @@ df.bins$sm[df.bins$zh.bin %in% bins] <- TRUE
 
 #look at proportions
 prop.sm <- df.bins %>% 
-  group_by(colony.id) %>%
-  summarise(n.zooid = length(zooid.id),
+  dplyr::group_by(colony.id) %>%
+  dplyr::summarise(n.zooid = length(zooid.id),
             n.sm.zooid = sum(sm),
             prop.sm = n.sm.zooid/n.zooid)
 View(prop.sm)
 write.csv(prop.sm,
-          "./Results/proportion.small.colonies.csv",
+          "./Results/proportion.small.colonies_8Sept2023.csv",
           row.names = FALSE)
 
 #goes from 100% to 20%; perhaps make 20% the cut off
@@ -445,31 +513,48 @@ sm.zooids <- prop.sm$colony.id[prop.sm$prop.sm < 1 &
                                  prop.sm$prop.sm > 0]
 length(sm.zooids) #19
 
-range(df$ln.zh[df$colony.id %in% sm.zooids])
-#5.800815 7.439169
+range(df$zh[df$colony.id %in% sm.zooids])
+#330.5689 1701.3353
 sort(df$ln.zh[df$colony.id %in% sm.zooids])
 #only 11 below 6.25, so probably fine
 
 ##### WRITE OUT TWO DATASETS ----
 write.csv(small.colonies,
-          "./Results/small.colonies.traits.csv",
+          "./Results/small.colonies.traits_8Sept2023.csv",
           row.names = FALSE)
 
 write.csv(reg.colonies,
-          "./Results/colonies.traits.csv",
+          "./Results/colonies.traits_8Sept2023.csv",
           row.names = FALSE)
 
-##### CORRELATIONS & ALLOMETRIES -----
+range(reg.colonies$zh)
+range(small.colonies$zh)
+
+range(reg.colonies$zh[reg.colonies$formation == "NKBS"])
+range(small.colonies$zh[small.colonies$formation == "NKBS"])
+mean(reg.colonies$zh[reg.colonies$formation == "NKBS"])
+mean(small.colonies$zh[small.colonies$formation == "NKBS"])
+median(reg.colonies$zh[reg.colonies$formation == "NKBS"])
+median(small.colonies$zh[small.colonies$formation == "NKBS"])
+
+range(reg.colonies$zh[reg.colonies$formation == "Waipuru"])
+range(small.colonies$zh[small.colonies$formation == "Waipuru"])
+mean(reg.colonies$zh[reg.colonies$formation == "Waipuru"])
+mean(small.colonies$zh[small.colonies$formation == "Waipuru"])
+median(reg.colonies$zh[reg.colonies$formation == "Waipuru"])
+median(small.colonies$zh[small.colonies$formation == "Waipuru"])
+
+range(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"])
+range(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"])
+mean(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"])
+mean(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"])
+median(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"])
+median(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"])
+
+#### CORRELATIONS & ALLOMETRIES ----
 ## are these coming from the same individuals??
 ## ask KLV for other metadata for sites
 ## OH hump is on the other side
-
-col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
-             "#00A9FF", "#C77CFF", "#FF61CC")
-
-
-col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
-               "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
 
 ggplot(data = df) +
   geom_smooth(aes(x = df[, traits[1]],
@@ -592,10 +677,223 @@ ggplot(data = df) +
 summary(lm(df[, traits[7]] ~ df[, traits[1]]))
 #slope = 1.092931; p-value < 2.2e-16; r2 = 0.8933
 
+#### LOOK AT CHANGES OVER TIME AND BETWEEN FORMATIONS ------
+## Add meta data
+form.df <- form.meta[1:7,] #in same order as mean_by_formation
+
+for(i in 1:nrow(form.df)){
+  form.df$mean.age[i] <- mean(form.df$Start_age[i], form.df$End_age[i], na.rm = TRUE)
+}
+
+form.df$age.range <- ""
+for(i in 1:nrow(form.df)){
+  form.df$age.range[i] <- form.df$Start_age[i] - form.df$End_age[i]
+}
+form.df$age.range <- as.numeric(form.df$age.range)
+
+mean_by_formation.meta <- merge(mean_by_formation, form.df,
+                                by.x = "formation",
+                                by.y = "formationCode")
+
+## overall differnce in zooid height
+mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"]
+#-0.1514114 (decrease in length)
+mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "SHCSBSB"]
+#-0.1479244 (decrease in width)
+
+##between formations
+mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "NKBS"]
+#0.1162435 (1.123269 diff)
+mean_by_formation$avg.zh[mean_by_formation$formation == "NKBS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Tewkesbury"]
+#-0.08700402 (0.9166734 diff)
+mean_by_formation$avg.zh[mean_by_formation$formation == "Tewkesbury"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Waipuru"]
+#0.06027717 (1.062131 diff)
+mean_by_formation$avg.zh[mean_by_formation$formation == "Waipuru"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Upper Kai-Iwi"]
+#0.01439653 (1.014501 diff)
+mean_by_formation$avg.zh[mean_by_formation$formation == "Upper Kai-Iwi"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Tainui"]
+#-0.2706406 (0.7628906 diff)
+mean_by_formation$avg.zh[mean_by_formation$formation == "Tainui"] - mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"]
+#0.01531607 (1.015434 diff)
+
+## how is sd a function of sample size (number of zooids and number of colonies)?
+#plot sd per colony by zooid no
+ggplot(mean_by_formation_colony) + 
+  geom_point(aes(x = n.zooid, y = sd.zh,
+                 col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = "Number of Zooids per Colony") +
+  scale_y_continuous(name = "Zooid Height SD") +
+  scale_color_manual(values = col.form)
+
+#plot sd per formation by colony no
+ggplot(mean_by_formation) + 
+  geom_point(aes(x = num.col, y = sd.zh,
+                 col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = "Number of Colonies per Colony") +
+  scale_y_continuous(name = "Zooid Height SD") +
+  scale_color_manual(values = col.form)
+
+anova(lm(mean_by_formation$sd.zh ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+
+#### LOOK AT TRENDS OVER TIME ----
+#use formation means
+#mean_by_formation
+
+ggplot(data = mean_by_formation.meta) +
+  geom_point(aes(x = age.range, y = avg.zh,
+                 col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = "Age Range (Ma)") +
+  scale_y_continuous(name = "Average Zooid Height (um)") +
+  scale_color_manual(values = col.form)
+
+ggplot(data = mean_by_formation.meta) +
+  geom_point(aes(x = mean.age, y = avg.zh,
+                 col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = "Age (Ma)") +
+  scale_y_continuous(name = "Average Zooid Height (um)") +
+  scale_color_manual(values = col.form)
 
 
+#### LOOK AT TRENDS RELATIVE TO LOCALITY ----
+#use colony means
+#mean_by_formation_colony
+list.imageName <- str_split(df$imageName, fixed("_"))
+df$specimenNum <- c()
+for(i in 1:length(list.imageName)){
+  df$specimenNum[i] <- list.imageName[[i]][1]
+}
+df$specimenNum
+#remove all leading 0s
+df$specimenNum <- str_remove(df$specimenNum, "^0+")
+
+length(unique(df$specimenNum)) #566
+
+locality.df$SAMPLE_ID 
+length(unique(locality.df$SAMPLE_ID)) #531
+nrow(locality.df) #538
+# need to remove dupes
+dupe.ids <- locality.df$SAMPLE_ID[duplicated(locality.df$SAMPLE_ID)]
+#"115B"  "9.44"  "118"   "119"   "161"   "9.148" "9.95" 
+# don't have 115B, 9.44, 9.148, 9.95 in df
+# do have 118, 119, 161 in df
+dupe.rid.ids <- c("115B", "9.148", "9.95", "9.44")
+dupe.keep.ids <- c("118", "119", "161")
+locality.df[locality.df$SAMPLE_ID %in% dupe.keep.ids,]
+#118 from WABO I and II, different formations, can probably keep NKBS and not Landguard (esp since KV collected at NKBS)
+#119 from WABO I and II, different formations, can probably keep NKBS and not Landguard (esp since KV collected at NKBS)
+#161 both from WABO II, different formations, can probably keep Upper Castlecliff rather than Denby
+
+locality.df.trim <- locality.df[-c(170, 171, 241),] #eliminate based on idnex
+locality.df.trim[locality.df.trim$SAMPLE_ID %in% dupe.keep.ids,]
+locality.df.trim <-  locality.df.trim[!(locality.df.trim$SAMPLE_ID %in% dupe.rid.ids),]
+locality.df.trim[locality.df.trim$SAMPLE_ID %in% dupe.rid.ids,] #empty, few
+
+loc.df.trim <- locality.df.trim %>%
+  dplyr::select("Expedition", "SAMPLE_ID", "Formation_name",
+         "GPS.lat", "GPS.long", "Physical.Description")
+
+df.loc <- merge(df, loc.df.trim,
+                by.x = "specimenNum",
+                by.y = "SAMPLE_ID",
+                all.x = TRUE, all.y = FALSE)
+nrow(df.loc) #5971, same number as df
+
+missing.loc <- c(unique(df.loc$specimenNum[is.na(df.loc$GPS.lat)]), unique(df.loc$specimenNum[df.loc$GPS.lat == ""]))
+length(missing.loc) #357
+#300: whiterock limestone, but we have it as NKBS (from WABO III)
+length(df.loc$specimenNum[df.loc$specimenNum %in% missing.loc]) #3510
+
+length(unique(df.loc$specimenNum[df.loc$specimenNum %in% missing.loc &
+                                   df.loc$formation == "NKLS"])) #65
+length(unique(df.loc$specimenNum[df.loc$specimenNum %in% missing.loc &
+                                   df.loc$formation == "NKBS"])) #87
+length(unique(df.loc$specimenNum[df.loc$specimenNum %in% missing.loc &
+                                   df.loc$formation == "Tewkesbury"])) #106
+length(unique(df.loc$specimenNum[df.loc$specimenNum %in% missing.loc &
+                                   df.loc$formation == "Waipuru"])) #11
+length(unique(df.loc$specimenNum[df.loc$specimenNum %in% missing.loc &
+                                   df.loc$formation == "Upper Kai-Iwi"])) #18
+length(unique(df.loc$specimenNum[df.loc$specimenNum %in% missing.loc &
+                                   df.loc$formation == "Tainui"])) #19
+length(unique(df.loc$specimenNum[df.loc$specimenNum %in% missing.loc &
+                                   df.loc$formation == "SHCSBSB"])) #50
+
+length(unique(df.loc$specimenNum[df.loc$GPS.lat != "" & 
+                                   !is.na(df.loc$GPS.lat)])) #210 for which have info; less than half
+
+## are the small ones in certain localities?
+df.loc$size <- ""
+df.loc$size[df.loc$ln.zh <= 6.25] <- "small"
+
+nkbs.loc <- unique(df.loc$GPS.lat[df.loc$formation == "NKBS"])
+nkbs.sm.loc <- unique(df.loc$GPS.lat[df.loc$formation == "NKBS" &
+                                      df.loc$size == "small"]) #18 localities with small zooids
+setdiff(nkbs.sm.loc, nkbs.loc) #no diff, so all the small localities are also in the regular localities
+length(nkbs.loc) #125
+length(setdiff(nkbs.loc, nkbs.sm.loc)) #107 localities without small zooids
+
+wai.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Waipuru"])
+wai.sm.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Waipuru" &
+                                       df.loc$size == "small"]) #1 localities with small zooids
+setdiff(wai.sm.loc, wai.loc) #no diff, so all the small localities are also in the regular localities
+length(wai.loc) #6
+length(setdiff(wai.loc, wai.sm.loc)) #5 localities without small zooids
 
 
+uki.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Upper Kai-Iwi"])
+uki.sm.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Upper Kai-Iwi" &
+                                       df.loc$size == "small"]) #4 localities with small zooids
+setdiff(uki.sm.loc, uki.loc) #no diff, so all the small localities are also in the regular localities
+length(uki.loc) #7
+length(setdiff(uki.loc, uki.sm.loc)) #3 localities without small zooids
+
+#### LOOK AT TRENDS RELATIVE TO SUBSTRATE ----
+
+
+#### LOOK AT TRENDS RELATIVE TO TEMPERATURE ----
+#use formation means
+#mean_by_formation
+
+df.form <- merge(df, form.meta,
+                 by.x = "formation",
+                 by.y = "formationCode",
+                 all.x = TRUE,
+                 all.y = FALSE)
+
+bottom = as.numeric(df.form$Isotope_Stage_Start)
+top = as.numeric(df.form$Isotope_Stage_End)
+df.form$med.O18 <- c()
+df.form$sd.med.O18 <- c()
+df.form$n.O18 <- c()
+for (i in 1:nrow(df.form)){
+  temp = oxy.18$d18O[which(oxy.18$Time <= bottom[i] & oxy.18$Time >= top[i])]
+  df.form$med.O18[i] = median(temp)
+  df.form$sd.med.O18[i] = sd(temp)
+  df.form$n.O18[i] <- length(temp)
+}
+
+unique(df.form$med.O18)
+
+ggplot(df.form) +
+  geom_point(aes(x = med.O18, y = ln.zh)) + 
+  theme(text = element_text(size = 16)) +
+  scale_x_continuous(name = "mean Delta O18") +
+  scale_y_continuous(name = "LN Zooid Height")
+#NO PATTERN
+
+ggplot(df.form) +
+  geom_point(aes(x = sd.med.O18, y = ln.zh)) + 
+  theme(text = element_text(size = 16)) +
+  scale_x_continuous(name = "sd Delta O18") +
+  scale_y_continuous(name = "LN Zooid Height")
+#NO PATTERN
 
 #### OLD ----
 noPath <- output$id
