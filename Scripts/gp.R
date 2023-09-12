@@ -297,7 +297,7 @@ range(mean_by_formation_colony$sd.o.side) #0.01430516 0.58861649
 mean(mean_by_formation_colony$sd.c.side) #0.132877
 range(mean_by_formation_colony$sd.c.side) #0.0353629 0.4793441
 
-mean_by_formation = traits.df %>%
+mean_by_formation = dat_lg_N %>%
   dplyr::group_by(formation) %>%
   dplyr::summarize(num.col = length(unique(colony.id)),
                    num.zooid = length(unique(zooid.id)),
@@ -701,15 +701,9 @@ diag(g.corr_mat) = 1
 paste("Random Skewers similarity matrix")
 corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 
-#### CORR OF G & P ----
+#### CHECK P > G ----
 
-#Gmat
-#Pmat
-
-formation_list
-
-###### PLOT DIAGONALS -----
-
+## PLOT DIAGONALS
 plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      pch = 19, col = col.form[1],
      xlab = "G non-standardized diagonal",
@@ -772,57 +766,7 @@ plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
 abline(0, 1) # looks good!
 summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) #p-value: 0.01981 *
 
-##### RANDOM SKEWERS OF P & G OF EACH FORMATION -----
-#NKLS
-NKLS_comp_mat = RandomSkewers(list(G_ext[[1]], P_ext[[1]])) #need at least
-NKLS_corr_mat = NKLS_comp_mat$correlations + t(NKLS_comp_mat$correlations) 
-diag(NKLS_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(NKLS_corr_mat, upper = "number", lower = "pie")
-
-#NKBS
-NKBS_comp_mat = RandomSkewers(list(G_ext[[2]], P_ext[[2]])) #need at least
-NKBS_corr_mat =NKBS_comp_mat$correlations + t(NKBS_comp_mat$correlations) 
-diag(NKBS_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(NKBS_corr_mat, upper = "number", lower = "pie")
-
-#Tewkesbury
-Tewkesbury_comp_mat = RandomSkewers(list(G_ext[[3]], P_ext[[3]])) #need at least
-Tewkesbury_corr_mat = Tewkesbury_comp_mat$correlations + t(Tewkesbury_comp_mat$correlations) 
-diag(Tewkesbury_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(Tewkesbury_corr_mat, upper = "number", lower = "pie")
-
-#Waipuru
-Waipuru_comp_mat = RandomSkewers(list(G_ext[[4]], P_ext[[4]])) #need at least
-Waipuru_corr_mat = Waipuru_comp_mat$correlations + t(Waipuru_comp_mat$correlations) 
-diag(Waipuru_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(Waipuru_corr_mat, upper = "number", lower = "pie")
-
-#Upper Kai-Iwi
-UKai_Iwi_comp_mat = RandomSkewers(list(G_ext[[5]], P_ext[[5]])) #need at least
-UKai_Iwi_corr_mat = UKai_Iwi_comp_mat$correlations + t(UKai_Iwi_comp_mat$correlations) 
-diag(UKai_Iwi_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(UKai_Iwi_corr_mat, upper = "number", lower = "pie")
-
-#Tainui
-Tainui_comp_mat = RandomSkewers(list(G_ext[[6]], P_ext[[6]])) #need at least
-Tainui_corr_mat = Tainui_comp_mat$correlations + t(Tainui_comp_mat$correlations) 
-diag(Tainui_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(Tainui_corr_mat, upper = "number", lower = "pie")
-
-#SHCSBSB
-SHCSBSB_comp_mat = RandomSkewers(list(G_ext[[7]], P_ext[[7]])) #need at least
-SHCSBSB_corr_mat = SHCSBSB_comp_mat$correlations + t(SHCSBSB_comp_mat$correlations) 
-diag(SHCSBSB_corr_mat) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(SHCSBSB_corr_mat, upper = "number", lower = "pie")
-
-##### COMPARISON OF PC1 AND PC2 OF P & G OF EACH FORMATION -----
+## COMPARISON OF PC1 AND PC2 OF P & G OF EACH FORMATION
 g.eig_variances
 p.eig_variances
 
@@ -881,6 +825,65 @@ plot(g.eig_variances[[7]], p.eig_variances[[7]],
      main = "SHCSBSB")
 abline(0, 1) # looks good!
 summary(lm(p.eig_variances[[7]] ~ g.eig_variances[[7]])) #p-value: 4.839e-08 ***
+
+#### CORR OF G & P ----
+
+#Gmat
+#Pmat
+
+formation_list
+
+## RANDOM SKEWERS OF P & G OF EACH FORMATION
+#NKLS
+NKLS_comp_mat = RandomSkewers(list(G_ext[[1]], P_ext[[1]])) #need at least
+NKLS_corr_mat = NKLS_comp_mat$correlations + t(NKLS_comp_mat$correlations) 
+diag(NKLS_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKLS_corr_mat, upper = "number", lower = "pie")
+
+#NKBS
+NKBS_comp_mat = RandomSkewers(list(G_ext[[2]], P_ext[[2]])) #need at least
+NKBS_corr_mat =NKBS_comp_mat$correlations + t(NKBS_comp_mat$correlations) 
+diag(NKBS_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKBS_corr_mat, upper = "number", lower = "pie")
+
+#Tewkesbury
+Tewkesbury_comp_mat = RandomSkewers(list(G_ext[[3]], P_ext[[3]])) #need at least
+Tewkesbury_corr_mat = Tewkesbury_comp_mat$correlations + t(Tewkesbury_comp_mat$correlations) 
+diag(Tewkesbury_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tewkesbury_corr_mat, upper = "number", lower = "pie")
+
+#Waipuru
+Waipuru_comp_mat = RandomSkewers(list(G_ext[[4]], P_ext[[4]])) #need at least
+Waipuru_corr_mat = Waipuru_comp_mat$correlations + t(Waipuru_comp_mat$correlations) 
+diag(Waipuru_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Waipuru_corr_mat, upper = "number", lower = "pie")
+
+#Upper Kai-Iwi
+UKai_Iwi_comp_mat = RandomSkewers(list(G_ext[[5]], P_ext[[5]])) #need at least
+UKai_Iwi_corr_mat = UKai_Iwi_comp_mat$correlations + t(UKai_Iwi_comp_mat$correlations) 
+diag(UKai_Iwi_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(UKai_Iwi_corr_mat, upper = "number", lower = "pie")
+
+#Tainui
+Tainui_comp_mat = RandomSkewers(list(G_ext[[6]], P_ext[[6]])) #need at least
+Tainui_corr_mat = Tainui_comp_mat$correlations + t(Tainui_comp_mat$correlations) 
+diag(Tainui_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tainui_corr_mat, upper = "number", lower = "pie")
+
+#SHCSBSB
+SHCSBSB_comp_mat = RandomSkewers(list(G_ext[[7]], P_ext[[7]])) #need at least
+SHCSBSB_corr_mat = SHCSBSB_comp_mat$correlations + t(SHCSBSB_comp_mat$correlations) 
+diag(SHCSBSB_corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(SHCSBSB_corr_mat, upper = "number", lower = "pie")
+
+#### CALCULATE E ----
 
 ##### PLOT P, E, AND G VARIATION ----
 # E = units
@@ -989,45 +992,10 @@ plot(out_results[, 2], out_results[, 1],
 points(obs_melt$N, obs_melt$RS, 
        col = "#00BFC4", pch = 19) #color by formation
 
-#### COMPARE Gs ----
-
-# Function to convert vector to norm length 
-f.normalize_vector <- function(vector) {
-  norm_length <- sqrt(sum(vector^2))
-  normalized_vector <- vector / norm_length
-  return(normalized_vector)
-}
-
-#trait means by time
-mean_by_formation
-#order of formations:
-# "NKLS"  "NKBS" "Tewkesbury"  "Waipuru" "Upper Kai-Iwi" "Tainui" "SHCSBSB"
-
-### Calculate the vector that defines the observed divergence between sample/formation 1 an 2
-
-NKLS <- as.numeric(mean_by_formation[1, 5:12]) # A vector containing trait means from sample/formation 1 
-NKBS <- as.numeric(mean_by_formation[2, 5:12]) # A vector containing trait means from sample/formation 2 
-tewk <- as.numeric(mean_by_formation[3, 5:12]) # A vector containing trait means from sample/formation 3
-wai <- as.numeric(mean_by_formation[4, 5:12]) # A vector containing trait means from sample/formation 4
-uki <- as.numeric(mean_by_formation[5, 5:12]) # A vector containing trait means from sample/formation 5 
-tai <- as.numeric(mean_by_formation[6, 5:12]) # A vector containing trait means from sample/formation 6 
-SHCSBSB <- as.numeric(mean_by_formation[7, 5:12]) # A vector containing trait means from sample/formation 7
-
-#second - first
-#t1 = NKBS - NKLS
-#t2 = tewk - NKBS
-#t3 = wai - tewk
-#t4 = uki - wai
-#t5 = tai - uki
-#t6 = SHCSBSB - tai
-
-## really need to learn how to name things in functions...
-evolved_difference_unit_length_t1 <- f.normalize_vector(NKBS - NKLS)
-evolved_difference_unit_length_t2 <- f.normalize_vector(tewk - NKBS)
-evolved_difference_unit_length_t3 <- f.normalize_vector(wai - tewk)
-evolved_difference_unit_length_t4 <- f.normalize_vector(uki - wai)
-evolved_difference_unit_length_t5 <- f.normalize_vector(tai - uki)
-evolved_difference_unit_length_t6 <- f.normalize_vector(SHCSBSB - tai)
+###### POSITIVE DEFINITE ------
+## check positive definite
+# round to 10 decimals to make it symmetric
+# to make it positive definite, use extended matrix to fill in
 
 G_matrix_NKLS = Gmat[[1]] # The G matrix estimated for sample/formation 1
 G_matrix_NKBS = Gmat[[2]] # The G matrix estimated for sample/formation 2
@@ -1037,32 +1005,6 @@ G_matrix_uki = Gmat[[5]] # The G matrix estimated for sample/formation 5
 G_matrix_tai = Gmat[[6]] # The G matrix estimated for sample/formation 6
 G_matrix_SHCSBSB = Gmat[[7]] # The G matrix estimated for sample/formation 7
 
-### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
-#observed_evolvability_in_direction_of_change<-t(evolved_difference_unit_length)%*%as.matrix(G_matrix_1)%*%evolved_difference_unit_length
-observed_evolvability_in_direction_of_change_t1 <- t(evolved_difference_unit_length_t1)%*%as.matrix(G_matrix_NKLS)%*%evolved_difference_unit_length_t1
-observed_evolvability_in_direction_of_change_t2 <- t(evolved_difference_unit_length_t2)%*%as.matrix(G_matrix_NKBS)%*%evolved_difference_unit_length_t2
-observed_evolvability_in_direction_of_change_t3 <- t(evolved_difference_unit_length_t3)%*%as.matrix(G_matrix_tewk)%*%evolved_difference_unit_length_t3
-observed_evolvability_in_direction_of_change_t4 <- t(evolved_difference_unit_length_t4)%*%as.matrix(G_matrix_wai)%*%evolved_difference_unit_length_t4
-observed_evolvability_in_direction_of_change_t5 <- t(evolved_difference_unit_length_t5)%*%as.matrix(G_matrix_uki)%*%evolved_difference_unit_length_t5
-observed_evolvability_in_direction_of_change_t6 <- t(evolved_difference_unit_length_t6)%*%as.matrix(G_matrix_tai)%*%evolved_difference_unit_length_t6
-
-### The conditional evolvability in the direction of divergence
-#observed_conditional_evolvability_in_direction_of_change<-1/(t(evolved_difference_unit_length)%*%solve(as.matrix(G_matrix_1))%*%evolved_difference_unit_length)
-observed_conditional_evolvability_in_direction_of_change_t1 <- 1/(t(evolved_difference_unit_length_t1)%*%solve(as.matrix(G_matrix_NKLS))%*%evolved_difference_unit_length_t1)
-observed_conditional_evolvability_in_direction_of_change_t2 <- 1/(t(evolved_difference_unit_length_t2)%*%solve(as.matrix(G_matrix_NKBS))%*%evolved_difference_unit_length_t2)
-observed_conditional_evolvability_in_direction_of_change_t3 <- 1/(t(evolved_difference_unit_length_t3)%*%solve(as.matrix(G_matrix_tewk))%*%evolved_difference_unit_length_t3)
-observed_conditional_evolvability_in_direction_of_change_t4 <- 1/(t(evolved_difference_unit_length_t4)%*%solve(as.matrix(G_matrix_wai))%*%evolved_difference_unit_length_t4)
-observed_conditional_evolvability_in_direction_of_change_t5 <- 1/(t(evolved_difference_unit_length_t5)%*%solve(as.matrix(G_matrix_uki))%*%evolved_difference_unit_length_t5)
-observed_conditional_evolvability_in_direction_of_change_t6 <- 1/(t(evolved_difference_unit_length_t6)%*%solve(as.matrix(G_matrix_tai))%*%evolved_difference_unit_length_t6)
-
-### Generate 10,000 selection gradients in random directions in the n-dimensional space
-n_dimensions <- 8 # number of traits in G matrix
-Beta <- randomBeta(10000, n_dimensions)
-
-###### POSITIVE DEFINITE ------
-## check positive definite
-# round to 10 decimals to make it symmetric
-# to make it positive definite, use extended matrix to fill in
 
 G_mat_NKLS <- round(as.matrix(G_matrix_NKLS), 6) #6 works better than 10
 is.symmetric.matrix(G_mat_NKLS) #TRUE
@@ -1137,6 +1079,68 @@ G_mat_SHCSBSB_ext <- round(as.matrix(G_matrix_SHCSBSB_ext), 6)
 is.symmetric.matrix(G_mat_SHCSBSB_ext) #TRUE
 is.positive.definite(G_mat_SHCSBSB_ext) #TRUE
 
+#### COMPARE Gs THROUGH TIME ----
+
+# Function to convert vector to norm length 
+f.normalize_vector <- function(vector) {
+  norm_length <- sqrt(sum(vector^2))
+  normalized_vector <- vector / norm_length
+  return(normalized_vector)
+}
+
+#trait means by time
+mean_by_formation
+#order of formations:
+# "NKLS"  "NKBS" "Tewkesbury"  "Waipuru" "Upper Kai-Iwi" "Tainui" "SHCSBSB"
+
+### Calculate the vector that defines the observed divergence between sample/formation 1 an 2
+
+NKLS <- as.numeric(mean_by_formation[1, 5:12]) # A vector containing trait means from sample/formation 1 
+NKBS <- as.numeric(mean_by_formation[2, 5:12]) # A vector containing trait means from sample/formation 2 
+tewk <- as.numeric(mean_by_formation[3, 5:12]) # A vector containing trait means from sample/formation 3
+wai <- as.numeric(mean_by_formation[4, 5:12]) # A vector containing trait means from sample/formation 4
+uki <- as.numeric(mean_by_formation[5, 5:12]) # A vector containing trait means from sample/formation 5 
+tai <- as.numeric(mean_by_formation[6, 5:12]) # A vector containing trait means from sample/formation 6 
+SHCSBSB <- as.numeric(mean_by_formation[7, 5:12]) # A vector containing trait means from sample/formation 7
+
+#second - first
+#t1 = NKBS - NKLS
+#t2 = tewk - NKBS
+#t3 = wai - tewk
+#t4 = uki - wai
+#t5 = tai - uki
+#t6 = SHCSBSB - tai
+
+## really need to learn how to name things in functions...
+evolved_difference_unit_length_t1 <- f.normalize_vector(NKBS - NKLS)
+evolved_difference_unit_length_t2 <- f.normalize_vector(tewk - NKBS)
+evolved_difference_unit_length_t3 <- f.normalize_vector(wai - tewk)
+evolved_difference_unit_length_t4 <- f.normalize_vector(uki - wai)
+evolved_difference_unit_length_t5 <- f.normalize_vector(tai - uki)
+evolved_difference_unit_length_t6 <- f.normalize_vector(SHCSBSB - tai)
+
+### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
+#observed_evolvability_in_direction_of_change<-t(evolved_difference_unit_length)%*%as.matrix(G_matrix_1)%*%evolved_difference_unit_length
+observed_evolvability_in_direction_of_change_t1 <- t(evolved_difference_unit_length_t1)%*%as.matrix(G_mat_NKLS_ext)%*%evolved_difference_unit_length_t1
+observed_evolvability_in_direction_of_change_t2 <- t(evolved_difference_unit_length_t2)%*%as.matrix(G_mat_NKBS_ext)%*%evolved_difference_unit_length_t2
+observed_evolvability_in_direction_of_change_t3 <- t(evolved_difference_unit_length_t3)%*%as.matrix(G_mat_tewk_ext)%*%evolved_difference_unit_length_t3
+observed_evolvability_in_direction_of_change_t4 <- t(evolved_difference_unit_length_t4)%*%as.matrix(G_mat_wai_ext)%*%evolved_difference_unit_length_t4
+observed_evolvability_in_direction_of_change_t5 <- t(evolved_difference_unit_length_t5)%*%as.matrix(G_mat_uki_ext)%*%evolved_difference_unit_length_t5
+observed_evolvability_in_direction_of_change_t6 <- t(evolved_difference_unit_length_t6)%*%as.matrix(G_mat_tai_ext)%*%evolved_difference_unit_length_t6
+
+### The conditional evolvability in the direction of divergence
+#observed_conditional_evolvability_in_direction_of_change<-1/(t(evolved_difference_unit_length)%*%solve(as.matrix(G_matrix_1))%*%evolved_difference_unit_length)
+observed_conditional_evolvability_in_direction_of_change_t1 <- 1/(t(evolved_difference_unit_length_t1)%*%solve(as.matrix(G_mat_NKLS_ext))%*%evolved_difference_unit_length_t1)
+observed_conditional_evolvability_in_direction_of_change_t2 <- 1/(t(evolved_difference_unit_length_t2)%*%solve(as.matrix(G_mat_NKBS_ext))%*%evolved_difference_unit_length_t2)
+observed_conditional_evolvability_in_direction_of_change_t3 <- 1/(t(evolved_difference_unit_length_t3)%*%solve(as.matrix(G_mat_tewk_ext))%*%evolved_difference_unit_length_t3)
+observed_conditional_evolvability_in_direction_of_change_t4 <- 1/(t(evolved_difference_unit_length_t4)%*%solve(as.matrix(G_mat_wai_ext))%*%evolved_difference_unit_length_t4)
+observed_conditional_evolvability_in_direction_of_change_t5 <- 1/(t(evolved_difference_unit_length_t5)%*%solve(as.matrix(G_mat_uki_ext))%*%evolved_difference_unit_length_t5)
+observed_conditional_evolvability_in_direction_of_change_t6 <- 1/(t(evolved_difference_unit_length_t6)%*%solve(as.matrix(G_mat_tai_ext))%*%evolved_difference_unit_length_t6)
+
+### Generate 10,000 selection gradients in random directions in the n-dimensional space
+n_dimensions <- 8 # number of traits in G matrix
+Beta <- randomBeta(10000, n_dimensions)
+
 #outputs e, r, c, a, i
 #e = evolvability
 #r = respondability
@@ -1202,7 +1206,7 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
                                    observed_conditional_evolvability_in_direction_of_change_t6,
                                    ""),
                     row.names = formation_list)
-#ONE NEGATIVE VALUE
+#NO NEGATIVE VALUES!
 
 write.csv(X_sum,
           "./Results/evolvability_summary.csv")
@@ -1281,7 +1285,13 @@ angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #23.03 #AS DID THIS ONE 156.9671 (opposite of 180?)
 
-###### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
+angle_diff_Gs <- c(angle_degrees.Gmax_NKLS_NKBS, angle_degrees.Gmax_NKBS_tewk,
+                   angle_degrees.Gmax_wai_uki, angle_degrees.Gmax_wai_uki,
+                   angle_degrees.Gmax_uki_tai, angle_degrees.Gmax_tai_SHCSBSB)
+
+
+#### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX ----
+
 ### See if change is in direction of G max
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1)
@@ -1289,7 +1299,7 @@ dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length
 angle_radians.Gmax_NKLS_max <- acos(dot_product.Gmax_NKLS_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKLS_max <- angle_radians.Gmax_NKLS_max * (180 / pi)
-#73.15
+#93.37
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_NKBS_max <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2)
@@ -1297,7 +1307,7 @@ dot_product.Gmax_NKBS_max <- sum(Gmax_NKBS_norm * evolved_difference_unit_length
 angle_radians.Gmax_NKBS_max <- acos(dot_product.Gmax_NKBS_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKBS_max <- angle_radians.Gmax_NKBS_max * (180 / pi)
-#36.81
+#67.63
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_tewk_max <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3)
@@ -1305,7 +1315,7 @@ dot_product.Gmax_tewk_max <- sum(Gmax_tewk_norm * evolved_difference_unit_length
 angle_radians.Gmax_tewk_max <- acos(dot_product.Gmax_tewk_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_tewk_max <- angle_radians.Gmax_tewk_max * (180 / pi)
-#112.56
+#118.62
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_wai_max <- sum(Gmax_wai_norm * evolved_difference_unit_length_t4)
@@ -1313,7 +1323,7 @@ dot_product.Gmax_wai_max <- sum(Gmax_wai_norm * evolved_difference_unit_length_t
 angle_radians.Gmax_wai_max <- acos(dot_product.Gmax_wai_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_wai_max <- angle_radians.Gmax_wai_max * (180 / pi)
-#153.95
+#125.73
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t5)
@@ -1321,7 +1331,7 @@ dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t
 angle_radians.Gmax_uki_max <- acos(dot_product.Gmax_uki_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_uki_max <- angle_radians.Gmax_uki_max * (180 / pi)
-#156.75
+#122.28
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_tai_max <- sum(Gmax_tai_norm * evolved_difference_unit_length_t6)
@@ -1329,7 +1339,7 @@ dot_product.Gmax_tai_max <- sum(Gmax_tai_norm * evolved_difference_unit_length_t
 angle_radians.Gmax_tai_max <- acos(dot_product.Gmax_tai_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai_max <- angle_radians.Gmax_tai_max * (180 / pi)
-#53.85 (NOW 126.15)
+#53.85 (NOW 127.22)
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
@@ -1337,16 +1347,16 @@ dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_
 angle_radians.Gmax_SHCSBSB_max <- acos(dot_product.Gmax_SHCSBSB_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_SHCSBSB_max <- angle_radians.Gmax_SHCSBSB_max * (180 / pi)
-#57.74
+#52.38
 
 angle_diff_Gmax_to_G <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_max,
                           angle_degrees.Gmax_tewk_max, angle_degrees.Gmax_wai_max,
                           angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
                           angle_degrees.Gmax_SHCSBSB_max)
 
-
 ##### LOOK AT TRENDS AS A FUNCTION OF TIME ------
 form.df <- form.meta[1:7,] #in same order as mean_by_formation
+mean_by_formation
 
 for(i in 1:nrow(form.df)){
   form.df$mean.age[i] <- mean(form.df$Start_age[i], form.df$End_age[i], na.rm = TRUE)
@@ -1358,14 +1368,61 @@ for(i in 1:nrow(form.df)){
 }
 form.df$age.range <- as.numeric(form.df$age.range)
 
-df.diff <- as.data.frame(cbind(angle_diff_Gmax_to_G, phen.zh,
-                               age, time.interval, form))
+df.diff <- as.data.frame(cbind(angle_diff_Gmax_to_G, form.df,
+                               mean_by_formation))
+
+df.diff.g <- as.data.frame(cbind(angle_diff_Gs, form.df,
+                                 mean_by_formation))
 
 ggplot(data = df.diff) +
-  geom_point(aes(x = time.interval, y = angle_diff_Gmax_to_G))
+  geom_point(aes(x = age.range, y = angle_diff_Gmax_to_G)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none",
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_x_continuous(name = "Age Range (Ma)") +
+  scale_y_continuous(name = "Angle away from Gmax")
 
 ggplot(data = df.diff) +
-  geom_point(aes(x = age, y = angle_diff_Gmax_to_G))
+  geom_point(aes(x = mean.age, y = angle_diff_Gmax_to_G,
+             col = formationCode)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none",
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_x_reverse(name = "Age (Ma)", limits = c(2.5, 0)) +
+  scale_y_continuous(name = "Angle away from Gmax") +
+  scale_color_manual(values = col.form)
+
+ggplot(data = df.diff) +
+  geom_point(aes(x = mean.age, y = avg.zh,
+                 col = formationCode)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none",
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_x_reverse(name = "Age (Ma)", limits = c(2.5, 0)) +
+  scale_y_continuous(name = "Mean LN ZH") +
+  scale_color_manual(values = col.form)
+
+ggplot(data = df.diff) +
+  geom_point(aes(x = age.range, y = avg.zh,
+                 col = formationCode)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none",
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_x_continuous(name = "Age Range (Ma)") +
+  scale_y_continuous(name = "Mean LN ZH") +
+  scale_color_manual(values = col.form) #seeingly no correlation
 
 #### GLOBAL G ----
 
@@ -1393,8 +1450,8 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
 
 save(model_Global, file = "./Results/global_matrices_data_form_reg.RData")
 
-#load(file="./Results/global_matrices_data_form_reg.RData") #load the g matrices calculated above 
-#model_Global <- data.list[[1]]
+load(file="./Results/global_matrices_data_form_reg.RData") #load the g matrices calculated above 
+model_Global <- data.list[[1]]
 
 ##### CHECK MODELS -----
 formation_list #order of formations

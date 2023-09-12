@@ -242,7 +242,7 @@ traits = names(traits.df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d",
 traits.df$zooid.id <- paste0(traits.df$boxID, "_", traits.df$image)
 colnames(traits.df)[colnames(traits.df) == 'specimenNR'] <- 'colony.id'
 
-mean_by_formation_colony = traits.df %>% #use this going forward
+tr.mean_by_formation_colony = traits.df %>% #use this going forward
   dplyr::group_by(formation, colony.id) %>%
   dplyr::summarize(n.zooid = length(unique(zooid.id)),
             avg.zh = mean(ln.zh, na.rm = T),
@@ -262,17 +262,17 @@ mean_by_formation_colony = traits.df %>% #use this going forward
             avg.c.side = mean(ln.c.side, na.rm = T),
             sd.c.side = sd(ln.c.side, na.rm = T)) %>%
   as.data.frame()
-nrow(mean_by_formation_colony) #731
+nrow(tr.mean_by_formation_colony) #731
 
-keep <- mean_by_formation_colony$colony.id[mean_by_formation_colony$n.zooid >= 5]
+keep <- tr.mean_by_formation_colony$colony.id[tr.mean_by_formation_colony$n.zooid >= 5]
 length(keep) #572 colonies
 
 df <- traits.df[traits.df$colony.id %in% keep,]
 nrow(df) #5971
 
-mean_by_formation_colony.keep <- mean_by_formation_colony[mean_by_formation_colony$n.zooid >= 5,]
+tr.mean_by_formation_colony.keep <- tr.mean_by_formation_colony[tr.mean_by_formation_colony$n.zooid >= 5,]
 
-mean_by_formation = df %>%
+tr.mean_by_formation = df %>%
   dplyr::group_by(formation) %>%
   dplyr::summarize(num.col = length(unique(colony.id)),
                    num.zooid = length(unique(zooid.id)),
@@ -366,6 +366,89 @@ p.dist <- ggplot(traits.melt) +
   scale_x_continuous(name = "LN trait measurement (pixels)")
 
 ggsave(p.dist, file = "./Results/trait_distribution_8Sept2023.png", width = 14, height = 10, units = "cm")
+
+p.zh <- ggplot(df) +
+  geom_density(aes(x = ln.zh,
+                   group = formation,
+                   col = formation)) + #lots are bimodal
+  ggtitle(paste0("Distribution of traits, N zooids = ", length(unique(df$zooid.id)),
+                 ", N colony = ", length(unique(df$colony.id)))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement (pixels)")
+
+p.zh.nkbs <- ggplot(df[df$formation == "NKBS",]) +
+  geom_density(aes(x = ln.zh),
+                   colour = col.form[1]) + #lots are bimodal
+  ggtitle(paste0("NKBS, N zooids = ", length(unique(df$zooid.id[df$formation == "NKBS"])),
+                 ", N colony = ", length(unique(df$colony.id[df$formation == "NKBS"])))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement (pixels)")
+
+p.zh.nkls <- ggplot(df[df$formation == "NKLS",]) +
+  geom_density(aes(x = ln.zh), colour = col.form[2]) + #lots are bimodal
+  ggtitle(paste0("NKLS, N zooids = ", length(unique(df$zooid.id[df$formation == "NKLS"])),
+                 ", N colony = ", length(unique(df$colony.id[df$formation == "NKLS"])))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement (pixels)")
+
+p.zh.tewk <- ggplot(df[df$formation == "Tewkesbury",]) +
+  geom_density(aes(x = ln.zh), colour = col.form[3]) + #lots are bimodal
+  ggtitle(paste0("Tewkesbury, N zooids = ", length(unique(df$zooid.id[df$formation == "Tewkesbury"])),
+                 ", N colony = ", length(unique(df$colony.id[df$formation == "Tewkesbury"])))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement (pixels)")
+
+p.zh.wai <- ggplot(df[df$formation == "Waipuru",]) +
+  geom_density(aes(x = ln.zh), colour = col.form[4]) + #lots are bimodal
+  ggtitle(paste0("Waipuru, N zooids = ", length(unique(df$zooid.id[df$formation == "Waipuru"])),
+                 ", N colony = ", length(unique(df$colony.id[df$formation == "Waipuru"])))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement (pixels)")
+
+p.zh.uki <- ggplot(df[df$formation == "Upper Kai-Iwi",]) +
+  geom_density(aes(x = ln.zh), colour = col.form[5]) + #lots are bimodal
+  ggtitle(paste0("Upper Kai-Iwi, N zooids = ", length(unique(df$zooid.id[df$formation == "Upper Kai-Iwi"])),
+                 ", N colony = ", length(unique(df$colony.id[df$formation == "Upper Kai-Iwi"])))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement (pixels)")
+
+p.zh.tai <- ggplot(df[df$formation == "Tainui",]) +
+  geom_density(aes(x = ln.zh), colour = col.form[6]) + #lots are bimodal
+  ggtitle(paste0("Tainui, N zooids = ", length(unique(df$zooid.id[df$formation == "Tainui"])),
+                 ", N colony = ", length(unique(df$colony.id[df$formation == "Tainui"])))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement (pixels)")
+
+p.zh.shcsbsb <- ggplot(df[df$formation == "SHCSBSB",]) +
+  geom_density(aes(x = ln.zh), colour = col.form[7]) + #lots are bimodal
+  ggtitle(paste0("SHCSBSB, N zooids = ", length(unique(df$zooid.id[df$formation == "SHCSBSB"])),
+                 ", N colony = ", length(unique(df$colony.id[df$formation == "SHCSBSB"])))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement (pixels)")
+
+Fig = list(p.zh.nkbs, p.zh.nkls, 
+           p.zh.tewk, p.zh.wai,
+           p.zh.uki, p.zh.tai,
+           p.zh.shcsbsb)
+
+ml <- marrangeGrob(Fig, nrow = 7, ncol = 1)
+ml
 
 ##### BIMODALITY -----
 ##explore bimodality, using zooid height as an example then see if it generalizes
@@ -474,9 +557,10 @@ df.bin.f <- df.bins %>%
 View(df.bin.f)
 #(6.2,6.3]
 #6.25 like I eyeballed
-write.csv(df.bin.f,
-          "./Results/zh.bin.frequency_8Sept2023.csv",
-          row.names = FALSE)
+
+#write.csv(df.bin.f,
+#          "./Results/zh.bin.frequency_8Sept2023.csv",
+#          row.names = FALSE)
 
 sm.traits <- df[df$ln.zh < 6.25,]
 sm.colonies <- unique(sm.traits$colony.id) #41; was 95 images out of 891
@@ -497,9 +581,10 @@ prop.sm <- df.bins %>%
             n.sm.zooid = sum(sm),
             prop.sm = n.sm.zooid/n.zooid)
 View(prop.sm)
-write.csv(prop.sm,
-          "./Results/proportion.small.colonies_8Sept2023.csv",
-          row.names = FALSE)
+
+#write.csv(prop.sm,
+#          "./Results/proportion.small.colonies_8Sept2023.csv",
+#          row.names = FALSE)
 
 #goes from 100% to 20%; perhaps make 20% the cut off
 rm.col <- prop.sm$colony.id[prop.sm$prop.sm == 1]
@@ -691,33 +776,33 @@ for(i in 1:nrow(form.df)){
 }
 form.df$age.range <- as.numeric(form.df$age.range)
 
-mean_by_formation.meta <- merge(mean_by_formation, form.df,
+tr.mean_by_formation.meta <- merge(tr.mean_by_formation, form.df,
                                 by.x = "formation",
                                 by.y = "formationCode")
 
 ## overall differnce in zooid height
-mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"]
+tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "NKLS"] - tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "SHCSBSB"]
 #-0.1514114 (decrease in length)
-mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "SHCSBSB"]
+tr.mean_by_formation$avg.ow.m[tr.mean_by_formation$formation == "NKLS"] - tr.mean_by_formation$avg.ow.m[tr.mean_by_formation$formation == "SHCSBSB"]
 #-0.1479244 (decrease in width)
 
 ##between formations
-mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "NKBS"]
+tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "NKLS"] - tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "NKBS"]
 #0.1162435 (1.123269 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "NKBS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Tewkesbury"]
+tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "NKBS"] - tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "Tewkesbury"]
 #-0.08700402 (0.9166734 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "Tewkesbury"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Waipuru"]
+tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "Tewkesbury"] - tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "Waipuru"]
 #0.06027717 (1.062131 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "Waipuru"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Upper Kai-Iwi"]
+tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "Waipuru"] - tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "Upper Kai-Iwi"]
 #0.01439653 (1.014501 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "Upper Kai-Iwi"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Tainui"]
+tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "Upper Kai-Iwi"] - tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "Tainui"]
 #-0.2706406 (0.7628906 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "Tainui"] - mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"]
+tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "Tainui"] - tr.mean_by_formation$avg.zh[tr.mean_by_formation$formation == "SHCSBSB"]
 #0.01531607 (1.015434 diff)
 
 ## how is sd a function of sample size (number of zooids and number of colonies)?
 #plot sd per colony by zooid no
-ggplot(mean_by_formation_colony) + 
+ggplot(tr.mean_by_formation_colony) + 
   geom_point(aes(x = n.zooid, y = sd.zh,
                  col = formation)) + 
   theme(text = element_text(size = 16),
@@ -727,7 +812,7 @@ ggplot(mean_by_formation_colony) +
   scale_color_manual(values = col.form)
 
 #plot sd per formation by colony no
-ggplot(mean_by_formation) + 
+ggplot(tr.mean_by_formation) + 
   geom_point(aes(x = num.col, y = sd.zh,
                  col = formation)) + 
   theme(text = element_text(size = 16),
@@ -736,13 +821,12 @@ ggplot(mean_by_formation) +
   scale_y_continuous(name = "Zooid Height SD") +
   scale_color_manual(values = col.form)
 
-anova(lm(mean_by_formation$sd.zh ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+anova(lm(tr.mean_by_formation$sd.zh ~ tr.mean_by_formation$num.col + tr.mean_by_formation$num.zooid))
 
-#### LOOK AT TRENDS OVER TIME ----
 #use formation means
 #mean_by_formation
 
-ggplot(data = mean_by_formation.meta) +
+ggplot(data = tr.mean_by_formation.meta) +
   geom_point(aes(x = age.range, y = avg.zh,
                  col = formation)) + 
   theme(text = element_text(size = 16),
@@ -751,7 +835,7 @@ ggplot(data = mean_by_formation.meta) +
   scale_y_continuous(name = "Average Zooid Height (um)") +
   scale_color_manual(values = col.form)
 
-ggplot(data = mean_by_formation.meta) +
+ggplot(data = tr.mean_by_formation.meta) +
   geom_point(aes(x = mean.age, y = avg.zh,
                  col = formation)) + 
   theme(text = element_text(size = 16),
@@ -760,6 +844,47 @@ ggplot(data = mean_by_formation.meta) +
   scale_y_continuous(name = "Average Zooid Height (um)") +
   scale_color_manual(values = col.form)
 
+
+df.form.meta <- merge(df, form.df,
+                      by.x = "formation",
+                      by.y = "formationCode")
+                      
+ggplot(data = df.form.meta) +
+  geom_point(aes(x = mean.age, y = ln.zh,
+                 col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = "Age (Ma)") +
+  scale_y_continuous(name = "Zooid Height (um)") +
+  scale_color_manual(values = col.form)
+
+reg.form.meta <- merge(reg.colonies, form.df,
+                      by.x = "formation",
+                      by.y = "formationCode")
+
+ggplot(data = reg.form.meta) +
+  geom_point(aes(x = ln.cw.d, y = ln.zh,
+                 col = formation)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none") +
+  scale_x_continuous(name = "Cryptocyst Width at the Distal End (um)") +
+  scale_y_continuous(name = "Zooid Height (um)") +
+  scale_color_manual(values = col.form)
+
+box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",], 
+       aes(x = formation, 
+           y = measurementValue, 
+           fill = formation)) +
+  geom_boxplot() +
+  scale_color_manual(values = col.form) +
+  scale_fill_manual(values = col.form) +
+  ggtitle("Boxplots of LN Zooid Heights") +
+  xlab("Formation") +
+  ylab("LN Zooid Height (um)")
+
+ggsave(box.ln.zh, 
+       file = "./Results/boxplot.ln.zh.png", 
+       width = 14, height = 10, units = "cm")
 
 #### LOOK AT TRENDS RELATIVE TO LOCALITY ----
 #use colony means
