@@ -367,6 +367,25 @@ p.dist <- ggplot(traits.melt) +
 
 ggsave(p.dist, file = "./Results/trait_distribution_8Sept2023.png", width = 14, height = 10, units = "cm")
 
+traits.melt.trim <- traits.melt[traits.melt$measurementType == "ln.zh" |
+                                traits.melt$measurementType == "ln.mpw.b" |
+                                traits.melt$measurementType == "ln.cw.m" |
+                                traits.melt$measurementType == "ln.cw.d" |
+                                traits.melt$measurementType == "ln.ow.m" |
+                                traits.melt$measurementType == "ln.oh" |
+                                traits.melt$measurementType == "ln.o.side" |
+                                traits.melt$measurementType == "ln.c.side",]
+  
+ggplot(traits.melt.trim) +
+  geom_density(aes(x = measurementValue,
+                   group = measurementType,
+                   col = measurementType)) + #lots are bimodal
+  ggtitle("Distribution of traits, N zooids = 18890, N colony = 891") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Density") +
+  scale_x_continuous(name = "LN trait measurement")
+
 p.zh <- ggplot(df) +
   geom_density(aes(x = ln.zh,
                    group = formation,
@@ -462,6 +481,14 @@ p.ln.zh <- ggplot(df) +
 
 #ggsave(p.zh, file = "./Results/zooid_height_8Sept2023.png", width = 14, height = 10, units = "cm")
 
+ggplot(df) +
+  geom_histogram(aes(x = ln.zh)) +
+  ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(keep))) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Frequency") +
+  scale_x_continuous(name = "LN Zooid Height")
+
 ##driven by FORMATION?
 #all but Punneki Limestone are bimodal
 p.zh.form <- ggplot(df) +
@@ -520,21 +547,48 @@ zh.owm.model <- lm(ln.ow.m ~ ln.zh,
 table(sm.zoo$colony.id)
 unique(sm.zoo$imageName[sm.zoo$colony.id == "077CV"]) #from images 1, 2, 3
 ## image 077_CV
-imgj.res_077_1 <- read.csv("./Data/ImgJ/077_CV_1_Results.csv", header = TRUE)
-imgj.res_077_2 <- read.csv("./Data/ImgJ/077_CV_2_Results.csv", header = TRUE)
-imgj.res_077_3 <- read.csv("./Data/ImgJ/077_CV_3_Results.csv", header = TRUE)
-imgj_077 <- rbind(imgj.res_077_1, imgj.res_077_2, imgj.res_077_3)
+imgj.res_077_1 <- read.csv("~/Desktop/007_CV_1_Results_13Sept2023.csv.csv", header = TRUE)
+imgj.res_077_2 <- read.csv("~/Desktop/007_CV_2_Results_13Sept2023.csv", header = TRUE)
+imgj.res_077_3 <- read.csv("~/Desktop/077_CV_3_Results_13Sept2023.csv", header = TRUE)
 ## scale
-imgj_077$scale.zh <- imgj_077$Length/.606
+imgj.res_077_1[1,] #first row is the scale to .1 mm; scale is 28 pixels per .1 mm; or 280 per 1mm; or 280000 per 1 micrometer
+# 28 px/.1 mm or .1 mm / 28 px
+imgj.res_077_1$scale.zh <- (imgj.res_077_1$Length/28)*1000
+imgj.res_077_2[1,] #29.017
+imgj.res_077_2$scale.zh <- (imgj.res_077_2$Length/29.017)*1000
+imgj.res_077_3[1,] #0.109
+imgj.res_077_3$scale.zh <- (imgj.res_077_3$Length/0.109)*1000
+
+imgj_077 <- rbind(imgj.res_077_1, imgj.res_077_2, imgj.res_077_3)
+
 ## log
 imgj_077$ln.zh <- log(imgj_077$scale.zh)
-imgj_077$ln.zh # all small!!
+range(imgj_077$ln.zh) # all small!!
+#-1.715532  6.075998
+range(df$ln.zh[df$imageName == "077_CV_1_15v_x30_BSE" |
+                 df$imageName == "077_CV_2_15v_x30_BSE" |
+                 df$imageName == "077_CV_3_15v_x30_BSE"])
+#5.789308 6.086177
+
+imgj.res_696_1 <- read.csv("~/Desktop/696_CC_1_Results_13Sept2023.csv", header = TRUE)
+imgj.res_696_2 <- read.csv("~/Desktop/696_CC_2_Results_13Sept2023.csv", header = TRUE)
+imgj.res_696_1[1,] #60
+imgj.res_696_1$scale.zh <- (imgj.res_696_1$Length/60)*1000
+imgj.res_696_2[1,] #60
+imgj.res_696_2$scale.zh <- (imgj.res_696_2$Length/60)*1000
+imgj.res_696 <- rbind(imgj.res_696_1, imgj.res_696_2)
+imgj.res_696$ln.zh <- log(imgj.res_696$scale.zh)
+range(imgj.res_696$ln.zh)
+#6.907755 9.148988
+range(df$ln.zh[df$imageName == "696_CC_1_10v_x30_BSE" |
+                 df$imageName == "696_CC_2_10v_x30_BSE"])
+#6.599759 7.061558
 
 ##273S
 unique(sm.zoo$imageName[sm.zoo$colony.id == "273S"]) #from images 1, 2, 3
-imgj.res_273_1 <- read.csv("./Data/ImgJ/273_S_1_Results.csv", header = TRUE)
-imgj.res_273_2 <- read.csv("./Data/ImgJ/273_S_2_Results.csv", header = TRUE)
-imgj.res_273_3 <- read.csv("./Data/ImgJ/273_S_3_Results.csv", header = TRUE)
+imgj.res_273_1 <- read.csv("~/Desktop/273_S_1_Results_13Sept2023.csv", header = TRUE)
+imgj.res_273_2 <- read.csv("~/Desktop/273_S_2_Results_13Sept2023.csv", header = TRUE)
+imgj.res_273_3 <- read.csv("~/Desktop/273_S_3_Results_13Sept2023.csv", header = TRUE)
 imgj_273 <- rbind(imgj.res_273_1, imgj.res_273_2, imgj.res_273_3)
 ## scale
 imgj_273$scale.zh <- imgj_273$Length/.606
@@ -617,24 +671,41 @@ range(small.colonies$zh)
 
 range(reg.colonies$zh[reg.colonies$formation == "NKBS"])
 range(small.colonies$zh[small.colonies$formation == "NKBS"])
-mean(reg.colonies$zh[reg.colonies$formation == "NKBS"])
-mean(small.colonies$zh[small.colonies$formation == "NKBS"])
+mean(reg.colonies$zh[reg.colonies$formation == "NKBS"]) #778.014
+mean(small.colonies$zh[small.colonies$formation == "NKBS"]) #392.4272; diff of 385.5868
 median(reg.colonies$zh[reg.colonies$formation == "NKBS"])
 median(small.colonies$zh[small.colonies$formation == "NKBS"])
 
 range(reg.colonies$zh[reg.colonies$formation == "Waipuru"])
 range(small.colonies$zh[small.colonies$formation == "Waipuru"])
-mean(reg.colonies$zh[reg.colonies$formation == "Waipuru"])
-mean(small.colonies$zh[small.colonies$formation == "Waipuru"])
+mean(reg.colonies$zh[reg.colonies$formation == "Waipuru"]) #801.5489
+mean(small.colonies$zh[small.colonies$formation == "Waipuru"]) #379.6889; diff of 421.86
 median(reg.colonies$zh[reg.colonies$formation == "Waipuru"])
 median(small.colonies$zh[small.colonies$formation == "Waipuru"])
 
 range(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"])
 range(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"])
-mean(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"])
-mean(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"])
+mean(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"]) #885.2919
+mean(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"]) #392.8787; diff of 492.4132
 median(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"])
 median(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"])
+
+####### SAMPLING NUMBERS ------
+
+length(unique(reg.form.meta$imageName))
+length(unique(reg.form.meta$colony.id))
+length(unique(reg.form.meta$zooid.id))
+
+sum.reg <- reg.form.meta %>% 
+  dplyr::group_by(formation) %>%
+  dplyr::summarize(n.zooid = length(unique(zooid.id)),
+            n.colony = length(unique(colony.id)),
+            n.image = length(unique(imageName)),
+            avg.zooid.colony = ceiling(n.zooid/n.colony)) #round up to nearest integer
+col.mean <- reg.form.meta %>%
+  dplyr::group_by(colony.id) %>%
+  dplyr::summarise(n.zooid = length(unique(zooid.id)))
+ceiling(mean(col.mean$n.zooid))
 
 #### CORRELATIONS & ALLOMETRIES ----
 ## are these coming from the same individuals??
@@ -960,24 +1031,36 @@ df.loc$size[df.loc$ln.zh <= 6.25] <- "small"
 nkbs.loc <- unique(df.loc$GPS.lat[df.loc$formation == "NKBS"])
 nkbs.sm.loc <- unique(df.loc$GPS.lat[df.loc$formation == "NKBS" &
                                       df.loc$size == "small"]) #18 localities with small zooids
+nkbs.reg.loc <- unique(df.loc$GPS.lat[df.loc$formation == "NKBS" &
+                                       df.loc$size != "small"]) #18 localities with small zooids
 setdiff(nkbs.sm.loc, nkbs.loc) #no diff, so all the small localities are also in the regular localities
+length(nkbs.sm.loc) #18
 length(nkbs.loc) #125
+length(nkbs.reg.loc) #113
 length(setdiff(nkbs.loc, nkbs.sm.loc)) #107 localities without small zooids
+length(setdiff(nkbs.sm.loc, nkbs.reg.loc))
 
 wai.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Waipuru"])
 wai.sm.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Waipuru" &
                                        df.loc$size == "small"]) #1 localities with small zooids
+wai.reg.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Waipuru" &
+                                      df.loc$size != "small"]) #1 localities with small zooids
 setdiff(wai.sm.loc, wai.loc) #no diff, so all the small localities are also in the regular localities
 length(wai.loc) #6
+length(wai.reg.loc)
 length(setdiff(wai.loc, wai.sm.loc)) #5 localities without small zooids
 
 
 uki.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Upper Kai-Iwi"])
 uki.sm.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Upper Kai-Iwi" &
                                        df.loc$size == "small"]) #4 localities with small zooids
+uki.reg.loc <- unique(df.loc$GPS.lat[df.loc$formation == "Upper Kai-Iwi" &
+                                      df.loc$size != "small"]) #4 localities with small zooids
 setdiff(uki.sm.loc, uki.loc) #no diff, so all the small localities are also in the regular localities
 length(uki.loc) #7
+length(uki.reg.loc) #4
 length(setdiff(uki.loc, uki.sm.loc)) #3 localities without small zooids
+
 
 #### LOOK AT TRENDS RELATIVE TO SUBSTRATE ----
 
@@ -1019,6 +1102,8 @@ ggplot(df.form) +
   scale_x_continuous(name = "sd Delta O18") +
   scale_y_continuous(name = "LN Zooid Height")
 #NO PATTERN
+
+# zooids scale to 0 to -6 with temp, getting smaller when warmer
 
 #### OLD ----
 noPath <- output$id

@@ -883,6 +883,87 @@ diag(SHCSBSB_corr_mat) = 1
 paste("Random Skewers similarity matrix")
 corrplot.mixed(SHCSBSB_corr_mat, upper = "number", lower = "pie")
 
+corr.p.g <- c(NKLS_corr_mat[1,2], NKBS_corr_mat[1,2],
+              Tewkesbury_corr_mat[1,2], Waipuru_corr_mat[1,2], 
+              UKai_Iwi_corr_mat[1,2], Tainui_corr_mat[1,2], 
+              SHCSBSB_corr_mat[1,2])
+
+corr.p.g.form <- cbind(levels(formation_list), corr.p.g)
+colnames(corr.p.g.form) <- c("formation", "correlation")
+corr.p.g.form
+
+write.csv(corr.p.g.form,
+          "Results/correlation.p.g.csv",
+          row.names = FALSE)
+
+###### PC1 of P and PC1 of G through time -------
+## NOTE THESE ARE NOT USING EXT MATRICES THAT ARE CORRECTED LIKE WE DO BELOW FOR
+## EXAMINING CHANGE IN G THROUGH TIME
+
+## PERCENT EXPLAINED BY PC1
+PC1_P <- p.eig_per[p.eig_per$variable == "X1",]
+PC1_G <- g.eig_per[g.eig_per$variable == "X1",]
+PC1_P_G <- cbind(levels(formation_list), PC1_P$value, PC1_G$value)
+colnames(PC1_P_G) <- c("formation", "PC1_P", "PC1_G")
+PC1_P_G <- as.data.frame(PC1_P_G)
+
+P_G_PC1 = ggplot(PC1_P_G) +
+  geom_point(aes(x = as.numeric(PC1_G), y = as.numeric(PC1_P),
+             col = formation)) +
+  geom_smooth(aes(x = as.numeric(PC1_G), y = as.numeric(PC1_P)),
+              method = "lm") +
+  xlab("% PC1 of P matrix") +
+  ylab("% PC1 of G matrix") +
+  scale_color_manual(values = col.form) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+P_G_PC1 #none negative; none above 1!
+summary(lm(as.numeric(PC1_P_G$PC1_P) ~ as.numeric(PC1_P_G$PC1_G)))
+#sig; slope = 0.62; r2 = 0.96
+
+ggsave(P_G_PC1, 
+       file = "./Results/PC1_P_G.png", 
+       width = 14, height = 10, units = "cm")
+
+## VALUES
+p.eig_variances
+g.eig_variances
+
+p.eig_var_mat = do.call(rbind, p.eig_variances)
+p.eig_var_mat = data.frame(p.eig_var_mat, rownames(p.eig_var_mat))
+p.eig_var = melt(p.eig_var_mat)
+colnames(p.eig_var) <- c("formation", "p.variable", "p.value")
+
+g.eig_var_mat = do.call(rbind, g.eig_variances)
+g.eig_var_mat = data.frame(g.eig_var_mat, rownames(g.eig_var_mat))
+g.eig_var = melt(g.eig_var_mat)
+colnames(g.eig_var) <- c("formation", "g.variable", "g.value")
+
+p.eig_var.1 <- p.eig_var[p.eig_var$p.variable == "X1", ]
+g.eig_var.1 <- g.eig_var[g.eig_var$g.variable == "X1", ]
+
+p.g.eig_var.1 <- merge(p.eig_var.1,
+                       g.eig_var.1,
+                       by = "formation")
+
+P_G_PC1.val = ggplot(p.g.eig_var.1,
+                   aes(x = g.value, y = p.value,
+                       group = formation,
+                       colour = formation)) +
+  geom_point() +
+  xlab("P matrix PC1 value") +
+  ylab("G matrix PC1 value")
+
+## VECTOR DIRECTION
+p.eig_vect = lapply(Pmat, function (x) {eigen(x)$vectors})
+g.eig_vect = lapply(Gmat, function (x) {eigen(x)$vectors})
+
+p.eig_vect_mat = do.call(rbind, p.eig_vect)
+p.eig_vect_mat = data.frame(p.eig_vect_mat, rownames(p.eig_vect_mat))
+p.eig_vect = melt(p.eig_var_mat)
+colnames(p.eig_var) <- c("formation", "p.variable", "p.value")
+
+
 #### CALCULATE E ----
 
 ##### PLOT P, E, AND G VARIATION ----
@@ -1119,6 +1200,7 @@ evolved_difference_unit_length_t4 <- f.normalize_vector(uki - wai)
 evolved_difference_unit_length_t5 <- f.normalize_vector(tai - uki)
 evolved_difference_unit_length_t6 <- f.normalize_vector(SHCSBSB - tai)
 
+###### OBSERVED EVOLVABILITY ------
 ### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
 #observed_evolvability_in_direction_of_change<-t(evolved_difference_unit_length)%*%as.matrix(G_matrix_1)%*%evolved_difference_unit_length
 observed_evolvability_in_direction_of_change_t1 <- t(evolved_difference_unit_length_t1)%*%as.matrix(G_mat_NKLS_ext)%*%evolved_difference_unit_length_t1
@@ -1128,6 +1210,7 @@ observed_evolvability_in_direction_of_change_t4 <- t(evolved_difference_unit_len
 observed_evolvability_in_direction_of_change_t5 <- t(evolved_difference_unit_length_t5)%*%as.matrix(G_mat_uki_ext)%*%evolved_difference_unit_length_t5
 observed_evolvability_in_direction_of_change_t6 <- t(evolved_difference_unit_length_t6)%*%as.matrix(G_mat_tai_ext)%*%evolved_difference_unit_length_t6
 
+###### OBSERVED CONDITIONAL EVOLVABILITY ------
 ### The conditional evolvability in the direction of divergence
 #observed_conditional_evolvability_in_direction_of_change<-1/(t(evolved_difference_unit_length)%*%solve(as.matrix(G_matrix_1))%*%evolved_difference_unit_length)
 observed_conditional_evolvability_in_direction_of_change_t1 <- 1/(t(evolved_difference_unit_length_t1)%*%solve(as.matrix(G_mat_NKLS_ext))%*%evolved_difference_unit_length_t1)
@@ -1150,6 +1233,8 @@ Beta <- randomBeta(10000, n_dimensions)
 #Beta = matrix of selection gradients
 #e and c are calculating variances of means; should not be negative
 #conditional must be equal to or smaller than e; often much small
+
+###### ESTIMATED CONDITIONAL EVOLVABILITY & EVOLVABILITY ------
 
 # Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
 X_t1 <- evolvabilityBeta(as.matrix(G_mat_NKLS_ext), Beta)
@@ -1205,13 +1290,15 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
                                    observed_conditional_evolvability_in_direction_of_change_t5,
                                    observed_conditional_evolvability_in_direction_of_change_t6,
                                    ""),
-                    row.names = formation_list)
+                    row.names = levels(formation_list))
 #NO NEGATIVE VALUES!
 
 write.csv(X_sum,
           "./Results/evolvability_summary.csv")
 
 # By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
+
+###### ANGLE CHANGE IN G ------
 
 ### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
 #eigen(as.matrix(G_matrix_1))$values[1]/sum(eigen(as.matrix(G_matrix_1))$values)
@@ -1241,7 +1328,6 @@ Gmax_uki_norm <- f.normalize_vector(Gmax_uki)
 Gmax_tai_norm <- f.normalize_vector(Gmax_tai)
 Gmax_SHCSBSB_norm <- f.normalize_vector(Gmax_SHCSBSB)
 
-###### ANGLES BETWEEN Gs ------
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm)
 # Calculate the angle in radians
@@ -1286,9 +1372,28 @@ angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #23.03 #AS DID THIS ONE 156.9671 (opposite of 180?)
 
 angle_diff_Gs <- c(angle_degrees.Gmax_NKLS_NKBS, angle_degrees.Gmax_NKBS_tewk,
-                   angle_degrees.Gmax_wai_uki, angle_degrees.Gmax_wai_uki,
+                   angle_degrees.Gmax_tewk_wai, angle_degrees.Gmax_wai_uki,
                    angle_degrees.Gmax_uki_tai, angle_degrees.Gmax_tai_SHCSBSB)
 
+angle.diff_Gs.time <- c("NKLS to NKBS", "NKBS to Tewkesbury",
+                        "Tewkesbury to Waipuru", "Waipuru to Upper Kai-Iwi",
+                        "Upper Kai-Iwi to Tainui", "Tainui to SHCSBSB")
+
+angle_diff_between_Gs <- as.data.frame(cbind(angle.diff_Gs.time, angle_diff_Gs))
+angle_diff_between_Gs$angle_diff_Gs <- as.numeric(angle_diff_between_Gs$angle_diff_Gs)
+
+for(i in 1:nrow(angle_diff_between_Gs)){
+  if(isTRUE(angle_diff_between_Gs$angle_diff_Gs[i] > 90)){
+    angle_diff_between_Gs$angle_diff_Gs[i] <- 180 - angle_diff_between_Gs$angle_diff_Gs[i]
+  }
+  else{
+    next
+  }
+}
+
+write.csv(angle_diff_between_Gs,
+          "./Results/angle_differences_between_Gs.csv",
+          row.names = FALSE)
 
 #### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX ----
 
@@ -1353,6 +1458,22 @@ angle_diff_Gmax_to_G <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_m
                           angle_degrees.Gmax_tewk_max, angle_degrees.Gmax_wai_max,
                           angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
                           angle_degrees.Gmax_SHCSBSB_max)
+angle_diff_between_Gmax_G <- as.data.frame(cbind(levels(formation_list), angle_diff_Gmax_to_G))
+colnames(angle_diff_between_Gmax_G) <- c("formation", "angle_diff_Gmax_to_G")
+angle_diff_between_Gmax_G$angle_diff_Gmax_to_G <- as.numeric(angle_diff_between_Gmax_G$angle_diff_Gmax_to_G)
+
+for(i in 1:nrow(angle_diff_between_Gmax_G)){
+  if(isTRUE(angle_diff_between_Gmax_G$angle_diff_Gmax_to_G[i] > 90)){
+    angle_diff_between_Gmax_G$angle_diff_Gmax_to_G[i] <- 180 - angle_diff_between_Gmax_G$angle_diff_Gmax_to_G[i]
+  }
+  else{
+    next
+  }
+}
+
+write.csv(angle_diff_between_Gmax_G,
+          "./Results/angle_differences_between_Gmax_G.csv",
+          row.names = FALSE)
 
 ##### LOOK AT TRENDS AS A FUNCTION OF TIME ------
 form.df <- form.meta[1:7,] #in same order as mean_by_formation
@@ -1368,11 +1489,12 @@ for(i in 1:nrow(form.df)){
 }
 form.df$age.range <- as.numeric(form.df$age.range)
 
-df.diff <- as.data.frame(cbind(angle_diff_Gmax_to_G, form.df,
-                               mean_by_formation))
-
-df.diff.g <- as.data.frame(cbind(angle_diff_Gs, form.df,
-                                 mean_by_formation))
+df.diff <- merge(angle_diff_between_Gmax_G, form.df,
+                 by.x = "formation",
+                 by.y = "formationCode")
+df.diff <- merge(df.diff, mean_by_formation,
+                 by.x = "formation",
+                 by.y = "formation")
 
 ggplot(data = df.diff) +
   geom_point(aes(x = age.range, y = angle_diff_Gmax_to_G)) + 
@@ -1385,9 +1507,8 @@ ggplot(data = df.diff) +
   scale_x_continuous(name = "Age Range (Ma)") +
   scale_y_continuous(name = "Angle away from Gmax")
 
-ggplot(data = df.diff) +
-  geom_point(aes(x = mean.age, y = angle_diff_Gmax_to_G,
-             col = formationCode)) + 
+p.ang_gmax <- ggplot(data = df.diff) +
+  geom_point(aes(x = mean.age, y = angle_diff_Gmax_to_G)) + 
   theme(text = element_text(size = 16),
         legend.position = "none",
         panel.grid.major = element_blank(), 
@@ -1395,8 +1516,13 @@ ggplot(data = df.diff) +
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black")) +
   scale_x_reverse(name = "Age (Ma)", limits = c(2.5, 0)) +
-  scale_y_continuous(name = "Angle away from Gmax") +
-  scale_color_manual(values = col.form)
+  scale_y_continuous(name = "Angle away from Gmax",
+                     lim = c(0, 90))
+
+ggsave(p.ang_gmax, 
+       file = "./Results/angle_gmax_diff.png", 
+       width = 14, height = 10, units = "cm")
+
 
 ggplot(data = df.diff) +
   geom_point(aes(x = mean.age, y = avg.zh,
@@ -1423,6 +1549,23 @@ ggplot(data = df.diff) +
   scale_x_continuous(name = "Age Range (Ma)") +
   scale_y_continuous(name = "Mean LN ZH") +
   scale_color_manual(values = col.form) #seeingly no correlation
+
+p.ang_g <- ggplot(angle_diff_between_Gs) +
+  geom_point(aes(x = angle.diff_Gs.time, y = angle_diff_Gs)) +
+  scale_x_discrete(name = "Formation Transition",
+                   guide = guide_axis(angle = 45)) +
+  scale_y_continuous(name = "Angle difference in G matrix", 
+                     lim = c(0, 90)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none",
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+ggsave(p.ang_g, 
+       file = "./Results/angle_g_diff.png", 
+       width = 20, height = 20, units = "cm")
 
 #### GLOBAL G ----
 

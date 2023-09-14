@@ -15,8 +15,8 @@ require(tidyverse)
 #### LOAD DATA ----
 ## CHANGE DATA FILE NAME AS NEEDED
 
-#output.oldest <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
-#nrow(output.oldest) #19346
+output.oldest <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
+nrow(output.oldest) #19346
 
 #output.old <- read.csv("./Data/output_21Jun2023_Stegniator.csv", header = TRUE)
 #nrow(output.old) #15783 #didn't ignore zooids, just filtered out images
@@ -25,7 +25,7 @@ require(tidyverse)
 #nrow(output) #7202 
 
 output <- read.csv("./Data/output_4Aug2023_done.csv", header = TRUE)
-nrow(output) #6443 
+nrow(output) #6443
 
 
 #AP_images <- read.csv("./Data/images_from_AP.csv", header = TRUE)
@@ -60,6 +60,27 @@ output$new.id <- paste0(output$box_id, "_", output$image)
 xx <- output[duplicated(output$new.id),]
 nrow(xx) #0! yay!
 
+output.oldest$fileName <- gsub("/media/voje-lab/bryozoa/imaging/Stegino_images/combined/",
+                        "",
+                        output.oldest$id)
+
+output.oldest$image <- gsub(".tif",
+                     "",
+                     output.oldest$fileName)
+
+zz.old <- output.oldest[duplicated(output.oldest$box_id),]
+nrow(zz.old) #3
+zz.old
+#82_1405_433_617
+#598_1024_434_666
+#880_646_517_625
+
+## DO WITH OLDER DATA SET SO THAT HAVE SOMETHING TO COMPARE
+output.oldest$new.id <- paste0(output.oldest$box_id, "_", output.oldest$image)
+xx.old <- output.oldest[duplicated(output.oldest$new.id),]
+nrow(xx.old) #0! yay!
+
+
 #output$specimenNR <- c()
 #for(i in 1:nrow(output)){
 #  output$specimenNR[i] <- paste0(str_split(output$image[i], fixed("_"))[[1]][1],
@@ -80,7 +101,19 @@ meta.images <- merge(output, bryo.meta.trim,
                      by.x = "image", by.y = "imageName",
                      all.x = TRUE, all.y = FALSE)
 
-nrow(meta.images) #6443
+nrow(meta.images) #6443 #zooids
+length(unique(meta.images$newSpecimenNR)) #732 colonies
+length(unique(meta.images$fileName)) #1395 images
+
+####### OLD SAMPLING NUMBERS ------
+
+meta.images.old <- merge(output.oldest, bryo.meta.trim,
+                     by.x = "image", by.y = "imageName",
+                     all.x = TRUE, all.y = FALSE)
+
+nrow(meta.images.old) #19346
+length(unique(meta.images.old$newSpecimenNR)) #904 colonies
+length(unique(meta.images.old$fileName)) #1880 iimages
 
 
 ## CHANGE DATE EXT EVERYTIME
