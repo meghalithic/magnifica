@@ -1391,6 +1391,14 @@ for(i in 1:nrow(angle_diff_between_Gs)){
   }
 }
 
+angle_diff_between_Gs$angle.diff_Gs.time <- factor(angle_diff_between_Gs$angle.diff_Gs.time,
+                                                   levels = c("NKLS to NKBS", 
+                                                              "NKBS to Tewkesbury",
+                                                              "Tewkesbury to Waipuru", 
+                                                              "Waipuru to Upper Kai-Iwi",
+                                                              "Upper Kai-Iwi to Tainui", 
+                                                              "Tainui to SHCSBSB"))
+
 write.csv(angle_diff_between_Gs,
           "./Results/angle_differences_between_Gs.csv",
           row.names = FALSE)

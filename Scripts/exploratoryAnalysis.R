@@ -668,27 +668,49 @@ write.csv(reg.colonies,
 
 range(reg.colonies$zh)
 range(small.colonies$zh)
+mean(reg.colonies$zh)
+median(reg.colonies$zh)
+sd(reg.colonies$zh)
 
-range(reg.colonies$zh[reg.colonies$formation == "NKBS"])
+range(reg.colonies$zh[reg.colonies$formation == "NKLS"]) #450.4467 1701.3353
+mean(reg.colonies$zh[reg.colonies$formation == "NKLS"]) #803.359
+sd(reg.colonies$zh[reg.colonies$formation == "NKLS"]) #101.0176
+
+range(reg.colonies$zh[reg.colonies$formation == "NKBS"]) #494.0033 1495.0723
 range(small.colonies$zh[small.colonies$formation == "NKBS"])
 mean(reg.colonies$zh[reg.colonies$formation == "NKBS"]) #778.014
+sd(reg.colonies$zh[reg.colonies$formation == "NKBS"]) #93.14028
 mean(small.colonies$zh[small.colonies$formation == "NKBS"]) #392.4272; diff of 385.5868
 median(reg.colonies$zh[reg.colonies$formation == "NKBS"])
 median(small.colonies$zh[small.colonies$formation == "NKBS"])
 
-range(reg.colonies$zh[reg.colonies$formation == "Waipuru"])
+range(reg.colonies$zh[reg.colonies$formation == "Tewkesbury"]) #330.5689 1668.3389
+mean(reg.colonies$zh[reg.colonies$formation == "Tewkesbury"]) #780.6346
+sd(reg.colonies$zh[reg.colonies$formation == "Tewkesbury"]) #99.51407
+
+range(reg.colonies$zh[reg.colonies$formation == "Waipuru"]) #544.617 1361.006
 range(small.colonies$zh[small.colonies$formation == "Waipuru"])
 mean(reg.colonies$zh[reg.colonies$formation == "Waipuru"]) #801.5489
+sd(reg.colonies$zh[reg.colonies$formation == "Waipuru"]) #95.42124
 mean(small.colonies$zh[small.colonies$formation == "Waipuru"]) #379.6889; diff of 421.86
 median(reg.colonies$zh[reg.colonies$formation == "Waipuru"])
 median(small.colonies$zh[small.colonies$formation == "Waipuru"])
 
-range(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"])
+range(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"]) #561.1774 1362.1250
 range(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"])
 mean(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"]) #885.2919
+sd(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"]) #118.5598
 mean(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"]) #392.8787; diff of 492.4132
 median(reg.colonies$zh[reg.colonies$formation == "Upper Kai-Iwi"])
 median(small.colonies$zh[small.colonies$formation == "Upper Kai-Iwi"])
+
+range(reg.colonies$zh[reg.colonies$formation == "Tainui"]) #592.3886 1203.1921
+mean(reg.colonies$zh[reg.colonies$formation == "Tainui"]) #947.1062
+sd(reg.colonies$zh[reg.colonies$formation == "Tainui"]) #95.33073
+
+range(reg.colonies$zh[reg.colonies$formation == "SHCSBSB"]) #418.482 1333.873
+mean(reg.colonies$zh[reg.colonies$formation == "SHCSBSB"]) #932.8167
+sd(reg.colonies$zh[reg.colonies$formation == "SHCSBSB"]) #95.79008
 
 ####### SAMPLING NUMBERS ------
 
