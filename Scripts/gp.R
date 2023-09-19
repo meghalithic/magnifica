@@ -901,7 +901,7 @@ write.csv(corr.p.g.form,
 ## EXAMINING CHANGE IN G THROUGH TIME
 
 ## PERCENT EXPLAINED BY PC1
-PC1_P <- p.eig_per[p.eig_per$variable == "X1",]
+P <- p.eig_per[p.eig_per$variable == "X1",]
 PC1_G <- g.eig_per[g.eig_per$variable == "X1",]
 PC1_P_G <- cbind(levels(formation_list), PC1_P$value, PC1_G$value)
 colnames(PC1_P_G) <- c("formation", "PC1_P", "PC1_G")
@@ -1559,7 +1559,8 @@ ggplot(data = df.diff) +
   scale_color_manual(values = col.form) #seeingly no correlation
 
 p.ang_g <- ggplot(angle_diff_between_Gs) +
-  geom_point(aes(x = angle.diff_Gs.time, y = angle_diff_Gs)) +
+  geom_point(aes(x = angle.diff_Gs.time, y = angle_diff_Gs),
+             size = 5, shape = 17) +
   scale_x_discrete(name = "Formation Transition",
                    guide = guide_axis(angle = 45)) +
   scale_y_continuous(name = "Angle difference in G matrix", 

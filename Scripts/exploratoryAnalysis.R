@@ -23,7 +23,7 @@ col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67",
                "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
 
 #### LOAD DATA ----
-images.meta <- read.csv("./Data/meta.images.8Sept2023.csv",
+images.meta <- read.csv("./Data/meta.images_8Sept2023.csv",
                    header = TRUE,
                    sep = ",")
 
@@ -529,6 +529,7 @@ p.ow.zh <- ggplot(data = df) +
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   scale_y_continuous(name = "LN Operculum mid-width") +
   scale_x_continuous(name = "LN Zooid height")
+summary(lm(df$ln.ow.m ~ df$ln.zh)) #slope = 0.772476
 
 #ggsave(p.ow.zh, file = "./Results/ow.zh.scaling.png", width = 14, height = 10, units = "cm")
 
@@ -666,6 +667,10 @@ write.csv(reg.colonies,
           "./Results/colonies.traits_8Sept2023.csv",
           row.names = FALSE)
 
+length(unique(df$colony.id)) #572
+length(unique(reg.colonies$colony.id)) #541
+length(unique(small.colonies$colony.id)) #31
+
 range(reg.colonies$zh)
 range(small.colonies$zh)
 mean(reg.colonies$zh)
@@ -711,6 +716,20 @@ sd(reg.colonies$zh[reg.colonies$formation == "Tainui"]) #95.33073
 range(reg.colonies$zh[reg.colonies$formation == "SHCSBSB"]) #418.482 1333.873
 mean(reg.colonies$zh[reg.colonies$formation == "SHCSBSB"]) #932.8167
 sd(reg.colonies$zh[reg.colonies$formation == "SHCSBSB"]) #95.79008
+
+ggplot() +
+  geom_histogram(aes(reg.colonies$ln.zh),
+                 color = "#1F9E89FF", fill = "#1F9E89FF") +
+  geom_histogram(aes(small.colonies$ln.zh),
+                 color = "#482878FF", fill = "#482878FF") +
+  ggtitle("Zooid height of Small and 'Regular' colonies") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  scale_y_continuous(name = "Frequency") +
+  scale_x_continuous(name = "LN Zooid Height")
+
+summary(lm(reg.colonies$ln.ow.m ~ reg.colonies$ln.zh)) #slope = 0.27
+summary(lm(small.colonies$ln.ow.m ~ small.colonies$ln.zh)) #slope = 0.17
 
 ####### SAMPLING NUMBERS ------
 
@@ -972,8 +991,15 @@ box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",],
   scale_color_manual(values = col.form) +
   scale_fill_manual(values = col.form) +
   ggtitle("Boxplots of LN Zooid Heights") +
-  xlab("Formation") +
-  ylab("LN Zooid Height (um)")
+  scale_x_discrete(name = "Formation",
+                   guide = guide_axis(angle = 45)) +
+  ylab("LN Zooid Height (um)") + 
+  theme(text = element_text(size = 16),
+        legend.position = "none",
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
 
 ggsave(box.ln.zh, 
        file = "./Results/boxplot.ln.zh.png", 

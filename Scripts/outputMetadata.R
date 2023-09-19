@@ -118,7 +118,7 @@ length(unique(meta.images.old$fileName)) #1880 iimages
 
 ## CHANGE DATE EXT EVERYTIME
 write.csv(meta.images,
-          "./Data/meta.images.8Sept2023.csv",
+          "./Data/meta.images_8Sept2023.csv",
           row.names = FALSE)
 
 #### OLD ----
