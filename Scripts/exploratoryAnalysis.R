@@ -129,7 +129,8 @@ p.o.side.rl <- ggplot() +
   scale_y_continuous(name = "Operculum Length Right Side (pixels)") +
   scale_x_continuous(name = "Operculum Length Left Side (pixels)")
 
-ggsave(p.o.side.rl, file = "./Results/operculum_length.png", width = 14, height = 10, units = "cm")
+ggsave(p.o.side.rl, 
+       file = "./Results/operculum.length.png", width = 14, height = 10, units = "cm")
 
 summary(lm(o.side.r ~ o.side.l)) 
 # slope = 0.912352; p-value < 2.2e-16; r2 = 0.9494
@@ -178,7 +179,8 @@ p.c.side.rl <- ggplot() +
   scale_y_continuous(name = "Cryptocyst Length Right Side (pixels)") +
   scale_x_continuous(name = "Cryptocyst Length Left Side (pixels)")
 
-ggsave(p.c.side.rl, file = "./Results/cryptocyst_length.png", width = 14, height = 10, units = "cm")
+ggsave(p.c.side.rl, 
+       file = "./Results/cryptocyst.length.png", width = 14, height = 10, units = "cm")
 
 summary(lm(c.side.r ~ c.side.l)) 
 # slope = 0.867776; p-value: < 2.2e-16; r2 = 0.7858
@@ -197,7 +199,8 @@ oh.model <- lmodel2(formula = oh.r ~ oh.l,
                     range.y = "relative")
 oh.model$regression.results #slope = 1, no asymmetry
 
-#ggsave(p.oh.rl, file = "./Results/operculum_height.png", width = 14, height = 10, units = "cm")
+#ggsave(p.oh.rl, 
+#file = "./Results/operculum.height.png", width = 14, height = 10, units = "cm")
 
 ##### MAKE TABLE & SCALE CORRECT -----
 #For 30x it is 0.606 pixels per um(micrometer)
@@ -365,7 +368,8 @@ p.dist <- ggplot(traits.melt) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN trait measurement (pixels)")
 
-ggsave(p.dist, file = "./Results/trait_distribution_8Sept2023.png", width = 14, height = 10, units = "cm")
+ggsave(p.dist, 
+       file = "./Results/trait.distribution_8Sept2023.png", width = 14, height = 10, units = "cm")
 
 traits.melt.trim <- traits.melt[traits.melt$measurementType == "ln.zh" |
                                 traits.melt$measurementType == "ln.mpw.b" |
@@ -479,7 +483,8 @@ p.ln.zh <- ggplot(df) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN Zooid Height")
 
-#ggsave(p.zh, file = "./Results/zooid_height_8Sept2023.png", width = 14, height = 10, units = "cm")
+#ggsave(p.zh, 
+#  file = "./Results/zooid.height_8Sept2023.png", width = 14, height = 10, units = "cm")
 
 ggplot(df) +
   geom_histogram(aes(x = ln.zh)) +
@@ -501,7 +506,8 @@ p.zh.form <- ggplot(df) +
   scale_y_continuous(name = "Density") +
   scale_x_continuous(name = "LN Zooid Height")
 
-#ggsave(p.zh.form, file = "./Results/zooid_height_by_formation_8Sept2023.png", width = 14, height = 10, units = "cm")
+#ggsave(p.zh.form, 
+# file = "./Results/zooid.height.by.formation_8Sept2023.png", width = 14, height = 10, units = "cm")
 
 #only see bimodal in Waipurpu, NKBS, Upper Kai-Iwi
 
@@ -531,7 +537,8 @@ p.ow.zh <- ggplot(data = df) +
   scale_x_continuous(name = "LN Zooid height")
 summary(lm(df$ln.ow.m ~ df$ln.zh)) #slope = 0.772476
 
-#ggsave(p.ow.zh, file = "./Results/ow.zh.scaling.png", width = 14, height = 10, units = "cm")
+#ggsave(p.ow.zh, 
+#file = "./Results/ow.zh.scaling.png", width = 14, height = 10, units = "cm")
 
 #look at 4 images:
 #2 with the largest operculum width

@@ -195,7 +195,8 @@ p.o.side = ggplot(data = df) +
 Fig = list(p.zh, p.mpw.b, p.cw.m, p.cw.d, p.ow.m, p.oh, p.c.side, p.o.side)
 ml <- marrangeGrob(Fig, nrow = 4, ncol = 2)
 ml
-ggsave(ml, file = "./Results/trait.interest_distribution_reg.png", 
+ggsave(ml, 
+       file = "./Results/trait.distribution.reg.png", 
        width = 14, height = 10, units = "cm")
 
 ## most would be normal without small hump...
@@ -374,7 +375,8 @@ means = dat_lg_N %>%
 #   labs(x = paste("LD1 (", percent(prop.lda[1]), ")", sep = ""),
 #        y = paste("LD2 (", percent(prop.lda[2]), ")", sep = ""))
 # p1
-# ggsave(p1, file = "./Results/trait_discriminant_27Jun2023.png", 
+# ggsave(p1, 
+#.       file = "./Results/trait.discriminant_27Jun2023.png", 
 #        width = 14, height = 10, units = "cm")
 
 
@@ -452,7 +454,8 @@ P_PC_dist = ggplot(p.eig_per,
   ylab("%Variation in the PC")
 P_PC_dist #none negative; none above 1!
 
-ggsave(P_PC_dist, file = "./Results/P_PC_dist_form_reg.png", 
+ggsave(P_PC_dist, 
+       file = "./Results/P.PC.dist.reg.png", 
        width = 14, height = 10, units = "cm") 
 #NKBS, Waipuru, Upper Kai-Iwi 
 
@@ -497,7 +500,8 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 
 data.list = list(model_G, dat_lg_N, form_data, mean_by_formation_colony)
 
-save(data.list, file = "./Results/g_matrices_data_form_reg.RData")
+save(data.list, 
+     file = "./Results/g_matrices_data_form_reg.RData")
 
 load(file="./Results/g_matrices_data_form_reg.RData") #load the g matrices calculated above 
 model_G <- data.list[[1]]
@@ -676,7 +680,8 @@ G_PC_dist = ggplot(g.eig_per,
   ylab("%Variation in the PC")
 G_PC_dist #one negative; none above 1!
 
-ggsave(G_PC_dist, file = "./Results/G_PC_dist_form_reg.png", 
+ggsave(G_PC_dist, 
+       file = "./Results/G.PC.dist.reg.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
@@ -922,7 +927,7 @@ summary(lm(as.numeric(PC1_P_G$PC1_P) ~ as.numeric(PC1_P_G$PC1_G)))
 #sig; slope = 0.62; r2 = 0.96
 
 ggsave(P_G_PC1, 
-       file = "./Results/PC1_P_G.png", 
+       file = "./Results/PC1.P.G.png", 
        width = 14, height = 10, units = "cm")
 
 ## VALUES
@@ -1091,7 +1096,8 @@ G_mat_NKLS <- round(as.matrix(G_matrix_NKLS), 6) #6 works better than 10
 is.symmetric.matrix(G_mat_NKLS) #TRUE
 is.positive.definite(G_mat_NKLS) #FALSE
 
-#saveRDS(G_matrix_NKLS, file = "~/Desktop/NKLS_G_matrix.rds")
+#saveRDS(G_matrix_NKLS,
+#file = "~/Desktop/NKLS_G_matrix.rds")
 
 G_mat_NKBS <- round(as.matrix(G_matrix_NKBS), 6)
 is.symmetric.matrix(G_mat_NKBS) #TRUE
@@ -1294,7 +1300,7 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
 #NO NEGATIVE VALUES!
 
 write.csv(X_sum,
-          "./Results/evolvability_summary.csv")
+          "./Results/evolvability.summary.csv")
 
 # By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
 
@@ -1400,7 +1406,7 @@ angle_diff_between_Gs$angle.diff_Gs.time <- factor(angle_diff_between_Gs$angle.d
                                                               "Tainui to SHCSBSB"))
 
 write.csv(angle_diff_between_Gs,
-          "./Results/angle_differences_between_Gs.csv",
+          "./Results/angle.differences.between.Gs.csv",
           row.names = FALSE)
 
 #### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX ----
@@ -1480,7 +1486,7 @@ for(i in 1:nrow(angle_diff_between_Gmax_G)){
 }
 
 write.csv(angle_diff_between_Gmax_G,
-          "./Results/angle_differences_between_Gmax_G.csv",
+          "./Results/angle.differences.between.Gmax.G.csv",
           row.names = FALSE)
 
 ##### LOOK AT TRENDS AS A FUNCTION OF TIME ------
@@ -1528,7 +1534,7 @@ p.ang_gmax <- ggplot(data = df.diff) +
                      lim = c(0, 90))
 
 ggsave(p.ang_gmax, 
-       file = "./Results/angle_gmax_diff.png", 
+       file = "./Results/angle.gmax.diff.png", 
        width = 14, height = 10, units = "cm")
 
 
@@ -1573,7 +1579,7 @@ p.ang_g <- ggplot(angle_diff_between_Gs) +
         axis.line = element_line(colour = "black"))
 
 ggsave(p.ang_g, 
-       file = "./Results/angle_g_diff.png", 
+       file = "./Results/angle.g.diff.png", 
        width = 20, height = 20, units = "cm")
 
 #### GLOBAL G ----
@@ -1600,7 +1606,8 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
                          nitt = 1500000, thin = 1000, burnin = 500000,
                          prior = prior.glob, verbose = TRUE)
 
-save(model_Global, file = "./Results/global_matrices_data_form_reg.RData")
+save(model_Global, 
+     file = "./Results/global_matrices_data_form_reg.RData")
 
 load(file="./Results/global_matrices_data_form_reg.RData") #load the g matrices calculated above 
 model_Global <- data.list[[1]]
@@ -1642,7 +1649,8 @@ Glob_PC_dist = ggplot(glob.eig_per_mat,
   ylab("%Variation in the PC")
 Glob_PC_dist #one negative; none above 1!
 
-ggsave(Glob_PC_dist, file = "./Results/Global_G_PC_dist_form_reg.png", 
+ggsave(Glob_PC_dist, 
+       file = "./Results/GlobalG.PC.dist.reg.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
