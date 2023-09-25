@@ -47,21 +47,11 @@ library(matrixcalc)
 
 #### LOAD DATA ----
 
-#df <- read.csv("./Results/traits_26Jun2023.csv",
-#               header = TRUE, 
-#               sep = ",",
-#               stringsAsFactors = FALSE)
-
 df <- read.csv("./Results/colonies.traits.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
 #already have small zooid removed and at least 5 zooids per colony
-
-sm.df <- read.csv("./Results/small.colonies.traits.csv",
-                  header = TRUE, 
-                  sep = ",",
-                  stringsAsFactors = FALSE)
 
 form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv",
                       header = TRUE,
@@ -1582,10 +1572,51 @@ ggsave(p.ang_g,
        file = "./Results/angle.g.diff.png", 
        width = 20, height = 20, units = "cm")
 
+##### LOOK AT TRENDS AS A FUNCTION OF TEMPERATURE ------
+
+df.form.pc <- merge(x = PC1_P_G , form.meta,
+                 by.x = "formation",
+                 by.y = "formationCode",
+                 all.x = TRUE,
+                 all.y = FALSE)
+
+bottom = as.numeric(df.form.pc$Isotope_Stage_Start)
+top = as.numeric(df.form.pc$Isotope_Stage_End)
+df.form.pc$med.O18 <- c()
+df.form.pc$sd.med.O18 <- c()
+df.form.pc$n.O18 <- c()
+for (i in 1:nrow(df.form.pc)){
+  temp = oxy.18$d18O[which(oxy.18$Time <= bottom[i] & oxy.18$Time >= top[i])]
+  df.form.pc$med.O18[i] = median(temp)
+  df.form.pc$sd.med.O18[i] = sd(temp)
+  df.form.pc$n.O18[i] <- length(temp)
+}
+
+p.temp.pc <- ggplot(df.form.pc) +
+  geom_point(aes(x = med.O18, y = as.numeric(PC1_P))) + 
+  geom_smooth(aes(x = med.O18, y = as.numeric(PC1_P)),
+              method = "lm") +
+  theme(text = element_text(size = 16)) +
+  scale_x_continuous(expression(mean~delta^18~O)) +
+  scale_y_continuous(expression(PC1~of~P~matrix)) + 
+  theme(text = element_text(size = 16),
+        legend.position = "none",
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"))
+
+ggsave(p.temp.pc, 
+       file = "./Results/temp.pc.png", 
+       width = 14, height = 10, units = "cm")
+#NO PATTERN
+summary(lm(df.form.pc$PC1_P ~ df.form.pc$med.O18))
+#slope = 0.16682; p = 0.07002, R2 = 0.4162
+
 #### GLOBAL G ----
 
 ##### PRIORS -----
-#save(dat_lg_N, file = "./Results/dat_lg_N.RData")
+save(dat_lg_N, file = "./Results/dat_lg_N.RData")
 
 #dat_lg_N.com = dat_lg_N[complete.cases(dat_lg_N),] #didn't fix anything
 phen.var.glob = cov(dat_lg_N[, 4:11]) #traits of ALL; correct for colony and formation later
@@ -1828,27 +1859,3 @@ angle_radians.Gmax_glob_SHCSBSB <- acos(dot_product.Gmax_glob_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Gmax_glob_SHCSBSB <- angle_radians.Gmax_glob_SHCSBSB * (180 / pi)
 #10.81873
-
-#### NOW INCLUDE SM ZOOIDS ----
-
-df.sm.trim <- sm.df %>%
-  dplyr::select(zooid.id, colony.id, formation, matches(traits))
-
-sm.df = as.data.frame(df.sm.trim)
-
-##### COMBINE -----
-
-all.df <- rbind(df, sm.df)
-
-##### REMAKE THINGS -----
-zooid_list.all <- unique(all.df$zooid.id)
-length(zooid_list.all) #5971
-
-colony_list.all <- unique(all.df$colony.id)
-length(colony_list.all) #572
-
-# arrange formations from oldest to youngest
-all.df$formation <- factor(all.df$formation, 
-                           levels = c("NKLS", "NKBS", "Tewkesbury", 
-                                      "Waipuru", "Upper Kai-Iwi", 
-                                      "Tainui", "SHCSBSB")) 
