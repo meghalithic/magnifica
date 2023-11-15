@@ -10,6 +10,7 @@
 
 source("./Scripts/0-env.R")
 
+
 #output.oldest <- read.csv("./Data/output_May2023_Stegniator.csv", header = TRUE)
 #nrow(output.oldest) #19346
 
@@ -19,8 +20,36 @@ source("./Scripts/0-env.R")
 #output <- read.csv("./Data/output_31jul2023_Steginator.csv", header = TRUE)
 #nrow(output) #7202 
 
-output <- read.csv("./Data/output_4Aug2023_done.csv", header = TRUE)
-nrow(output) #6443
+output.fossil <- read.csv("./Data/output_4Aug2023_done.csv", header = TRUE)
+nrow(output.fossil) #6443
+
+output.modern <- read.csv("./Data/output_modern_trim.csv",
+                          header = TRUE)
+nrow(output.modern) #922
+## remove images that are not magnifica
+colnames(output.modern)
+head(output.modern$id)
+#images are 1200, 1203, 1205, 1216, 1220
+rm.img <- c("bryozoa_lab_images/mab-modern-jpg/1200_CC_1_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1200_CC_2_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1203_CC_1_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1203_CC_2_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1203_CC_3_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1205_CC_1_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1205_CC_2_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1205_CC_3_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1205_CC_4_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1216_CC_1_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1216_CC_2_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1216_CC_3_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1220_CC_1_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1220_CC_2_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1220_CC_3_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1220_CC_4_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1220_CC_5_15v_x30_BSE.jpg",
+            "bryozoa_lab_images/mab-modern-jpg/1220_CC_6_15v_x30_BSE.jpg")
+output.modern <- output.modern[!(output.modern$id %in% rm.img),]
+nrow(output.modern) #613
 
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
@@ -30,17 +59,25 @@ bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
 
 nrow(bryo.meta) #1890
 
-nrow(output) #6443
-colnames(output)
-output$id[1]
+output.modern$image <- gsub("bryozoa_lab_images/mab-modern-jpg/",
+                             "",
+                             output.modern$id)
 
-output$fileName <- gsub("bryozoa_lab_images/",
-                        "",
-                        output$id)
+
+output.fossil$image <- gsub("bryozoa_lab_images/",
+                             "",
+                             output.fossil$id)
+
+output <- as.data.frame(rbind(output.fossil, output.modern))
+
 
 output$image <- gsub(".jpg",
                      "",
-                     output$fileName)
+                     output$image)
+
+nrow(output) #7056
+colnames(output)
+output$id[1]
 
 zz <- output[duplicated(output$box_id),]
 nrow(zz) #3
@@ -64,12 +101,26 @@ bryo.meta.trim$imageName <- gsub(".tif", "",
                                  bryo.meta.trim$fileName.tif)
 
 meta.images <- merge(output, bryo.meta.trim,
-                     by.x = "image", by.y = "imageName",
+                     by.x = "image", by.y = "imageName", #don't use image for bryo.meta.trim
                      all.x = TRUE, all.y = FALSE)
 
-nrow(meta.images) #6443 #zooids
-length(unique(meta.images$newSpecimenNR)) #732 colonies
-length(unique(meta.images$fileName)) #1395 images
+nrow(meta.images) #7056 #zooids
+length(unique(meta.images$image)) #1455 images
+
+unique(meta.images$formation)
+meta.images$image[is.na(meta.images$formation)]
+meta.images$formation[is.na(meta.images$formation)] <- "modern"
+unique(meta.images$formation)
+
+sp.nr <- meta.images$image[is.na(meta.images$newSpecimenNR)]
+sp.nr.sp <- str_split(sp.nr, "_")
+sp.nr.new <- c()
+for(i in 1:length(sp.nr.sp)){
+    sp.nr.new[i] <- paste0(sp.nr.sp[[i]][1], sp.nr.sp[[i]][2])
+}
+meta.images$newSpecimenNR[is.na(meta.images$newSpecimenNR)] <- sp.nr.new
+
+length(unique(meta.images$newSpecimenNR)) #751 colonies
 
 ####### COMPARE TO OLD SAMPLING NUMBERS ------
 
@@ -99,6 +150,6 @@ length(unique(meta.images.old$fileName)) #1880 iimages
 #### WRITE OUT DATASET ----
 ## CHANGE DATE EXT EVERYTIME
 write.csv(meta.images,
-          "./Data/meta.images_29Sept2023.csv",
+          "./Data/meta.images_15Nov2023.csv", #includes modern data now
           row.names = FALSE)
 
