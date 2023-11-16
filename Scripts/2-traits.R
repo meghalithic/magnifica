@@ -11,7 +11,7 @@
 
 source("./Scripts/0-env.R")
 
-images.meta <- read.csv("./Data/meta.images_29Sept2023.csv", 
+images.meta <- read.csv("./Data/meta.images_15Nov2023.csv", #meta.images_29Sept2023.csv", 
                         header = TRUE,
                         sep = ",")
 #output from outputMetadata.R
@@ -22,28 +22,38 @@ df.filter <- read.table("./Data/filteredImages.csv",
 
 #### EXPLORE DATA ----
 nrow(df.filter) #1834
-nrow(images.meta) #6443
+nrow(images.meta) #7056
 
 #### MANIPULATE DATA ####
 
 #extract only the image name, not the entire path; helps match df.filter and images.meta
+#merge by images.meta$image
 df.filter$fileName.old <- c()
 for(i in 1:nrow(df.filter)){
   df.filter$fileName.old[i] <- str_split(df.filter$path.tif[i], "/")[[1]][length(str_split(df.filter$path.tif[i], "/")[[1]])]
 }
 
-images.filter <- images.meta[images.meta$fileName.tif %in% df.filter$fileName.old,]
-nrow(images.filter) #6438
-length(unique(images.filter$fileName.tif)) #1394
+images.filter.fossil <- images.meta[images.meta$fileName.tif %in% df.filter$fileName.old,]
+nrow(images.filter.fossil) #6438
+length(unique(images.filter$fileName.tif)) #1395
+
+images.filter.modern <- images.meta[images.meta$formation == "modern",]
+nrow(images.filter.modern) #613
+
+images.filter <- as.data.frame(rbind(images.filter.fossil,
+                                     images.filter.modern))
+nrow(images.filter) #7051
 
 images.filter$formation <- factor(images.filter$formation, 
                                   levels = c("NKLS", "NKBS", "Tewkesbury",
                                              "Waipuru", "Upper Kai-Iwi",
-                                             "Tainui", "SHCSBSB")) 
+                                             "Tainui", "SHCSBSB", "modern")) 
 
 ##### CREATE IDs -----
-images.filter$zooid.id <- paste0(images.filter$box_id, "_", images.filter$image)
+images.filter$zooid.id <- paste0(images.filter$box_id, "_", images.filter$fileName)
 colnames(images.filter)[colnames(images.filter) == 'newSpecimenNR'] <- 'colony.id'
+
+length(unique(images.filter$colony.id[images.filter$formation == "modern"])) #19
 
 #### CALCULATE DISTANCES ----
 #measurements based off Voje et al. 2020 https://doi.org/10.5061/dryad.t4b8gthxm
@@ -115,10 +125,10 @@ p.o.side.rl <- ggplot() +
   scale_x_continuous(name = "Operculum Length Left Side (pixels)")
 
 ggsave(p.o.side.rl, 
-       file = "./Results/operculum.length.png", width = 14, height = 10, units = "cm")
+       file = "./Results/operculum.length.w.modern.png", width = 14, height = 10, units = "cm")
 
 summary(lm(o.side.r ~ o.side.l)) 
-# slope = 0.912352; p-value < 2.2e-16; r2 = 0.9494
+# slope = 0.91873; p-value < 2.2e-16; r2 = 0.95
 
 ## Operculum height
 oh <- (.5/ow.b)*sqrt(ow.b+oh.r+oh.l)
@@ -165,11 +175,11 @@ p.c.side.rl <- ggplot() +
   scale_x_continuous(name = "Cryptocyst Length Left Side (pixels)")
 
 ggsave(p.c.side.rl, 
-       file = "./Results/cryptocyst.length.png", 
+       file = "./Results/cryptocyst.length.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
 summary(lm(c.side.r ~ c.side.l)) 
-# slope = 0.867776; p-value: < 2.2e-16; r2 = 0.7858
+# slope = 0.86534; p-value: < 2.2e-16; r2 = 0.7802
 
 ## right v left side of operculum
 p.oh.rl <- ggplot() +
@@ -181,7 +191,7 @@ p.oh.rl <- ggplot() +
   scale_x_continuous(name = "Operculum Height Left Side (pixels)")
 
 ggsave(p.oh.rl, 
-       file = "./Results/operculum.height.png", 
+       file = "./Results/operculum.height.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
 summary(lm(oh.r ~ oh.l)) 
@@ -230,17 +240,17 @@ traits.df$ln.area <- log(traits.df$area)
 samp.zoo <- traits.df %>%
     dplyr::group_by(colony.id) %>%
     dplyr::summarize(n.zooid = length(unique(zooid.id)))
-nrow(samp.zoo) #731 colonies total
+nrow(samp.zoo) #750 colonies total
 
 length(samp.zoo$colony.id[samp.zoo$n.zooid < 5]) #159 colonies to remove
 keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
-length(keep) #572 colonies
+length(keep) #591 colonies
 
 df <- traits.df[traits.df$colony.id %in% keep,]
-nrow(df) #5971
+nrow(df) #6584
 
 #### WRITE OUT DATASET ----
 
 write.csv(df,
-          "./Results/traits_29Sept2023.csv",
+          "./Results/traits_15Nov2023.csv",
           row.names = FALSE)

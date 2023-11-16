@@ -36,7 +36,7 @@ require(tidyverse)
 #SHCSBSB = #FF61CC
 
 col.form = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
-             "#00A9FF", "#C77CFF", "#FF61CC")
+             "#00A9FF", "#C77CFF", "#FF61CC", "#00BFC4")
 
 
 col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 

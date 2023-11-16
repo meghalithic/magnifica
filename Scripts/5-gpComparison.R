@@ -826,7 +826,7 @@ p.temp.pc <- ggplot(df.form.pc) +
     geom_smooth(aes(x = med.O18, y = as.numeric(PC1_P)),
                 method = "lm") +
     theme(text = element_text(size = 16)) +
-    scale_x_continuous(expression(mean~delta^18~O)) +
+    scale_x_continu ous(expression(mean~delta^18~O)) +
     scale_y_continuous(expression(PC1~of~P~matrix)) + 
     theme(text = element_text(size = 16),
           legend.position = "none",

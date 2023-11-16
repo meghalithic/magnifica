@@ -13,7 +13,7 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("Results/traits_29Sept2023.csv",
+df <- read.csv("Results/traits_15Nov2023.csv", #29Sept2023.csv",
                header = TRUE)
 #output from traits.R
 
@@ -125,7 +125,7 @@ length(unique(reg.colonies$colony.id)) #541
 
 ##### WRITE OUT DATASET ----
 write.csv(reg.colonies,
-          "./Results/colonies.traits_29Sept2023.csv",
+          "./Results/colonies.traits_15Nov2023.csv",
           row.names = FALSE)
 
 ##### ABOUT TRAITS -----
@@ -236,7 +236,7 @@ means = df %>%
 
 sum.data.list = list(mean_by_formation, mean_by_formation_colony)
 save(sum.data.list,
-     file = "./Results/sum.data.list.RData")
+     file = "./Results/sum.data.list.w.modern.RData")
 
 #### CORRELATIONS & ALLOMETRIES ----
 ## are these coming from the same individuals??
@@ -300,7 +300,7 @@ for(i in 1:length(plot.df)){
 }
 
 write.csv(traitCorr,
-          "./Results/trait.correlations.csv",
+          "./Results/trait.correlations.w.modern.csv",
           row.names = FALSE)
 
 #### LOOK AT CHANGES OVER TIME AND BETWEEN FORMATIONS ------
@@ -316,16 +316,21 @@ for(i in 1:nrow(form.df)){
   form.df$age.range[i] <- form.df$Start_age[i] - form.df$End_age[i]
 }
 form.df$age.range <- as.numeric(form.df$age.range)
+modern <- c("modern", "modern", "mod", "modern", 
+            "New Zealand", "Wanganui Basin", "https://doi.org/10.1016/S0037-0738(98)00097-9",
+            "NA", "NA", "NA", 
+            0, 0, "NA", "", 0, 0)
+form.df.mod <- as.data.frame(rbind(form.df, modern))
 
-mean_by_formation.meta <- merge(mean_by_formation, form.df,
+mean_by_formation.meta <- merge(mean_by_formation, form.df.mod,
                                 by.x = "formation",
                                 by.y = "formationCode")
 
 ## overall difference in zooid height
-mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"]
-#-0.1514114 (decrease in length)
-mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "SHCSBSB"]
-#-0.1479244 (decrease in width)
+mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]
+#-0.1073236 (decrease in length)
+mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]
+#-0.1468331 (decrease in width)
 
 ##between formations
 mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "NKBS"]
@@ -340,6 +345,8 @@ mean_by_formation$avg.zh[mean_by_formation$formation == "Upper Kai-Iwi"] - mean_
 #-0.2706406 (0.7628906 diff)
 mean_by_formation$avg.zh[mean_by_formation$formation == "Tainui"] - mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"]
 #0.01531607 (1.015434 diff)
+mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"] - mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]
+#0.0440878 (1.106848 diff)
 
 ## how is sd a function of sample size (number of zooids and number of colonies)?
 #plot sd per colony by zooid no
@@ -368,7 +375,7 @@ anova(lm(mean_by_formation$sd.zh ~ mean_by_formation$num.col + mean_by_formation
 #mean_by_formation
 
 ggplot(data = mean_by_formation.meta) +
-  geom_point(aes(x = age.range, y = avg.zh,
+  geom_point(aes(x = as.numeric(age.range), y = avg.zh,
                  col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
@@ -379,9 +386,9 @@ ggplot(data = mean_by_formation.meta) +
 mean_by_formation.meta$formation <- factor(mean_by_formation.meta$formation, 
                                            levels = c("NKLS", "NKBS", "Tewkesbury", 
                                                       "Waipuru", "Upper Kai-Iwi", 
-                                                      "Tainui", "SHCSBSB")) 
+                                                      "Tainui", "SHCSBSB", "modern")) 
 p.zh.age <- ggplot(data = mean_by_formation.meta) +
-  geom_point(aes(x = mean.age, y = avg.zh,
+  geom_point(aes(x = as.numeric(mean.age), y = avg.zh,
                  col = formation),
              size = 5, shape = 17) + 
   theme(text = element_text(size = 16),
@@ -396,7 +403,7 @@ p.zh.age <- ggplot(data = mean_by_formation.meta) +
   scale_color_manual(values = col.form)
 
 ggsave(p.zh.age, 
-       file = "./Results/ln.zh.time.png", 
+       file = "./Results/ln.zh.time.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
 df.form.meta <- merge(df, form.df,
@@ -407,7 +414,7 @@ df.form.meta <- merge(df, form.df,
 traits.melt$formation <- factor(traits.melt$formation,
                                 levels = c("NKLS", "NKBS", "Tewkesbury", 
                                            "Waipuru", "Upper Kai-Iwi", 
-                                           "Tainui", "SHCSBSB")) 
+                                           "Tainui", "SHCSBSB", "modern")) 
 
 box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",], 
        aes(x = formation, 
@@ -429,6 +436,6 @@ box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",],
         plot.background = element_rect(fill='transparent', color=NA))
 
 ggsave(box.ln.zh, 
-       file = "./Results/boxplot.ln.zh.png", 
+       file = "./Results/boxplot.ln.zh.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
