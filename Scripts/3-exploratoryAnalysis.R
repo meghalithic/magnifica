@@ -305,7 +305,7 @@ write.csv(traitCorr,
 
 #### LOOK AT CHANGES OVER TIME AND BETWEEN FORMATIONS ------
 ## Add meta data
-form.df <- form.meta[1:7,] #in same order as mean_by_formation
+form.df <- form.meta[c(1:7,12),] #in same order as mean_by_formation
 
 for(i in 1:nrow(form.df)){
   form.df$mean.age[i] <- mean(form.df$Start_age[i], form.df$End_age[i], na.rm = TRUE)
@@ -316,19 +316,14 @@ for(i in 1:nrow(form.df)){
   form.df$age.range[i] <- form.df$Start_age[i] - form.df$End_age[i]
 }
 form.df$age.range <- as.numeric(form.df$age.range)
-modern <- c("modern", "modern", "mod", "modern", 
-            "New Zealand", "Wanganui Basin", "https://doi.org/10.1016/S0037-0738(98)00097-9",
-            "NA", "NA", "NA", 
-            0, 0, "NA", "", 0, 0)
-form.df.mod <- as.data.frame(rbind(form.df, modern))
 
-mean_by_formation.meta <- merge(mean_by_formation, form.df.mod,
+mean_by_formation.meta <- merge(mean_by_formation, form.df,
                                 by.x = "formation",
                                 by.y = "formationCode")
 
 ## overall difference in zooid height
 mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]
-#-0.1073236 (decrease in length)
+#-0.09371967 (decrease in length)
 mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]
 #-0.1468331 (decrease in width)
 
@@ -346,7 +341,7 @@ mean_by_formation$avg.zh[mean_by_formation$formation == "Upper Kai-Iwi"] - mean_
 mean_by_formation$avg.zh[mean_by_formation$formation == "Tainui"] - mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"]
 #0.01531607 (1.015434 diff)
 mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"] - mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]
-#0.0440878 (1.106848 diff)
+#0.05769168 (1.142067 diff)
 
 ## how is sd a function of sample size (number of zooids and number of colonies)?
 #plot sd per colony by zooid no
@@ -392,7 +387,7 @@ p.zh.age <- ggplot(data = mean_by_formation.meta) +
                  col = formation),
              size = 5, shape = 17) + 
   theme(text = element_text(size = 16),
-        legend.position = "none",
+        #legend.position = "none",
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.background = element_blank(), 
@@ -439,3 +434,21 @@ ggsave(box.ln.zh,
        file = "./Results/boxplot.ln.zh.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
+#diff in variance across formations
+var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
+                                 traits.melt$formation == "NKLS"])
+var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
+                                     traits.melt$formation == "NKBS"])
+var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
+                                     traits.melt$formation == "Tewkesbury"])
+var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
+                                     traits.melt$formation == "Waipuru"])
+var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
+                                     traits.melt$formation == "Upper Kai-Iwi"])
+var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
+                                     traits.melt$formation == "Tainui"])
+var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
+                                     traits.melt$formation == "SHCSBSB"])
+var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
+                                     traits.melt$formation == "modern"])
+#all very similar!!

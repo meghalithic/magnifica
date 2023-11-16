@@ -22,7 +22,7 @@ df.filter <- read.table("./Data/filteredImages.csv",
 
 #### EXPLORE DATA ----
 nrow(df.filter) #1834
-nrow(images.meta) #7056
+nrow(images.meta) #6662
 
 #### MANIPULATE DATA ####
 
@@ -128,7 +128,7 @@ ggsave(p.o.side.rl,
        file = "./Results/operculum.length.w.modern.png", width = 14, height = 10, units = "cm")
 
 summary(lm(o.side.r ~ o.side.l)) 
-# slope = 0.91873; p-value < 2.2e-16; r2 = 0.95
+# slope = 0.91; p-value < 2.2e-16; r2 = 0.95
 
 ## Operculum height
 oh <- (.5/ow.b)*sqrt(ow.b+oh.r+oh.l)
@@ -179,7 +179,7 @@ ggsave(p.c.side.rl,
        width = 14, height = 10, units = "cm")
 
 summary(lm(c.side.r ~ c.side.l)) 
-# slope = 0.86534; p-value: < 2.2e-16; r2 = 0.7802
+# slope = 0.87; p-value: < 2.2e-16; r2 = 0.78
 
 ## right v left side of operculum
 p.oh.rl <- ggplot() +
@@ -242,12 +242,12 @@ samp.zoo <- traits.df %>%
     dplyr::summarize(n.zooid = length(unique(zooid.id)))
 nrow(samp.zoo) #750 colonies total
 
-length(samp.zoo$colony.id[samp.zoo$n.zooid < 5]) #159 colonies to remove
+length(samp.zoo$colony.id[samp.zoo$n.zooid < 5]) #161 colonies to remove
 keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
-length(keep) #591 colonies
+length(keep) #589 colonies
 
 df <- traits.df[traits.df$colony.id %in% keep,]
-nrow(df) #6584
+nrow(df) #6185
 
 #### WRITE OUT DATASET ----
 

@@ -25,13 +25,13 @@ nrow(output.fossil) #6443
 
 output.modern <- read.csv("./Data/output_modern_trim.csv",
                           header = TRUE)
-nrow(output.modern) #922
+nrow(output.modern) #510
 ## remove images that are not magnifica
 colnames(output.modern)
 head(output.modern$id)
 #images are 1200, 1203, 1205, 1216, 1220
-rm.img <- c("bryozoa_lab_images/mab-modern-jpg/1200_CC_1_15v_x30_BSE.jpg",
-            "bryozoa_lab_images/mab-modern-jpg/1200_CC_2_15v_x30_BSE.jpg",
+rm.img <- c("bryozoa_lab_images/mab-modern-jpg/1200_CC_1_15v_x30_BSE.jpg", #this was changed to 1222
+            "bryozoa_lab_images/mab-modern-jpg/1200_CC_2_15v_x30_BSE.jpg", #this was changed to 1222
             "bryozoa_lab_images/mab-modern-jpg/1203_CC_1_15v_x30_BSE.jpg",
             "bryozoa_lab_images/mab-modern-jpg/1203_CC_2_15v_x30_BSE.jpg",
             "bryozoa_lab_images/mab-modern-jpg/1203_CC_3_15v_x30_BSE.jpg",
@@ -49,7 +49,7 @@ rm.img <- c("bryozoa_lab_images/mab-modern-jpg/1200_CC_1_15v_x30_BSE.jpg",
             "bryozoa_lab_images/mab-modern-jpg/1220_CC_5_15v_x30_BSE.jpg",
             "bryozoa_lab_images/mab-modern-jpg/1220_CC_6_15v_x30_BSE.jpg")
 output.modern <- output.modern[!(output.modern$id %in% rm.img),]
-nrow(output.modern) #613
+nrow(output.modern) #219
 
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
@@ -75,7 +75,7 @@ output$image <- gsub(".jpg",
                      "",
                      output$image)
 
-nrow(output) #7056
+nrow(output) #6662
 colnames(output)
 output$id[1]
 
