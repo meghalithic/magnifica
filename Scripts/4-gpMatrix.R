@@ -40,7 +40,7 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("./Results/colonies.traits_29Sept2023.csv",
+df <- read.csv("./Results/colonies.traits_15Nov2023.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
@@ -59,17 +59,17 @@ mean_by_formation_colony <- sum.data.list[[2]]
 #### MANIPULATE DATA ----
 
 zooid_list <- unique(df$zooid.id)
-length(zooid_list) #5480 (was 15773)
+length(zooid_list) #5694 (was 15773 without modern)
 
 colony_list <- unique(df$colony.id)
-length(colony_list) #541 (was 742)
+length(colony_list) #558 (was 742 without modern)
 
 # arrange formations from oldest to youngest
 df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
                                                 "Waipuru", "Upper Kai-Iwi", 
-                                                "Tainui", "SHCSBSB")) 
+                                                "Tainui", "SHCSBSB", "modern")) 
 formation_list <- unique(df$formation)
-length(formation_list) #7
+length(formation_list) #8
 
 #same order as in df
 names(df)
@@ -165,7 +165,7 @@ ml <- marrangeGrob(Fig, nrow = 4, ncol = 2)
 ml
 
 ggsave(ml, 
-       file = "./Results/trait.distribution.png", 
+       file = "./Results/trait.distribution.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
 #### NORMALITY TESTS ----
@@ -225,6 +225,22 @@ p.vals.df <- as.data.frame(cbind(traits, p.vals))
 
 write.csv(p.vals.df,
           "./Results/normality.test.csv",
+          row.names = FALSE)
+
+#by formation
+df.norm <- df %>%
+    dplyr::group_by(formation) %>%
+    dplyr::summarise(p.val.zh = shapiro.test(ln.zh)$p.value,
+                     p.val.mpw.b = shapiro.test(ln.mpw.b)$p.value,
+                     p.val.cw.m = shapiro.test(ln.cw.m)$p.value,
+                     p.val.cw.d = shapiro.test(ln.cw.d)$p.value,
+                     p.val.ow.m = shapiro.test(ln.ow.m)$p.value,
+                     p.val.oh = shapiro.test(ln.oh)$p.value,
+                     p.val.c.side = shapiro.test(ln.c.side)$p.value,
+                     p.val.o.side = shapiro.test(ln.o.side)$p.value) %>%
+    as.data.frame()
+write.csv(df.norm,
+          "./Results/normallity.test.by.formation.csv",
           row.names = FALSE)
 
 #### REDUCE TO TRAITS OF INTEREST ----
@@ -289,13 +305,13 @@ P_PC_dist = ggplot(p.eig_per,
 P_PC_dist #none negative; none above 1!
 
 ggsave(P_PC_dist, 
-       file = "./Results/P.PC.dist.png", 
+       file = "./Results/P.PC.dist.w.modern.png", 
        width = 14, height = 10, units = "cm") 
 
 ###### P NOISE ------
 ##Controlling for noise
 #Extend G
-P_ext = lapply(Pmat, function (x){ ExtendMatrix(x, ret.dim = 5)$ExtMat}) #to match the G matrix
+P_ext = lapply(Pmat, function (x){ ExtendMatrix(x, ret.dim = 4)$ExtMat}) #to match the G matrix
 #ignore warning from above
 lapply(P_ext, isSymmetric)  
 P_Ext_std_variances = lapply(P_ext, diag)
@@ -332,9 +348,9 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 }
 
 save(model_G,
-     file = "./Results/model_G.RData")
+     file = "./Results/model_G.w.modern.RData")
 
-load(file = "./Results/model_G.RData") #load the g matrices calculated above 
+load(file = "./Results/model_G.w.modern.RData") #load the g matrices calculated above 
 
 ##### CHECK MODELS -----
 formation_list #order of formations
@@ -345,17 +361,19 @@ summary(model_G[[4]])
 summary(model_G[[5]])
 summary(model_G[[6]])
 summary(model_G[[7]])
+summary(model_G[[8]])
 
 ##plots to see where sampling from:
 plot(model_G[[1]]$VCV) #catepillar!
 plot(model_G[[2]]$VCV) #catepillar!
 plot(model_G[[3]]$VCV) #catepillar!
-plot(model_G[[4]]$VCV) #catepillar!
+plot(model_G[[4]]$VCV) #catepillar!; high skew
 plot(model_G[[5]]$VCV) #catepillar!
 plot(model_G[[6]]$VCV) #catepillar!
 plot(model_G[[7]]$VCV) #catepillar!
+plot(model_G[[8]]$VCV) #catepillar!
 #formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", "Waipuru", 
-#                                    "Upper Kai-Iwi", "SHCSBSB", "Tainui"
+#                                    "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern"
 
 ##### CHECK P IS BIGGER THAN G -----
 
@@ -363,10 +381,20 @@ plot(model_G[[7]]$VCV) #catepillar!
 ## chekcing NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
 
 # PRIORS
+# NKLS
+diag(phen.var[[1]]) #all larger
+diag(prior$NKBS$G$G1$V) < diag(phen.var[[1]]) #all larger
+diag(prior$NKBS$R$V) < diag(phen.var[[1]]) #all larger
+
 # NKBS
 diag(phen.var[[2]]) #all larger
 diag(prior$NKBS$G$G1$V) < diag(phen.var[[2]]) #all larger
 diag(prior$NKBS$R$V) < diag(phen.var[[2]]) #all larger
+
+# Tewkesbury
+diag(phen.var[[3]]) #all larger
+diag(prior$NKBS$G$G1$V) < diag(phen.var[[3]]) #all larger
+diag(prior$NKBS$R$V) < diag(phen.var[[3]]) #all larger
 
 # Waipuru
 diag(phen.var[[4]]) #all larger
@@ -377,6 +405,21 @@ diag(prior$Waipuru$R$V) < diag(phen.var[[4]])
 diag(phen.var[[5]]) #all larger
 diag(prior$`Upper Kai-Iwi`$G$G1$V) < diag(phen.var[[5]])
 diag(prior$`Upper Kai-Iwi`$R$V) < diag(phen.var[[5]])
+
+# Tainui
+diag(phen.var[[6]]) #all larger
+diag(prior$`Upper Kai-Iwi`$G$G1$V) < diag(phen.var[[6]])
+diag(prior$`Upper Kai-Iwi`$R$V) < diag(phen.var[[6]])
+
+# SHCSBSB
+diag(phen.var[[7]]) #all larger
+diag(prior$`Upper Kai-Iwi`$G$G1$V) < diag(phen.var[[7]])
+diag(prior$`Upper Kai-Iwi`$R$V) < diag(phen.var[[7]])
+
+# modern
+diag(phen.var[[8]]) #all larger
+diag(prior$NKBS$G$G1$V) < diag(phen.var[[8]]) #all larger
+diag(prior$NKBS$R$V) < diag(phen.var[[8]]) #all larger
 
 #RETRIEVE THE P MATRIX FROM THE MCMC OBJECT
 # p matrix for each formation (maybe colony?)
@@ -483,9 +526,10 @@ G_PC_dist = ggplot(g.eig_per,
   xlab("Principal component rank") +
   ylab("%Variation in the PC")
 G_PC_dist #Tainui negative; none above 1; Upper Kai-Iwi looks FUNKY
+## Waipuru 5th dim is wild; may only ret 4 dim?
 
 ggsave(G_PC_dist, 
-       file = "./Results/G.PC.dist.png", 
+       file = "./Results/G.PC.dist.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
@@ -495,7 +539,7 @@ ggsave(G_PC_dist,
 ###### G NOISE ------
 ##Controlling for noise
 #Extend G
-G_ext = lapply(Gmat, function (x){ ExtendMatrix(x, ret.dim = 5)$ExtMat}) #not 8 because last eigen value (#6) was negative
+G_ext = lapply(Gmat, function (x){ ExtendMatrix(x, ret.dim = 4)$ExtMat}) #not 8 because last eigen value (#6) was negative
 #ignore warning from above
 lapply(G_ext, isSymmetric)  
 Ext_std_variances = lapply(G_ext, diag)
@@ -516,9 +560,9 @@ data.list = list(P_ext, G_ext,
                  mean_by_formation, mean_by_formation_colony, 
                  form_data, by_form.n, col_form.n)
 save(data.list,
-     file = "./Results/data.list.RData")
+     file = "./Results/data.list.w.modern.RData")
 
-load(file = "./Results/data.list.RData") #load the g matrices calculated above 
+load(file = "./Results/data.list.w.modern.RData") #load the g matrices calculated above 
 
 
 #### CHECK P > G ----
@@ -533,7 +577,7 @@ plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      ylim = c(0, .2))
 abline(0, 1) 
 summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]]))) 
-#slope = 2.9; r2 = 0.8; p is sig
+#slope = 2.4; r2 = 0.65; p is sig 0.009
 
 plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      pch = 19, col = col.form[2],
@@ -542,7 +586,7 @@ plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      main = "NKBS")
 abline(0, 1)
 summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]])))
-#slope = 3.5; r2 = 0.8; p is sig
+#slope = 3.4; r2 = 0.8; p is sig 0.003
 
 plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      pch = 19, col = col.form[3],
@@ -553,7 +597,7 @@ plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      ylim = c(0, 0.05))
 abline(0, 1) 
 summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]])))
-#slope = 3.5; r2=0.9; p is sig
+#slope = 3.5; r2=0.8; p is sig 0.002
 
 plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      pch = 19, col = col.form[4],
@@ -562,7 +606,7 @@ plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      main = "Waipuru")
 abline(0, 1)
 summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]]))) 
-#slope = 1.7; r2 = 0.7; p is sig
+#slope = 1.7; r2 = 0.7; p is sig 0.009
 
 plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      pch = 19, col = col.form[5],
@@ -571,7 +615,7 @@ plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      main = "Upper Kai-Iwi")
 abline(0, 1) 
 summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]])))
-#slope = 1.6; r2 = 0.9; p is sig
+#slope = 1.5; r2 = 0.96; p is sig <0.001
 
 plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      pch = 19, col = col.form[6],
@@ -580,7 +624,7 @@ plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      main = "Tainui")
 abline(0, 1) 
 summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]]))) 
-#slope = 1.5; r2 = 0.7; p is sig
+#slope = 1.9; r2 = 0.8; p is sig 0.001
 
 plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      pch = 19, col = col.form[7],
@@ -591,60 +635,18 @@ plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      ylim = c(0,0.05))
 abline(0, 1) 
 summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) 
-#slope = 2; r2 = 0.6; p = 0.01
+#slope = 2.4; r2 = 0.5; p = 0.026
 
-## COMPARISON OF PC1 AND PC2 OF P & G OF EACH FORMATION
-g.eig_variances
-p.eig_variances
-
-plot(g.eig_variances[[1]], p.eig_variances[[1]],
-     pch = 19, col = col.form[1],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "NKLS")
+plot(diag(Gmat[[8]]), diag(Pmat[[8]]),
+     pch = 19, col = col.form[8],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "SHCSBSB",
+     xlim = c(0, 0.01),
+     ylim = c(0,0.05))
 abline(0, 1) 
-
-plot(g.eig_variances[[2]], p.eig_variances[[2]],
-     pch = 19, col = col.form[2],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "NKBS")
-abline(0, 1) 
-
-plot(g.eig_variances[[3]], p.eig_variances[[3]],
-     pch = 19, col = col.form[3],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "Tewkesbury")
-abline(0, 1)
-
-plot(g.eig_variances[[4]], p.eig_variances[[4]],
-     pch = 19, col = col.form[4],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "Waipuru")
-abline(0, 1) 
-
-plot(g.eig_variances[[5]], p.eig_variances[[5]],
-     pch = 19, col = col.form[5],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "Upper Kai-Iwi")
-abline(0, 1) 
-
-plot(g.eig_variances[[6]], p.eig_variances[[6]],
-     pch = 19, col = col.form[6],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "Tainui")
-abline(0, 1) 
-
-plot(g.eig_variances[[7]], p.eig_variances[[7]],
-     pch = 19, col = col.form[7],
-     xlab = "G standardized variances",
-     ylab = "P standardized variances",
-     main = "SHCSBSB")
-abline(0, 1) 
+summary(lm(diag(Pmat[[8]]) ~ diag(Gmat[[8]]))) 
+#slope = 1.3; r2 = 0.8; p = 0.003
 
 #### RAREFACTION ----
 ##Rarefaction - 
@@ -695,7 +697,7 @@ mean.df_complete_cases <- mean.df.sub[complete.cases(mean.df.sub), ] #remove row
 colony_samples = split.data.frame(mean.df_complete_cases, mean.df_complete_cases$formation) #Sample size
 sample_sizes_G = lapply(colony_samples, function(x){dim(x)[1]})
 
-comp_sampleN = matrix(0, 7, 7) #calculating the smallest sample size in the comparison among pairs of G 
+comp_sampleN = matrix(0, 8, 8) #calculating the smallest sample size in the comparison among pairs of G 
 
 for (i in 1:length(sample_sizes_G)){
     for (j in 1:length(sample_sizes_G)){
@@ -735,18 +737,9 @@ p.rare <- ggplot() +
           plot.background = element_rect(fill='transparent', color=NA)) +
     scale_x_continuous(name = "Sample size") +
     scale_y_continuous(name = "Similarity") 
-# indices 16, 19, 13, 9, 4 of obs_melt are outside of the rarefaction curve
-# these correspond to the following pairs in comp_mat:
-obs_melt$RS[16] #upper kai-iwi and waipuru
-obs_melt$RS[19] #upper kai-iwi and tainui
-obs_melt$RS[13] #upper kai-iwi and tewkesbury
-obs_melt$RS[9] #upper kai-iwi and NKBS
-obs_melt$RS[4] #upper kai-iwi and NKLS
-#Upper kai-iwi is different from all except SHCSBSB
-
 
 ggsave(p.rare, 
-       file = "./Results/rarefaction.png", 
+       file = "./Results/rarefaction.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
 #### GLOBAL G ----
@@ -762,7 +755,7 @@ prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 2)), #nu = 10 #V 
 #Running the MCMC chain
 
 model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
-                               ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait + formation, #-1?
+                               ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait + trait:formation - 1, #get rid of "trait" alone?
                          #account for variation w/in colony:
                          random = ~us(trait):colony.id, #the number of these determines # of Gs
                          rcov = ~us(trait):units,
@@ -772,9 +765,9 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
                          prior = prior.glob, verbose = TRUE)
 
 save(model_Global, 
-     file = "./Results/global_matrix.RData")
+     file = "./Results/global_matrix.w.modern.RData")
 
-load(file="./Results/global_matrix.RData") #load the g matrices calculated above 
+load(file="./Results/global_matrix.w.modern.RData") #load the g matrices calculated above 
 model_Global <- model_Global[[1]]
 
 ##### CHECK MODELS -----
