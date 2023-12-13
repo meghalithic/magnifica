@@ -324,7 +324,7 @@ ggsave(P_PC_dist,
 ###### P NOISE ------
 ##Controlling for noise
 #Extend G
-P_ext = lapply(Pmat, function (x){ ExtendMatrix(x, ret.dim = 4)$ExtMat}) #to match the G matrix
+P_ext = lapply(Pmat, function (x){ ExtendMatrix(x, ret.dim = 5)$ExtMat}) #to match the G matrix
 #ignore warning from above
 lapply(P_ext, isSymmetric)  
 P_Ext_std_variances = lapply(P_ext, diag)
@@ -754,6 +754,16 @@ p.rare <- ggplot() +
 ggsave(p.rare, 
        file = "./Results/rarefaction.w.modern.png", 
        width = 14, height = 10, units = "cm")
+
+## find which ones are outside of the gray
+#low sample size, smallest similarity
+which.min(obs_melt$RS)
+obs_melt[25,] #0.6630677
+comp_mat$correlations #.663 is corr between modern and Upper Kai-Iwi
+#low sample size, next lowest similarity
+sort(obs_melt$RS, decreasing = TRUE)
+obs_melt[obs_melt$RS <= 0.7407344,] #index 18
+comp_mat$correlations #0.74 is corr between modern and Tewkesbury
 
 #### GLOBAL G ----
 
