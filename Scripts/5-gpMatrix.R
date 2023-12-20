@@ -765,6 +765,8 @@ sort(obs_melt$RS, decreasing = TRUE)
 obs_melt[obs_melt$RS <= 0.7407344,] #index 18
 comp_mat$correlations #0.74 is corr between modern and Tewkesbury
 
+## COLOR MODERN
+
 #### GLOBAL G ----
 
 ##### PRIORS -----
