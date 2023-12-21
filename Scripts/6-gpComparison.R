@@ -45,6 +45,11 @@ means <- data.list[[10]]
 load(file="./Results/global_ext.w.modern.RData") #load the g matrices calculated above 
 Glob_ext
 
+load(file = "./Results/model_G.w.modern.RData") #load the g matrices calculated above 
+Gmat <- model_G
+p.cov = lapply(form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
+Pmat = p.cov
+
 #### CORR OF G & P ----
 
 #Gmat
@@ -914,38 +919,35 @@ global <- as.numeric(means) #DON'T DO THIS!!!
 
 ## where it's going - where it's been
 # don't do first one because not coming from anywhere?
-evolved_difference_unit_length_glob_nkls <- f.normalize_vector(NKLS - global)
-evolved_difference_unit_length_glob_nkbs <- f.normalize_vector(NKBS - global)
-evolved_difference_unit_length_glob_tewk <- f.normalize_vector(tewk - global)
-evolved_difference_unit_length_glob_wai <- f.normalize_vector(wai - global)
-evolved_difference_unit_length_glob_uki <- f.normalize_vector(uki - global)
-evolved_difference_unit_length_glob_tai <- f.normalize_vector(tai - global)
-evolved_difference_unit_length_glob_SHCSBSB <- f.normalize_vector(SHCSBSB - global)
-evolved_difference_unit_length_glob_mod <- f.normalize_vector(mod - global)
+#evolved_difference_unit_length_t1
+#evolved_difference_unit_length_t2
+#evolved_difference_unit_length_t3
+#evolved_difference_unit_length_t4
+#evolved_difference_unit_length_t5
+#evolved_difference_unit_length_t6
+#evolved_difference_unit_length_t7
 
 ###### OBSERVED EVOLVABILITY ------
 ### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
 #observed_evolvability_in_direction_of_change<-t(evolved_difference_unit_length)%*%as.matrix(G_matrix_1)%*%evolved_difference_unit_length
-observed_evolvability_in_direction_of_change_glob_nkls <- t(evolved_difference_unit_length_glob_nkls)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_nkls
-observed_evolvability_in_direction_of_change_glob_nkbs <- t(evolved_difference_unit_length_glob_nkbs)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_nkbs
-observed_evolvability_in_direction_of_change_glob_tewk <- t(evolved_difference_unit_length_glob_tewk)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_tewk
-observed_evolvability_in_direction_of_change_glob_wai <- t(evolved_difference_unit_length_glob_wai)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_wai
-observed_evolvability_in_direction_of_change_glob_uki <- t(evolved_difference_unit_length_glob_uki)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_uki
-observed_evolvability_in_direction_of_change_glob_tai <- t(evolved_difference_unit_length_glob_tai)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_tai
-observed_evolvability_in_direction_of_change_glob_SHCSBSB <- t(evolved_difference_unit_length_glob_SHCSBSB)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_SHCSBSB
-observed_evolvability_in_direction_of_change_glob_mod <- t(evolved_difference_unit_length_glob_mod)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_mod
+observed_evolvability_in_direction_of_change_glob_t1 <- t(evolved_difference_unit_length_t1)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t1
+observed_evolvability_in_direction_of_change_glob_t2 <- t(evolved_difference_unit_length_t2)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t2
+observed_evolvability_in_direction_of_change_glob_t3 <- t(evolved_difference_unit_length_t3)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t3
+observed_evolvability_in_direction_of_change_glob_t4 <- t(evolved_difference_unit_length_t4)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t4
+observed_evolvability_in_direction_of_change_glob_t5 <- t(evolved_difference_unit_length_t5)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t5
+observed_evolvability_in_direction_of_change_glob_t6 <- t(evolved_difference_unit_length_t6)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t6
+observed_evolvability_in_direction_of_change_glob_t7 <- t(evolved_difference_unit_length_t7)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t7
 
 ###### OBSERVED CONDITIONAL EVOLVABILITY ------
 ### The conditional evolvability in the direction of divergence
 #observed_conditional_evolvability_in_direction_of_change<-1/(t(evolved_difference_unit_length)%*%solve(as.matrix(G_matrix_1))%*%evolved_difference_unit_length)
-observed_conditional_evolvability_in_direction_of_change_glob_nkls <- 1/(t(evolved_difference_unit_length_glob_nkls)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_nkls)
-observed_conditional_evolvability_in_direction_of_change_glob_nkbs <- 1/(t(evolved_difference_unit_length_glob_nkbs)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_nkbs)
-observed_conditional_evolvability_in_direction_of_change_glob_tewk <- 1/(t(evolved_difference_unit_length_glob_tewk)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_tewk)
-observed_conditional_evolvability_in_direction_of_change_glob_wai <- 1/(t(evolved_difference_unit_length_glob_wai)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_wai)
-observed_conditional_evolvability_in_direction_of_change_glob_uki <- 1/(t(evolved_difference_unit_length_glob_uki)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_uki)
-observed_conditional_evolvability_in_direction_of_change_glob_tai <- 1/(t(evolved_difference_unit_length_glob_tai)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_tai)
-observed_conditional_evolvability_in_direction_of_change_glob_SHCSBSB <- 1/(t(evolved_difference_unit_length_glob_SHCSBSB)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_SHCSBSB)
-observed_conditional_evolvability_in_direction_of_change_glob_mod <- 1/(t(evolved_difference_unit_length_glob_mod)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_mod)
+observed_conditional_evolvability_in_direction_of_change_glob_t1 <- 1/(t(evolved_difference_unit_length_t1)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t1)
+observed_conditional_evolvability_in_direction_of_change_glob_t2 <- 1/(t(evolved_difference_unit_length_t2)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t2)
+observed_conditional_evolvability_in_direction_of_change_glob_t3 <- 1/(t(evolved_difference_unit_length_t3)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t3)
+observed_conditional_evolvability_in_direction_of_change_glob_t4 <- 1/(t(evolved_difference_unit_length_t4)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t4)
+observed_conditional_evolvability_in_direction_of_change_glob_t5 <- 1/(t(evolved_difference_unit_length_t5)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t5)
+observed_conditional_evolvability_in_direction_of_change_glob_t6 <- 1/(t(evolved_difference_unit_length_t6)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t6)
+observed_conditional_evolvability_in_direction_of_change_glob_t7 <- 1/(t(evolved_difference_unit_length_t7)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t7)
 
 ### Generate 10,000 selection gradients in random directions in the n-dimensional space
 #n_dimensions <- 8 # number of traits in G matrix
@@ -1005,91 +1007,92 @@ Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
 
 ### See if change is in direction of G max
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1)
+dot_product.Glob_max_NKLS <- sum(Gmax_glob_norm * evolved_difference_unit_length_t1)
 # Calculate the angle in radians
-angle_radians.Gmax_NKLS_max <- acos(dot_product.Gmax_NKLS_max)
+angle_radians.Glob_max_NKLS <- acos(dot_product.Glob_max_NKLS)
 # Convert the angle to degrees
-angle_degrees.Gmax_NKLS_max <- angle_radians.Gmax_NKLS_max * (180 / pi)
-#80.90905
+angle_degrees.Glob_max_NKLS <- angle_radians.Glob_max_NKLS * (180 / pi)
+#155.9968; was 80.90905
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_NKBS_max <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2)
+dot_product.Glob_max_NKBS <- sum(Gmax_glob_norm * evolved_difference_unit_length_t2)
 # Calculate the angle in radians
-angle_radians.Gmax_NKBS_max <- acos(dot_product.Gmax_NKBS_max)
+angle_radians.Glob_max_NKBS <- acos(dot_product.Glob_max_NKBS)
 # Convert the angle to degrees
-angle_degrees.Gmax_NKBS_max <- angle_radians.Gmax_NKBS_max * (180 / pi)
-#43.14475
+angle_degrees.Glob_max_NKBS <- angle_radians.Glob_max_NKBS * (180 / pi)
+#43.31873; was 43.14475
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_tewk_max <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3)
+dot_product.Glob_max_tewk <- sum(Gmax_glob_norm * evolved_difference_unit_length_t3)
 # Calculate the angle in radians
-angle_radians.Gmax_tewk_max <- acos(dot_product.Gmax_tewk_max)
+angle_radians.Glob_max_tewk <- acos(dot_product.Glob_max_tewk)
 # Convert the angle to degrees
-angle_degrees.Gmax_tewk_max <- angle_radians.Gmax_tewk_max * (180 / pi)
-#122.1798
+angle_degrees.Glob_max_tewk <- angle_radians.Glob_max_tewk * (180 / pi)
+#126.4306; was 122.1798
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_wai_max <- sum(Gmax_wai_norm * evolved_difference_unit_length_t4)
+dot_product.Glob_max_wai <- sum(Gmax_glob_norm * evolved_difference_unit_length_t4)
 # Calculate the angle in radians
-angle_radians.Gmax_wai_max <- acos(dot_product.Gmax_wai_max)
+angle_radians.Glob_max_wai <- acos(dot_product.Glob_max_wai)
 # Convert the angle to degrees
-angle_degrees.Gmax_wai_max <- angle_radians.Gmax_wai_max * (180 / pi)
-#93.20555
+angle_degrees.Glob_max_wai <- angle_radians.Glob_max_wai * (180 / pi)
+#165.7819; was 93.20555
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t5)
+dot_product.Glob_max_uki <- sum(Gmax_glob_norm * evolved_difference_unit_length_t5)
 # Calculate the angle in radians
-angle_radians.Gmax_uki_max <- acos(dot_product.Gmax_uki_max)
+angle_radians.Glob_max_uki <- acos(dot_product.Glob_max_uki)
 # Convert the angle to degrees
-angle_degrees.Gmax_uki_max <- angle_radians.Gmax_uki_max * (180 / pi)
-#145.7685
+angle_degrees.Glob_max_uki <- angle_radians.Glob_max_uki * (180 / pi)
+#128.7347; was 145.7685
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_tai_max <- sum(Gmax_tai_norm * evolved_difference_unit_length_t6)
+dot_product.Glob_max_tai <- sum(Gmax_glob_norm * evolved_difference_unit_length_t6)
 # Calculate the angle in radians
-angle_radians.Gmax_tai_max <- acos(dot_product.Gmax_tai_max)
+angle_radians.Glob_max_tai <- acos(dot_product.Glob_max_tai)
 # Convert the angle to degrees
-angle_degrees.Gmax_tai_max <- angle_radians.Gmax_tai_max * (180 / pi)
-#40.81748
+angle_degrees.Glob_max_tai <- angle_radians.Glob_max_tai * (180 / pi)
+#49.55738; was 40.81748
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+dot_product.Glob_max_SHCSBSB <- sum(Gmax_glob_norm * evolved_difference_unit_length_t6)
 # Calculate the angle in radians
-angle_radians.Gmax_SHCSBSB_max <- acos(dot_product.Gmax_SHCSBSB_max)
+angle_radians.Glob_max_SHCSBSB <- acos(dot_product.Glob_max_SHCSBSB)
 # Convert the angle to degrees
-angle_degrees.Gmax_SHCSBSB_max <- angle_radians.Gmax_SHCSBSB_max * (180 / pi)
-#50.65786
+angle_degrees.Glob_max_SHCSBSB <- angle_radians.Glob_max_SHCSBSB * (180 / pi)
+#49.55738; was 50.65786
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_mod_max <- sum(Gmax_mod_norm * evolved_difference_unit_length_t7)
+dot_product.Glob_max_mod <- sum(Gmax_glob_norm * evolved_difference_unit_length_t7)
 # Calculate the angle in radians
-angle_radians.Gmax_mod_max <- acos(dot_product.Gmax_mod_max)
+angle_radians.Glob_max_mod <- acos(dot_product.Glob_max_mod)
 # Convert the angle to degrees
-angle_degrees.Gmax_mod_max <- angle_radians.Gmax_mod_max * (180 / pi)
-#131.2871
+angle_degrees.Glob_max_mod <- angle_radians.Glob_max_mod * (180 / pi)
+#95.32893; was 131.2871
 
-angle_diff_Gmax_to_P <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_max,
-                          angle_degrees.Gmax_tewk_max, angle_degrees.Gmax_wai_max,
-                          angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
-                          angle_degrees.Gmax_SHCSBSB_max, angle_degrees.Gmax_mod_max)
-angle_diff_between_Gmax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Gmax_to_P))
-colnames(angle_diff_between_Gmax_P) <- c("formation", "angle_diff_Gmax_to_P")
-angle_diff_between_Gmax_P$angle_diff_Gmax_to_P <- as.numeric(angle_diff_between_Gmax_P$angle_diff_Gmax_to_P)
+angle_diff_Glob_max_to_P <- c(angle_degrees.Glob_max_NKLS, angle_degrees.Glob_max_NKBS,
+                              angle_degrees.Glob_max_tewk, angle_degrees.Glob_max_wai,
+                              angle_degrees.Glob_max_uki, angle_degrees.Glob_max_tai,
+                              angle_degrees.Glob_max_SHCSBSB, angle_degrees.Glob_max_mod)
+angle_diff_between_Glob_max_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Glob_max_to_P))
+colnames(angle_diff_between_Glob_max_P) <- c("formation", "angle_diff_Glob_max_to_P")
+angle_diff_between_Glob_max_P$angle_diff_Glob_max_to_P <- as.numeric(angle_diff_between_Glob_max_P$angle_diff_Glob_max_to_P)
 
-for(i in 1:nrow(angle_diff_between_Gmax_P)){
-    if(isTRUE(angle_diff_between_Gmax_P$angle_diff_Gmax_to_P[i] > 90)){
-        angle_diff_between_Gmax_P$angle_diff_Gmax_to_P[i] <- 180 - as.numeric(angle_diff_between_Gmax_P$angle_diff_Gmax_to_P[i])
+for(i in 1:nrow(angle_diff_between_Glob_max_P)){
+    if(isTRUE(angle_diff_between_Glob_max_P$angle_diff_Glob_max_to_P[i] > 90)){
+        angle_diff_between_Glob_max_P$angle_diff_Glob_max_to_P[i] <- 180 - as.numeric(angle_diff_between_Glob_max_P$angle_diff_Glob_max_to_P[i])
     }
     else{
         next
     }
 }
 
-write.csv(angle_diff_between_Gmax_P,
-          "./Results/angle.differences.between.Gmax.P.w.modern.csv",
+write.csv(angle_diff_between_Glob_max_P,
+          "./Results/angle.differences.between.Glob_max.P.w.modern.csv",
           row.names = FALSE)
 
 #### CALCULATE E ----
+Emat = Gmat - Pmat
 
 ##### PLOT P, E, AND G VARIATION ----
 # E = units
