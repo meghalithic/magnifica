@@ -242,7 +242,7 @@ means = df %>%
                      avg.c.side = mean(ln.c.side, na.rm = T)) %>%
     as.data.frame()
 
-sum.data.list = list(mean_by_formation, mean_by_formation_colony)
+sum.data.list = list(mean_by_formation, mean_by_formation_colony, means)
 save(sum.data.list,
      file = "./Results/sum.data.list.w.modern.RData")
 

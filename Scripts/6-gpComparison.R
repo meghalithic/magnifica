@@ -40,6 +40,10 @@ mean_by_formation_colony <- data.list[[6]]
 form_data <- data.list[[7]]
 by_form.n <- data.list[[8]]
 col_form.n <- data.list[[9]]
+means <- data.list[[10]]
+
+load(file="./Results/global_ext.w.modern.RData") #load the g matrices calculated above 
+Glob_ext
 
 #### CORR OF G & P ----
 
@@ -50,7 +54,7 @@ df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury",
                                                 "Tainui", "SHCSBSB", "modern")) 
 formation_list <- unique(df$formation)
 formation_list
-
+##### G MATRICES THROUGH TIME -----
 ## RANDOM SKEWERS OF P & G OF EACH FORMATION
 #NKLS
 NKLS_comp_mat = RandomSkewers(list(G_ext[[1]], P_ext[[1]])) #need at least
@@ -61,7 +65,7 @@ corrplot.mixed(NKLS_corr_mat, upper = "number", lower = "pie")
 
 #NKBS
 NKBS_comp_mat = RandomSkewers(list(G_ext[[2]], P_ext[[2]])) #need at least
-NKBS_corr_mat =NKBS_comp_mat$correlations + t(NKBS_comp_mat$correlations) 
+NKBS_corr_mat = NKBS_comp_mat$correlations + t(NKBS_comp_mat$correlations) 
 diag(NKBS_corr_mat) = 1
 paste("Random Skewers similarity matrix")
 corrplot.mixed(NKBS_corr_mat, upper = "number", lower = "pie")
@@ -123,86 +127,79 @@ write.csv(corr.p.g.form,
           "Results/correlation.p.g.w.modern.csv",
           row.names = FALSE)
 
-###### PC1 of P and PC1 of G through time -------
-## NOTE THESE ARE NOT USING EXT MATRICES THAT ARE CORRECTED LIKE WE DO BELOW FOR
-## EXAMINING CHANGE IN G THROUGH TIME
-p.eig_variances = lapply(P_ext, function (x) {eigen(x)$values})
-g.eig_variances = lapply(G_ext, function (x) {eigen(x)$values})
+##### GLOBAL G THROUGH TIME -----
+#NKLS
+NKLS_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[1]])) #need at least
+NKLS_corr_mat.glob = NKLS_comp_mat.glob$correlations + t(NKLS_comp_mat.glob$correlations) 
+diag(NKLS_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKLS_corr_mat.glob, upper = "number", lower = "pie")
 
-p.eig_percent = lapply(p.eig_variances, function (x) {x/sum(x)})
-p.eig_per_mat = do.call(rbind, p.eig_percent)
-p.eig_per_mat = data.frame(p.eig_per_mat, rownames(p.eig_per_mat))
-p.eig_per = melt(p.eig_per_mat)
+#NKBS
+NKBS_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[2]])) #need at least
+NKBS_corr_mat.glob = NKBS_comp_mat.glob$correlations + t(NKBS_comp_mat.glob$correlations) 
+diag(NKBS_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKBS_corr_mat.glob, upper = "number", lower = "pie")
 
-g.eig_percent = lapply(g.eig_variances, function (x) {x/sum(x)})
-g.eig_per_mat = do.call(rbind, g.eig_percent)
-g.eig_per_mat = data.frame(g.eig_per_mat, rownames(g.eig_per_mat))
-g.eig_per = melt(g.eig_per_mat)
+#Tewkesbury
+Tewkesbury_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[3]])) #need at least
+Tewkesbury_corr_mat.glob = Tewkesbury_comp_mat.glob$correlations + t(Tewkesbury_comp_mat.glob$correlations) 
+diag(Tewkesbury_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tewkesbury_corr_mat.glob, upper = "number", lower = "pie")
 
-## PERCENT EXPLAINED BY PC1
-PC1_P <- p.eig_per[p.eig_per$variable == "X1",]
-PC1_G <- g.eig_per[g.eig_per$variable == "X1",]
-PC1_P_G <- cbind(levels(formation_list), PC1_P$value, PC1_G$value)
-colnames(PC1_P_G) <- c("formation", "PC1_P", "PC1_G")
-PC1_P_G <- as.data.frame(PC1_P_G)
+#Waipuru
+Waipuru_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[4]])) #need at least
+Waipuru_corr_mat.glob = Waipuru_comp_mat.glob$correlations + t(Waipuru_comp_mat.glob$correlations) 
+diag(Waipuru_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Waipuru_corr_mat.glob, upper = "number", lower = "pie")
 
-P_G_PC1 = ggplot(PC1_P_G) +
-    geom_point(aes(x = as.numeric(PC1_G), y = as.numeric(PC1_P),
-                   col = formation),
-               size = 5, shape = 17) +
-    geom_smooth(aes(x = as.numeric(PC1_G), y = as.numeric(PC1_P)),
-                method = "lm") +
-    xlab("% PC1 of P matrix") +
-    ylab("% PC1 of G matrix") +
-    scale_color_manual(values = col.form) +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_line(colour = "black"))
-P_G_PC1 #none negative; none above 1!
-summary(lm(as.numeric(PC1_P_G$PC1_P) ~ as.numeric(PC1_P_G$PC1_G)))
-#sig; slope = 0.51522; r2 = 0.9768
+#Upper Kai-Iwi
+UKai_Iwi_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[5]])) #need at least
+UKai_Iwi_corr_mat.glob = UKai_Iwi_comp_mat.glob$correlations + t(UKai_Iwi_comp_mat.glob$correlations) 
+diag(UKai_Iwi_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(UKai_Iwi_corr_mat.glob, upper = "number", lower = "pie")
 
-#ggsave(P_G_PC1, 
-#       file = "./Results/PC1.P.G.png", 
-#       width = 14, height = 10, units = "cm")
+#Tainui
+Tainui_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[6]])) #need at least
+Tainui_corr_mat.glob = Tainui_comp_mat.glob$correlations + t(Tainui_comp_mat.glob$correlations) 
+diag(Tainui_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tainui_corr_mat.glob, upper = "number", lower = "pie")
 
-## VALUES
-p.eig_variances
-g.eig_variances
+#SHCSBSB
+SHCSBSB_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[7]])) #need at least
+SHCSBSB_corr_mat.glob = SHCSBSB_comp_mat.glob$correlations + t(SHCSBSB_comp_mat.glob$correlations) 
+diag(SHCSBSB_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(SHCSBSB_corr_mat.glob, upper = "number", lower = "pie")
 
-p.eig_var_mat = do.call(rbind, p.eig_variances)
-p.eig_var_mat = data.frame(p.eig_var_mat, rownames(p.eig_var_mat))
-p.eig_var = melt(p.eig_var_mat)
-colnames(p.eig_var) <- c("formation", "p.variable", "p.value")
+#modern
+modern_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[8]])) #need at least
+modern_corr_mat.glob = modern_comp_mat.glob$correlations + t(modern_comp_mat.glob$correlations) 
+diag(modern_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(modern_corr_mat.glob, upper = "number", lower = "pie")
 
-g.eig_var_mat = do.call(rbind, g.eig_variances)
-g.eig_var_mat = data.frame(g.eig_var_mat, rownames(g.eig_var_mat))
-g.eig_var = melt(g.eig_var_mat)
-colnames(g.eig_var) <- c("formation", "g.variable", "g.value")
 
-p.eig_var.1 <- p.eig_var[p.eig_var$p.variable == "X1", ]
-g.eig_var.1 <- g.eig_var[g.eig_var$g.variable == "X1", ]
+corr.p.glob <- c(NKLS_corr_mat.glob[1,2], NKBS_corr_mat.glob[1,2],
+                 Tewkesbury_corr_mat.glob[1,2], Waipuru_corr_mat.glob[1,2], 
+                 UKai_Iwi_corr_mat.glob[1,2], Tainui_corr_mat.glob[1,2], 
+                 SHCSBSB_corr_mat.glob[1,2],
+                 modern_corr_mat.glob[1,2])
 
-p.g.eig_var.1 <- merge(p.eig_var.1,
-                       g.eig_var.1,
-                       by = "formation")
+corr.p.glob.form <- cbind(levels(formation_list), corr.p.glob)
+colnames(corr.p.glob.form) <- c("formation", "correlation")
+corr.p.glob.form
 
-P_G_PC1.val = ggplot(p.g.eig_var.1,
-                     aes(x = g.value, y = p.value,
-                         group = formation,
-                         colour = formation)) +
-    geom_point() +
-    xlab("P matrix PC1 value") +
-    ylab("G matrix PC1 value")
-P_G_PC1.val
+write.csv(corr.p.glob.form,
+          "Results/correlation.p.glob.w.modern.csv",
+          row.names = FALSE)
 
-#### CALCULATE E ----
-
-##### PLOT P, E, AND G VARIATION ----
-# E = units
-# P = cov or units + colony id
-# G = estimate or colony id
-
-###### POSITIVE DEFINITE ------
+#### POSITIVE DEFINITE ----
 ## check positive definite
 # round to 10 decimals to make it symmetric
 # to make it positive definite, use extended matrix to fill in
@@ -215,6 +212,7 @@ G_ext_uki = round(as.matrix(G_ext[[5]]), 6) # The G matrix estimated for sample/
 G_ext_tai = round(as.matrix(G_ext[[6]]), 6) # The G matrix estimated for sample/formation 6
 G_ext_SHCSBSB = round(as.matrix(G_ext[[7]]), 6) # The G matrix estimated for sample/formation 7
 G_ext_mod = round(as.matrix(G_ext[[8]]), 6) # The G matrix estimated for sample/formation 7
+Glob_ext_pos = round(as.matrix(Glob_ext), 6)
 
 is.symmetric.matrix(G_ext_NKLS)
 is.positive.definite(G_ext_NKLS)
@@ -236,6 +234,12 @@ is.positive.definite(G_ext_tai)
 
 is.symmetric.matrix(G_ext_SHCSBSB)
 is.positive.definite(G_ext_SHCSBSB)
+
+is.symmetric.matrix(G_ext_mod)
+is.positive.definite(G_ext_mod)
+
+is.symmetric.matrix(Glob_ext_pos)
+is.positive.definite(Glob_ext_pos)
 
 P_ext_NKLS = round(as.matrix(P_ext[[1]]), 6) # The G matrix estimated for sample/formation 1
 P_ext_NKBS = round(as.matrix(P_ext[[2]]), 6) # The G matrix estimated for sample/formation 2
@@ -266,6 +270,9 @@ is.positive.definite(P_ext_tai)
 
 is.symmetric.matrix(P_ext_SHCSBSB)
 is.positive.definite(P_ext_SHCSBSB)
+
+is.symmetric.matrix(P_ext_mod)
+is.positive.definite(P_ext_mod)
 
 #### COMPARE Gs THROUGH TIME ----
 
@@ -466,7 +473,7 @@ ggsave(p.evol,
 
 # By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
 
-#### ANGLE CHANGE IN G BETWEEN FORMATIONS ----
+##### ANGLE CHANGE IN G BETWEEN FORMATIONS -----
 
 ### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
 #eigen(as.matrix(G_matrix_1))$values[1]/sum(eigen(as.matrix(G_matrix_1))$values)
@@ -584,9 +591,10 @@ write.csv(angle_diff_between_Gs,
           "./Results/angle.differences.between.Gs.w.modern.csv",
           row.names = FALSE)
 
-#### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX ----
+##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
 
 ### See if change is in direction of G max
+## use Gmax of t1 and compare to ∆z
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1)
 # Calculate the angle in radians
@@ -892,30 +900,198 @@ for (i in 1:nrow(df.form.pc)){
     df.form.pc$n.O18[i] <- length(temp)
 }
 
-p.temp.pc <- ggplot(df.form.pc) +
-    geom_point(aes(x = med.O18, y = as.numeric(PC1_P)),
-               col = col.form) + 
-    geom_smooth(aes(x = med.O18, y = as.numeric(PC1_P)),
-                method = "lm") +
-    theme(text = element_text(size = 16)) +
-    scale_x_continuous(expression(mean~delta^18~O)) +
-    scale_y_continuous(expression(PC1~of~P~matrix)) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+#### COMPARE TO GLOBAL G ----
 
-summary(lm(as.numeric(df.form.pc$PC1_P) ~ df.form.pc$med.O18))
-#slope = 0.16682; r2 = 0.4162; p-value = 0.07002
+### Calculate the vector that defines the observed divergence between global G and sample/formation
+global <- as.numeric(means) #DON'T DO THIS!!!
+#NKLS
+#NKBS
+#tewk
+#wai
+#uki
+#tai
+#SHCSBSB
 
-ggsave(p.temp.pc, 
-       file = "./Results/temp.pc.w.modern.png", 
-       width = 14, height = 10, units = "cm")
+## where it's going - where it's been
+# don't do first one because not coming from anywhere?
+evolved_difference_unit_length_glob_nkls <- f.normalize_vector(NKLS - global)
+evolved_difference_unit_length_glob_nkbs <- f.normalize_vector(NKBS - global)
+evolved_difference_unit_length_glob_tewk <- f.normalize_vector(tewk - global)
+evolved_difference_unit_length_glob_wai <- f.normalize_vector(wai - global)
+evolved_difference_unit_length_glob_uki <- f.normalize_vector(uki - global)
+evolved_difference_unit_length_glob_tai <- f.normalize_vector(tai - global)
+evolved_difference_unit_length_glob_SHCSBSB <- f.normalize_vector(SHCSBSB - global)
+evolved_difference_unit_length_glob_mod <- f.normalize_vector(mod - global)
 
-#NO PATTERN
-summary(lm(df.form.pc$PC1_P ~ df.form.pc$med.O18))
-#slope = 0.16682; p = 0.07002, R2 = 0.4162
+###### OBSERVED EVOLVABILITY ------
+### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
+#observed_evolvability_in_direction_of_change<-t(evolved_difference_unit_length)%*%as.matrix(G_matrix_1)%*%evolved_difference_unit_length
+observed_evolvability_in_direction_of_change_glob_nkls <- t(evolved_difference_unit_length_glob_nkls)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_nkls
+observed_evolvability_in_direction_of_change_glob_nkbs <- t(evolved_difference_unit_length_glob_nkbs)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_nkbs
+observed_evolvability_in_direction_of_change_glob_tewk <- t(evolved_difference_unit_length_glob_tewk)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_tewk
+observed_evolvability_in_direction_of_change_glob_wai <- t(evolved_difference_unit_length_glob_wai)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_wai
+observed_evolvability_in_direction_of_change_glob_uki <- t(evolved_difference_unit_length_glob_uki)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_uki
+observed_evolvability_in_direction_of_change_glob_tai <- t(evolved_difference_unit_length_glob_tai)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_tai
+observed_evolvability_in_direction_of_change_glob_SHCSBSB <- t(evolved_difference_unit_length_glob_SHCSBSB)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_SHCSBSB
+observed_evolvability_in_direction_of_change_glob_mod <- t(evolved_difference_unit_length_glob_mod)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_glob_mod
 
+###### OBSERVED CONDITIONAL EVOLVABILITY ------
+### The conditional evolvability in the direction of divergence
+#observed_conditional_evolvability_in_direction_of_change<-1/(t(evolved_difference_unit_length)%*%solve(as.matrix(G_matrix_1))%*%evolved_difference_unit_length)
+observed_conditional_evolvability_in_direction_of_change_glob_nkls <- 1/(t(evolved_difference_unit_length_glob_nkls)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_nkls)
+observed_conditional_evolvability_in_direction_of_change_glob_nkbs <- 1/(t(evolved_difference_unit_length_glob_nkbs)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_nkbs)
+observed_conditional_evolvability_in_direction_of_change_glob_tewk <- 1/(t(evolved_difference_unit_length_glob_tewk)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_tewk)
+observed_conditional_evolvability_in_direction_of_change_glob_wai <- 1/(t(evolved_difference_unit_length_glob_wai)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_wai)
+observed_conditional_evolvability_in_direction_of_change_glob_uki <- 1/(t(evolved_difference_unit_length_glob_uki)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_uki)
+observed_conditional_evolvability_in_direction_of_change_glob_tai <- 1/(t(evolved_difference_unit_length_glob_tai)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_tai)
+observed_conditional_evolvability_in_direction_of_change_glob_SHCSBSB <- 1/(t(evolved_difference_unit_length_glob_SHCSBSB)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_SHCSBSB)
+observed_conditional_evolvability_in_direction_of_change_glob_mod <- 1/(t(evolved_difference_unit_length_glob_mod)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_glob_mod)
+
+### Generate 10,000 selection gradients in random directions in the n-dimensional space
+#n_dimensions <- 8 # number of traits in G matrix
+#Beta <- randomBeta(10000, n_dimensions)
+
+#outputs e, r, c, a, i
+#e = evolvability
+#r = respondability
+#c = conditional evolvability
+#a = autonomy of each selection gradient
+#i = integration
+#Beta = matrix of selection gradients
+#e and c are calculating variances of means; should not be negative
+#conditional must be equal to or smaller than e; often much small
+
+###### ESTIMATED CONDITIONAL EVOLVABILITY & EVOLVABILITY ------
+
+# Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
+X <- evolvabilityBeta(as.matrix(Glob_ext), Beta)
+sumX <- summary(X) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+sumX
+
+X_sum_glob <- data.frame(c.mean = c(sumX$Averages[[3]], rep("", 7)),
+                         c.min = c(sumX$Minimum[[3]], rep("", 7)),
+                         c.max = c(sumX$Maximum[[3]], rep("", 7)),
+                         e.mean = c(sumX$Averages[[1]], rep("", 7)),
+                         e.min = c(sumX$Minimum[[1]], rep("", 7)),
+                         e.max = c(sumX$Maximum[[1]], rep("", 7)),
+                         observed_e = c(observed_evolvability_in_direction_of_change_glob_nkls,
+                                        observed_evolvability_in_direction_of_change_glob_nkbs,
+                                        observed_evolvability_in_direction_of_change_glob_tewk,
+                                        observed_evolvability_in_direction_of_change_glob_wai,
+                                        observed_evolvability_in_direction_of_change_glob_uki,
+                                        observed_evolvability_in_direction_of_change_glob_tai,
+                                        observed_evolvability_in_direction_of_change_glob_SHCSBSB,
+                                        observed_evolvability_in_direction_of_change_glob_mod),
+                         observed_c = c(observed_conditional_evolvability_in_direction_of_change_glob_nkls,
+                                        observed_conditional_evolvability_in_direction_of_change_glob_nkbs,
+                                        observed_conditional_evolvability_in_direction_of_change_glob_tewk,
+                                        observed_conditional_evolvability_in_direction_of_change_glob_wai,
+                                        observed_conditional_evolvability_in_direction_of_change_glob_uki,
+                                        observed_conditional_evolvability_in_direction_of_change_glob_tai,
+                                        observed_conditional_evolvability_in_direction_of_change_glob_SHCSBSB,
+                                        observed_conditional_evolvability_in_direction_of_change_glob_mod),
+                         row.names = levels(formation_list))
+#NO NEGATIVE VALUES!
+
+write.csv(X_sum_glob,
+          "./Results/evolvability.global.summary.csv")
+
+##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
+### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
+Gmax_glob <- eigen(Glob_ext)$vectors[,1]
+
+# Put Gmax to norm length
+Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
+
+### See if change is in direction of G max
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1)
+# Calculate the angle in radians
+angle_radians.Gmax_NKLS_max <- acos(dot_product.Gmax_NKLS_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_NKLS_max <- angle_radians.Gmax_NKLS_max * (180 / pi)
+#80.90905
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_NKBS_max <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2)
+# Calculate the angle in radians
+angle_radians.Gmax_NKBS_max <- acos(dot_product.Gmax_NKBS_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_NKBS_max <- angle_radians.Gmax_NKBS_max * (180 / pi)
+#43.14475
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_tewk_max <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3)
+# Calculate the angle in radians
+angle_radians.Gmax_tewk_max <- acos(dot_product.Gmax_tewk_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_tewk_max <- angle_radians.Gmax_tewk_max * (180 / pi)
+#122.1798
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_wai_max <- sum(Gmax_wai_norm * evolved_difference_unit_length_t4)
+# Calculate the angle in radians
+angle_radians.Gmax_wai_max <- acos(dot_product.Gmax_wai_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_wai_max <- angle_radians.Gmax_wai_max * (180 / pi)
+#93.20555
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t5)
+# Calculate the angle in radians
+angle_radians.Gmax_uki_max <- acos(dot_product.Gmax_uki_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_uki_max <- angle_radians.Gmax_uki_max * (180 / pi)
+#145.7685
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_tai_max <- sum(Gmax_tai_norm * evolved_difference_unit_length_t6)
+# Calculate the angle in radians
+angle_radians.Gmax_tai_max <- acos(dot_product.Gmax_tai_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_tai_max <- angle_radians.Gmax_tai_max * (180 / pi)
+#40.81748
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+# Calculate the angle in radians
+angle_radians.Gmax_SHCSBSB_max <- acos(dot_product.Gmax_SHCSBSB_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_SHCSBSB_max <- angle_radians.Gmax_SHCSBSB_max * (180 / pi)
+#50.65786
+
+# Calculate the dot product of the unit vectors
+dot_product.Gmax_mod_max <- sum(Gmax_mod_norm * evolved_difference_unit_length_t7)
+# Calculate the angle in radians
+angle_radians.Gmax_mod_max <- acos(dot_product.Gmax_mod_max)
+# Convert the angle to degrees
+angle_degrees.Gmax_mod_max <- angle_radians.Gmax_mod_max * (180 / pi)
+#131.2871
+
+angle_diff_Gmax_to_P <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_max,
+                          angle_degrees.Gmax_tewk_max, angle_degrees.Gmax_wai_max,
+                          angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
+                          angle_degrees.Gmax_SHCSBSB_max, angle_degrees.Gmax_mod_max)
+angle_diff_between_Gmax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Gmax_to_P))
+colnames(angle_diff_between_Gmax_P) <- c("formation", "angle_diff_Gmax_to_P")
+angle_diff_between_Gmax_P$angle_diff_Gmax_to_P <- as.numeric(angle_diff_between_Gmax_P$angle_diff_Gmax_to_P)
+
+for(i in 1:nrow(angle_diff_between_Gmax_P)){
+    if(isTRUE(angle_diff_between_Gmax_P$angle_diff_Gmax_to_P[i] > 90)){
+        angle_diff_between_Gmax_P$angle_diff_Gmax_to_P[i] <- 180 - as.numeric(angle_diff_between_Gmax_P$angle_diff_Gmax_to_P[i])
+    }
+    else{
+        next
+    }
+}
+
+write.csv(angle_diff_between_Gmax_P,
+          "./Results/angle.differences.between.Gmax.P.w.modern.csv",
+          row.names = FALSE)
+
+#### CALCULATE E ----
+
+##### PLOT P, E, AND G VARIATION ----
+# E = units
+# P = cov or units + colony id
+# G = estimate or colony id

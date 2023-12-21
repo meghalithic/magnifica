@@ -571,7 +571,8 @@ corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 data.list = list(P_ext, G_ext,
                  df, dat_lg_N, 
                  mean_by_formation, mean_by_formation_colony, 
-                 form_data, by_form.n, col_form.n)
+                 form_data, by_form.n, col_form.n,
+                 means)
 save(data.list,
      file = "./Results/data.list.w.modern.RData")
 
@@ -793,7 +794,7 @@ save(model_Global,
      file = "./Results/global_matrix.w.modern.RData")
 
 load(file="./Results/global_matrix.w.modern.RData") #load the g matrices calculated above 
-model_Global <- model_Global[[1]]
+model_Global
 
 ##### CHECK MODELS -----
 formation_list #order of formations
@@ -843,171 +844,25 @@ ggsave(Glob_PC_dist,
 ###### G NOISE ------
 ##Controlling for noise
 #Extend G
-Glob_ext = ExtendMatrix(glob.Gmat, ret.dim = 6)$ExtMat #not 8 because last eigen value (#8) was negative
+Glob_ext = ExtendMatrix(glob.Gmat, ret.dim = 5)$ExtMat #not 8 because last eigen value (#8) was negative
+Glob_ext <- as.matrix(Glob_ext)
 #ignore warning from above
 isSymmetric(Glob_ext)
 Glob_Ext_std_variances = diag(Glob_ext) 
 Glob_Ext_eig_variances = eigen(Glob_ext)$values
+##need to create random cov.m for comparison
+cov.m <- RandomMatrix(8, 1, 1, 100) 
+G_list <- list(Glob_ext, as.matrix(cov.m))
 
-#### COMPARE TO GLOBAL G ----
+glob.comp_mat = RandomSkewers(G_list) #need at least
+glob.corr_mat = glob.comp_mat$correlations + t(glob.comp_mat$correlations) 
+diag(glob.corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(glob.corr_mat,upper = "number", lower = "pie")
 
-### Calculate the vector that defines the observed divergence between sample/formation 1 an 2
-global <- as.numeric(means)
-#NKLS
-#NKBS
-#tewk
-#wai
-#uki
-#tai
-#SHCSBSB
+save(Glob_ext, 
+     file = "./Results/global_ext.w.modern.RData")
 
-evolved_difference_unit_length_NKLS_glob <- f.normalize_vector(NKLS - global)
-evolved_difference_unit_length_NKBS_glob <- f.normalize_vector(NKBS - global)
-evolved_difference_unit_length_tewk_glob <- f.normalize_vector(tewk - global)
-evolved_difference_unit_length_wai_glob <- f.normalize_vector(wai - global)
-evolved_difference_unit_length_uki_glob <- f.normalize_vector(uki - global)
-evolved_difference_unit_length_tai_glob <- f.normalize_vector(tai - global)
-evolved_difference_unit_length_SCHSBSB_glob <- f.normalize_vector(SHCSBSB-global)
+load(file="./Results/global_ext.w.modern.RData") #load the g matrices calculated above 
+Glob_ext
 
-G_matrix_glob = glob.Gmat 
-#G_matrix_NKLS
-#G_matrix_NKBS
-#G_matrix_tewk
-#G_matrix_wai
-#G_matrix_uki
-#G_matrix_tai
-#G_matrix_SHCSBSB
-
-### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
-observed_evolvability_in_direction_of_change_NKLS <- t(evolved_difference_unit_length_NKLS_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_NKLS_glob
-observed_evolvability_in_direction_of_change_NKBS <- t(evolved_difference_unit_length_NKBS_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_NKBS_glob
-observed_evolvability_in_direction_of_change_tewk <- t(evolved_difference_unit_length_tewk_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_tewk_glob
-observed_evolvability_in_direction_of_change_wai <- t(evolved_difference_unit_length_wai_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_wai_glob
-observed_evolvability_in_direction_of_change_uki <- t(evolved_difference_unit_length_uki_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_uki_glob
-observed_evolvability_in_direction_of_change_tai <- t(evolved_difference_unit_length_tai_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_tai_glob
-observed_evolvability_in_direction_of_change_SHCSBSB <- t(evolved_difference_unit_length_SCHSBSB_glob)%*%as.matrix(G_matrix_glob)%*%evolved_difference_unit_length_SCHSBSB_glob
-
-### The conditional evolvability in the direction of divergence
-observed_conditional_evolvability_in_direction_of_change_NKLS <- 1/(t(evolved_difference_unit_length_NKLS_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_NKLS_glob)
-observed_conditional_evolvability_in_direction_of_change_NKBS <- 1/(t(evolved_difference_unit_length_NKBS_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_NKBS_glob)
-observed_conditional_evolvability_in_direction_of_change_tewk <- 1/(t(evolved_difference_unit_length_tewk_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_tewk_glob)
-observed_conditional_evolvability_in_direction_of_change_wai <- 1/(t(evolved_difference_unit_length_wai_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_wai_glob)
-observed_conditional_evolvability_in_direction_of_change_uki <- 1/(t(evolved_difference_unit_length_uki_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_uki_glob)
-observed_conditional_evolvability_in_direction_of_change_tai <- 1/(t(evolved_difference_unit_length_tai_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_tai_glob)
-observed_conditional_evolvability_in_direction_of_change_SCHSBSB <- 1/(t(evolved_difference_unit_length_SCHSBSB_glob)%*%solve(as.matrix(G_matrix_glob))%*%evolved_difference_unit_length_SCHSBSB_glob)
-
-### Generate 10,000 selection gradients in random directions in the n-dimensional space
-#n_dimensions <- 8 # number of traits in G matrix
-#Beta <- randomBeta(10000, n_dimensions)
-
-# Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
-X_glob <- evolvabilityBeta(as.matrix(G_matrix_glob), Beta)
-summary(X_glob) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
-#e_mean 0.00664551
-#c_mean -0.00010400
-#e_min 1.237089e-04
-#c_min -2.428818e-01
-#e_max 0.02531620
-#c_max 0.33979277
-
-#X_t1 
-#X_t2
-#X_t3 
-#X_t4 
-#X_t5 
-#X_t6 
-#X_t7 
-
-# By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
-
-### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
-eigen(as.matrix(G_matrix_glob))$values[1]/sum(eigen(as.matrix(G_matrix_glob))$values)
-#0.5229979
-
-### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
-
-Gmax_glob <- eigen(G_matrix_glob)$vectors[,1]
-
-#Gmax_NKLS
-#Gmax_NKBS
-#Gmax_tewk
-#Gmax_wai
-#Gmax_uki
-#Gmax_tai
-#Gmax_SCHSBSB
-
-# Put Gmax to norm length
-Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
-
-#Gmax_NKLS_norm
-#Gmax_NKBS_norm
-#Gmax_tewk_norm
-#Gmax_wai_norm
-#Gmax_uki_norm
-#Gmax_tai_norm
-#Gmax_SCHSBSB_norm
-
-###### ANGLES COMPARED TO GLOBAL G ------
-
-## NKLS
-# Calculate the dot product of the unit vectors
-dot_product.Gmax_glob_NKLS <- sum(Gmax_glob_norm * Gmax_NKLS_norm)
-# Calculate the angle in radians
-angle_radians.Gmax_glob_NKLS <- acos(dot_product.Gmax_glob_NKLS)
-# Convert the angle to degrees
-angle_degrees.Gmax_glob_NKLS <- angle_radians.Gmax_glob_NKLS * (180 / pi)
-#7.953553
-
-## NKBS
-# Calculate the dot product of the unit vectors
-dot_product.Gmax_glob_NKBS <- sum(Gmax_glob_norm * Gmax_NKBS_norm)
-# Calculate the angle in radians
-angle_radians.Gmax_glob_NKBS <- acos(dot_product.Gmax_glob_NKBS)
-# Convert the angle to degrees
-angle_degrees.Gmax_glob_NKBS <- angle_radians.Gmax_glob_NKBS * (180 / pi)
-#3.790778
-
-## Tewksbury
-# Calculate the dot product of the unit vectors
-dot_product.Gmax_glob_tewk <- sum(Gmax_glob_norm * Gmax_tewk_norm)
-# Calculate the angle in radians
-angle_radians.Gmax_glob_tewk <- acos(dot_product.Gmax_glob_tewk)
-# Convert the angle to degrees
-angle_degrees.Gmax_glob_tewk <- angle_radians.Gmax_glob_tewk * (180 / pi)
-#5.831842
-
-## Waipuru
-# Calculate the dot product of the unit vectors
-dot_product.Gmax_glob_wai <- sum(Gmax_glob_norm * Gmax_wai_norm)
-# Calculate the angle in radians
-angle_radians.Gmax_glob_wai <- acos(dot_product.Gmax_glob_wai)
-# Convert the angle to degrees
-angle_degrees.Gmax_glob_wai <- angle_radians.Gmax_glob_wai * (180 / pi)
-#20.70651
-
-## Upper Kai-Iwi
-# Calculate the dot product of the unit vectors
-dot_product.Gmax_glob_uki <- sum(Gmax_glob_norm * Gmax_uki_norm)
-# Calculate the angle in radians
-angle_radians.Gmax_glob_uki <- acos(dot_product.Gmax_glob_uki)
-# Convert the angle to degrees
-angle_degrees.Gmax_glob_uki <- angle_radians.Gmax_glob_uki * (180 / pi)
-#17.58378
-
-## Tainui
-# Calculate the dot product of the unit vectors
-dot_product.Gmax_glob_tai <- sum(Gmax_glob_norm * Gmax_tai_norm)
-# Calculate the angle in radians
-angle_radians.Gmax_glob_tai <- acos(dot_product.Gmax_glob_tai)
-# Convert the angle to degrees
-angle_degrees.Gmax_glob_tai <- angle_radians.Gmax_glob_tai * (180 / pi)
-#22.45352
-
-## SHCSBSB
-# Calculate the dot product of the unit vectors
-dot_product.Gmax_glob_SHCSBSB <- sum(Gmax_glob_norm * Gmax_SHCSBSB_norm)
-# Calculate the angle in radians
-angle_radians.Gmax_glob_SHCSBSB <- acos(dot_product.Gmax_glob_SHCSBSB)
-# Convert the angle to degrees
-angle_degrees.Gmax_glob_SHCSBSB <- angle_radians.Gmax_glob_SHCSBSB * (180 / pi)
-#10.81873
