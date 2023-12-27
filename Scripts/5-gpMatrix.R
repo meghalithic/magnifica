@@ -731,17 +731,17 @@ colnames(obs_melt) = c("RS","N")
 #Plotting the result
 plot(out_results[, 2], out_results[, 1], 
      xlab = "Sample size", ylab = "Similarity", 
-     pch = 19, col = "grey")
+     pch = 19, col = "grey", cex = .5)
 points(obs_melt$N, obs_melt$RS, 
-       col = "#00BFC4", pch = 19)
+       col = "#00BFC4", pch = 19, cex = .5)
 
 p.rare <- ggplot() +
     geom_point(aes(out_results[, 2], out_results[, 1]),
                pch = 19, col = "grey", size = 2) +
     geom_point(aes(obs_melt$N, obs_melt$RS),
                col = "#00BFC4", pch = 19, size = 2) + 
-    #geom_point(aes(obs_melt$N[4], obs_melt$RS[4]), #using to check where the points are
-    #           col = "red", pch = 19, size = 2)
+    geom_point(aes(obs_melt$N[25], obs_melt$RS[25]), #using to check where the points are
+               col = "red", pch = 19, size = 2) +
     theme(text = element_text(size = 16),
           legend.position = "none",
           panel.grid.major = element_blank(), 
@@ -761,10 +761,6 @@ ggsave(p.rare,
 which.min(obs_melt$RS)
 obs_melt[25,] #0.6630677
 comp_mat$correlations #.663 is corr between modern and Upper Kai-Iwi
-#low sample size, next lowest similarity
-sort(obs_melt$RS, decreasing = TRUE)
-obs_melt[obs_melt$RS <= 0.7407344,] #index 18
-comp_mat$correlations #0.74 is corr between modern and Tewkesbury
 
 ## COLOR MODERN
 
