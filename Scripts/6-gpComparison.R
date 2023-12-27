@@ -905,6 +905,30 @@ for (i in 1:nrow(df.form.pc)){
     df.form.pc$n.O18[i] <- length(temp)
 }
 
+p.pc1.temp <- ggplot(df.form.pc[-1,]) +
+    geom_point(aes(x = med.O18,
+                   y = as.numeric(PC1_P))) +
+    geom_smooth(aes(x = med.O18,
+                    y = as.numeric(PC1_P)),
+                method = "lm") +
+    theme(text = element_text(size = 16),
+          #legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA)) +
+    scale_x_continuous(name = expression(Median~delta^18~O)) +
+    scale_y_continuous(name = expression(PC1~of~P[mat])) +
+    ggtitle("PC1 as a function of temperature without modern")
+    
+ggsave(p.pc1.temp, 
+       file = "./Results/pc1.of.p.without.modern.png", 
+       width = 20, height = 20, units = "cm")
+
+summary(lm(as.numeric(df.form.pc$PC1_P[-1]) ~ df.form.pc$med.O18[-1]))
+#slope = 0.04, p-value = 0.53, r2 = 0
+
 #### COMPARE TO GLOBAL G ----
 
 ### Calculate the vector that defines the observed divergence between global G and sample/formation
@@ -1092,7 +1116,190 @@ write.csv(angle_diff_between_Glob_max_P,
           row.names = FALSE)
 
 #### CALCULATE E ----
-Emat = Gmat - Pmat
+Emat <- list()
+
+for(i in 1:length(formation_list)){
+    Emat[[i]] <- as.matrix(Pmat[[i]]) - as.matrix(Gmat[[i]])
+}
+
+names(Emat) = names(by_form)
+
+##### E_ext -----
+
+lapply(Emat, isSymmetric)  #is.symmetric.matrix
+e.variances = lapply(Emat, diag)
+paste("Trait variances")
+head(e.variances)
+
+e.eig_variances = lapply(Emat, function (x) {eigen(x)$values})
+paste("Eigenvalue variances")
+head(e.eig_variances)
+
+e.eig_percent = lapply(e.eig_variances, function (x) {x/sum(x)})
+e.eig_per_mat = do.call(rbind, e.eig_percent)
+e.eig_per_mat = data.frame(e.eig_per_mat, rownames(e.eig_per_mat))
+e.eig_per = melt(e.eig_per_mat)
+#dev.off()
+E_PC_dist = ggplot(e.eig_per,
+                   aes(x = variable, y = value,
+                       group = rownames.e.eig_per_mat.,
+                       colour = rownames.e.eig_per_mat.)) +
+    geom_line(aes(linetype = rownames.e.eig_per_mat.)) +
+    geom_point() +
+    xlab("Principal component rank") +
+    ylab("%Variation in the PC")
+E_PC_dist #Tainui negative; none above 1; Upper Kai-Iwi looks FUNKY
+## Waipuru 5th dim is wild; may only ret 4 dim?
+
+
+E_ext = lapply(Emat, function (x){ ExtendMatrix(x, ret.dim = 5)$ExtMat}) #not 8 because last eigen value (#6) was negative
+#ignore warning from above
+#make 5th dim 0 if neg
+lapply(E_ext, isSymmetric)  
+
+E_ext_NKLS = round(as.matrix(E_ext[[1]]), 6) # The G matrix estimated for sample/formation 1
+E_ext_NKBS = round(as.matrix(E_ext[[2]]), 6) # The G matrix estimated for sample/formation 2
+E_ext_tewk = round(as.matrix(E_ext[[3]]), 6) # The G matrix estimated for sample/formation 3
+E_ext_wai = round(as.matrix(E_ext[[4]]), 6) # The G matrix estimated for sample/formation 4
+E_ext_uki = round(as.matrix(E_ext[[5]]), 6) # The G matrix estimated for sample/formation 5
+E_ext_tai = round(as.matrix(E_ext[[6]]), 6) # The G matrix estimated for sample/formation 6
+E_ext_SHCSBSB = round(as.matrix(E_ext[[7]]), 6) # The G matrix estimated for sample/formation 7
+E_ext_mod = round(as.matrix(E_ext[[8]]), 6) # The G matrix estimated for sample/formation 7
+
+is.symmetric.matrix(E_ext_NKLS)
+is.positive.definite(E_ext_NKLS)
+
+is.symmetric.matrix(E_ext_NKBS)
+is.positive.definite(E_ext_NKBS)
+
+is.symmetric.matrix(E_ext_tewk)
+is.positive.definite(E_ext_tewk)
+
+is.symmetric.matrix(E_ext_wai)
+is.positive.definite(E_ext_wai) #now TRUE
+
+is.symmetric.matrix(E_ext_uki)
+is.positive.definite(E_ext_uki)
+
+is.symmetric.matrix(E_ext_tai)
+is.positive.definite(E_ext_tai)
+
+is.symmetric.matrix(E_ext_SHCSBSB)
+is.positive.definite(E_ext_SHCSBSB)
+
+is.symmetric.matrix(E_ext_mod)
+is.positive.definite(E_ext_mod)
+
+#### Emax ----
+Emax_NKLS <- eigen(E_ext_NKLS)$vectors[,1]
+Emax_NKBS <- eigen(E_ext_NKBS)$vectors[,1]
+Emax_tewk <- eigen(E_ext_tewk)$vectors[,1]
+Emax_wai <- eigen(E_ext_wai)$vectors[,1]
+Emax_uki <- eigen(E_ext_uki)$vectors[,1]
+Emax_tai <- eigen(E_ext_tai)$vectors[,1]
+Emax_SHCSBSB <- eigen(E_ext_SHCSBSB)$vectors[,1]
+Emax_mod <- eigen(E_ext_mod)$vectors[,1]
+
+# Put Gmax to norm length
+Emax_NKLS_norm <- f.normalize_vector(Emax_NKLS)
+Emax_NKBS_norm <- f.normalize_vector(Emax_NKBS)
+Emax_tewk_norm <- f.normalize_vector(Emax_tewk)
+Emax_wai_norm <- f.normalize_vector(Emax_wai)
+Emax_uki_norm <- f.normalize_vector(Emax_uki)
+Emax_tai_norm <- f.normalize_vector(Emax_tai)
+Emax_SHCSBSB_norm <- f.normalize_vector(Emax_SHCSBSB)
+Emax_mod_norm <- f.normalize_vector(Emax_mod)
+
+#### AMOUNT OF VARIATION E EXPLAINS ----
+
+#### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO EMAX ----
+
+### See if change is in direction of G max
+## use Gmax of t1 and compare to ∆z
+# Calculate the dot product of the unit vectors
+dot_product.Emax_NKLS_max <- sum(Emax_NKLS_norm * evolved_difference_unit_length_t1)
+# Calculate the angle in radians
+angle_radians.Emax_NKLS_max <- acos(dot_product.Emax_NKLS_max)
+# Convert the angle to degrees
+angle_degrees.Emax_NKLS_max <- angle_radians.Emax_NKLS_max * (180 / pi)
+#153.7483; Gmax is 80.90905
+
+# Calculate the dot product of the unit vectors
+dot_product.Emax_NKBS_max <- sum(Emax_NKBS_norm * evolved_difference_unit_length_t2)
+# Calculate the angle in radians
+angle_radians.Emax_NKBS_max <- acos(dot_product.Emax_NKBS_max)
+# Convert the angle to degrees
+angle_degrees.Emax_NKBS_max <- angle_radians.Emax_NKBS_max * (180 / pi)
+#40.60758; Gmax is 43.14475
+
+# Calculate the dot product of the unit vectors
+dot_product.Emax_tewk_max <- sum(Emax_tewk_norm * evolved_difference_unit_length_t3)
+# Calculate the angle in radians
+angle_radians.Emax_tewk_max <- acos(dot_product.Emax_tewk_max)
+# Convert the angle to degrees
+angle_degrees.Emax_tewk_max <- angle_radians.Emax_tewk_max * (180 / pi)
+#116.5479; Gmax is 122.1798
+
+# Calculate the dot product of the unit vectors
+dot_product.Emax_wai_max <- sum(Emax_wai_norm * evolved_difference_unit_length_t4)
+# Calculate the angle in radians
+angle_radians.Emax_wai_max <- acos(dot_product.Emax_wai_max)
+# Convert the angle to degrees
+angle_degrees.Emax_wai_max <- angle_radians.Emax_wai_max * (180 / pi)
+#135.9855; Gmax is 93.20555
+
+# Calculate the dot product of the unit vectors
+dot_product.Emax_uki_max <- sum(Emax_uki_norm * evolved_difference_unit_length_t5)
+# Calculate the angle in radians
+angle_radians.Emax_uki_max <- acos(dot_product.Emax_uki_max)
+# Convert the angle to degrees
+angle_degrees.Emax_uki_max <- angle_radians.Emax_uki_max * (180 / pi)
+#120.9149; Gmax is 145.7685
+
+# Calculate the dot product of the unit vectors
+dot_product.Emax_tai_max <- sum(Emax_tai_norm * evolved_difference_unit_length_t6)
+# Calculate the angle in radians
+angle_radians.Emax_tai_max <- acos(dot_product.Emax_tai_max)
+# Convert the angle to degrees
+angle_degrees.Emax_tai_max <- angle_radians.Emax_tai_max * (180 / pi)
+#61.79681; Gmax is 40.81748
+
+# Calculate the dot product of the unit vectors
+dot_product.Emax_SHCSBSB_max <- sum(Emax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+# Calculate the angle in radians
+angle_radians.Emax_SHCSBSB_max <- acos(dot_product.Emax_SHCSBSB_max)
+# Convert the angle to degrees
+angle_degrees.Emax_SHCSBSB_max <- angle_radians.Emax_SHCSBSB_max * (180 / pi)
+#63.61717; Gmax is 50.65786
+
+# Calculate the dot product of the unit vectors
+dot_product.Emax_mod_max <- sum(Emax_mod_norm * evolved_difference_unit_length_t7)
+# Calculate the angle in radians
+angle_radians.Emax_mod_max <- acos(dot_product.Emax_mod_max)
+# Convert the angle to degrees
+angle_degrees.Emax_mod_max <- angle_radians.Emax_mod_max * (180 / pi)
+#101.1701; Gmax is 131.2871
+
+angle_diff_Emax_to_P <- c(angle_degrees.Emax_NKLS_max, angle_degrees.Emax_NKBS_max,
+                          angle_degrees.Emax_tewk_max, angle_degrees.Emax_wai_max,
+                          angle_degrees.Emax_uki_max, angle_degrees.Emax_tai_max,
+                          angle_degrees.Emax_SHCSBSB_max, angle_degrees.Emax_mod_max)
+angle_diff_between_Emax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Emax_to_P))
+colnames(angle_diff_between_Emax_P) <- c("formation", "angle_diff_Emax_to_P")
+angle_diff_between_Emax_P$angle_diff_Emax_to_P <- as.numeric(angle_diff_between_Emax_P$angle_diff_Emax_to_P)
+
+for(i in 1:nrow(angle_diff_between_Emax_P)){
+    if(isTRUE(angle_diff_between_Emax_P$angle_diff_Emax_to_P[i] > 90)){
+        angle_diff_between_Emax_P$angle_diff_Emax_to_P[i] <- 180 - as.numeric(angle_diff_between_Emax_P$angle_diff_Emax_to_P[i])
+    }
+    else{
+        next
+    }
+}
+
+write.csv(angle_diff_between_Emax_P,
+          "./Results/angle.differences.between.Emax.P.w.modern.csv",
+          row.names = FALSE)
 
 ##### PLOT P, E, AND G VARIATION ----
 # E = units
