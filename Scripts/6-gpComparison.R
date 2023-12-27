@@ -1211,6 +1211,62 @@ Emax_SHCSBSB_norm <- f.normalize_vector(Emax_SHCSBSB)
 Emax_mod_norm <- f.normalize_vector(Emax_mod)
 
 #### AMOUNT OF VARIATION E EXPLAINS ----
+E_size <- c(sum(diag(E_ext_NKBS)),
+            sum(diag(E_ext_NKLS)),
+            sum(diag(E_ext_tewk)),
+            sum(diag(E_ext_wai)),
+            sum(diag(E_ext_uki)),
+            sum(diag(E_ext_tai)),
+            sum(diag(E_ext_SHCSBSB)),
+            sum(diag(E_ext_mod)))
+
+P_G_E_size <- as.data.frame(cbind(form.name, P_size, G_size, E_size))
+P_G_E_size$form.name <- factor(P_E_size$form.name, levels = c("NKLS", "NKBS",
+                                                            "Tewkesbury", 
+                                                            "Waipuru",
+                                                            "Upper Kai-Iwi",
+                                                            "Tainui",
+                                                            "SHCSBSB",
+                                                            "modern"))
+
+#proportion G to P
+P_G_E_size$prop.e.p <- as.numeric(P_E_size$E_size)/as.numeric(P_E_size$P_size)
+range(P_G_E_size$prop.e.p)
+#38 to 68 %
+
+P_G_E_size$prop.g.p <- as.numeric(P_G_E_size$G_size)/as.numeric(P_G_E_size$P_size)
+range(P_G_E_size$prop.g.p)
+
+p.pge.size <- ggplot(P_G_E_size) +
+    geom_point(aes(y = as.numeric(P_size), x = form.name),
+               size = 5, shape = 17,
+               color = "black") + 
+    geom_point(aes(y = as.numeric(G_size), x = form.name),
+               size = 5,
+               color = "black") + 
+    geom_point(aes(y = as.numeric(E_size), x = form.name),
+               size = 5, shape = 4,
+               color = "black") + 
+    theme(text = element_text(size = 16),
+          #legend.position = "right",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA)) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Sizes of P and E",
+                       limits = c(0, .25)) +
+    ggtitle("Diagonals of P (triangle), G (cirlce), and E (X)")
+    #scale_shape_manual(name = "Matrix",
+    #                   values = c("P matrix" = 17,
+    #                              "G matrix" = 4,
+    #                              "E matrix" = 16)) 
+
+ggsave(p.pge.size, 
+       file = "./Results/p.g.e.size.png", 
+       width = 20, height = 20, units = "cm")
 
 #### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO EMAX ----
 
