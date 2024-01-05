@@ -915,7 +915,7 @@ p.pc1.temp <- ggplot(df.form.pc[-1,]) +
     ggtitle("PC1 as a function of temperature without modern")
     
 ggsave(p.pc1.temp, 
-       file = "./Results/pc1.of.p.without.modern.png", 
+       file = "./Results/temp.pc.without.modern.png", 
        width = 20, height = 20, units = "cm")
 
 summary(lm(as.numeric(df.form.pc$PC1_P[-1]) ~ df.form.pc$med.O18[-1]))
