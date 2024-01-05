@@ -649,25 +649,17 @@ angle_degrees.Gmax_tai_max <- angle_radians.Gmax_tai_max * (180 / pi)
 #40.81748
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t7)
 # Calculate the angle in radians
 angle_radians.Gmax_SHCSBSB_max <- acos(dot_product.Gmax_SHCSBSB_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_SHCSBSB_max <- angle_radians.Gmax_SHCSBSB_max * (180 / pi)
-#50.65786
-
-# Calculate the dot product of the unit vectors
-dot_product.Gmax_mod_max <- sum(Gmax_mod_norm * evolved_difference_unit_length_t7)
-# Calculate the angle in radians
-angle_radians.Gmax_mod_max <- acos(dot_product.Gmax_mod_max)
-# Convert the angle to degrees
-angle_degrees.Gmax_mod_max <- angle_radians.Gmax_mod_max * (180 / pi)
-#131.2871
+#88.28694
 
 angle_diff_Gmax_to_P <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_max,
                           angle_degrees.Gmax_tewk_max, angle_degrees.Gmax_wai_max,
                           angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
-                          angle_degrees.Gmax_SHCSBSB_max, angle_degrees.Gmax_mod_max)
+                          angle_degrees.Gmax_SHCSBSB_max, "")
 angle_diff_between_Gmax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Gmax_to_P))
 colnames(angle_diff_between_Gmax_P) <- c("formation", "angle_diff_Gmax_to_P")
 angle_diff_between_Gmax_P$angle_diff_Gmax_to_P <- as.numeric(angle_diff_between_Gmax_P$angle_diff_Gmax_to_P)
@@ -990,37 +982,88 @@ observed_conditional_evolvability_in_direction_of_change_glob_t7 <- 1/(t(evolved
 ###### ESTIMATED CONDITIONAL EVOLVABILITY & EVOLVABILITY ------
 
 # Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
-X <- evolvabilityBeta(as.matrix(Glob_ext), Beta)
-sumX <- summary(X) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
-sumX
+X_glob <- evolvabilityBeta(as.matrix(Glob_ext), Beta)
+sumX_glob <- summary(X_glob) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+sumX_glob
 
-X_sum_glob <- data.frame(c.mean = c(sumX$Averages[[3]], rep("", 7)),
-                         c.min = c(sumX$Minimum[[3]], rep("", 7)),
-                         c.max = c(sumX$Maximum[[3]], rep("", 7)),
-                         e.mean = c(sumX$Averages[[1]], rep("", 7)),
-                         e.min = c(sumX$Minimum[[1]], rep("", 7)),
-                         e.max = c(sumX$Maximum[[1]], rep("", 7)),
-                         observed_e = c(observed_evolvability_in_direction_of_change_glob_nkls,
-                                        observed_evolvability_in_direction_of_change_glob_nkbs,
-                                        observed_evolvability_in_direction_of_change_glob_tewk,
-                                        observed_evolvability_in_direction_of_change_glob_wai,
-                                        observed_evolvability_in_direction_of_change_glob_uki,
-                                        observed_evolvability_in_direction_of_change_glob_tai,
-                                        observed_evolvability_in_direction_of_change_glob_SHCSBSB,
-                                        observed_evolvability_in_direction_of_change_glob_mod),
-                         observed_c = c(observed_conditional_evolvability_in_direction_of_change_glob_nkls,
-                                        observed_conditional_evolvability_in_direction_of_change_glob_nkbs,
-                                        observed_conditional_evolvability_in_direction_of_change_glob_tewk,
-                                        observed_conditional_evolvability_in_direction_of_change_glob_wai,
-                                        observed_conditional_evolvability_in_direction_of_change_glob_uki,
-                                        observed_conditional_evolvability_in_direction_of_change_glob_tai,
-                                        observed_conditional_evolvability_in_direction_of_change_glob_SHCSBSB,
-                                        observed_conditional_evolvability_in_direction_of_change_glob_mod),
-                         row.names = levels(formation_list))
+X_sum_glob <- data.frame(c.mean = c(sumX_glob$Averages[[3]], rep("", 7)),
+                         c.min = c(sumX_glob$Minimum[[3]], rep("", 7)),
+                         c.max = c(sumX_glob$Maximum[[3]], rep("", 7)),
+                         e.mean = c(sumX_glob$Averages[[1]], rep("", 7)),
+                         e.min = c(sumX_glob$Minimum[[1]], rep("", 7)),
+                         e.max = c(sumX_glob$Maximum[[1]], rep("", 7)),
+                         observed_e_glob = c(observed_evolvability_in_direction_of_change_glob_t1,
+                                             observed_evolvability_in_direction_of_change_glob_t2,
+                                             observed_evolvability_in_direction_of_change_glob_t3,
+                                             observed_evolvability_in_direction_of_change_glob_t4,
+                                             observed_evolvability_in_direction_of_change_glob_t5,
+                                             observed_evolvability_in_direction_of_change_glob_t6,
+                                             observed_evolvability_in_direction_of_change_glob_t7,
+                                             ""),
+                         observed_c_glob = c(observed_conditional_evolvability_in_direction_of_change_glob_t1,
+                                             observed_conditional_evolvability_in_direction_of_change_glob_t2,
+                                             observed_conditional_evolvability_in_direction_of_change_glob_t3,
+                                             observed_conditional_evolvability_in_direction_of_change_glob_t4,
+                                             observed_conditional_evolvability_in_direction_of_change_glob_t5,
+                                             observed_conditional_evolvability_in_direction_of_change_glob_t6,
+                                             observed_conditional_evolvability_in_direction_of_change_glob_t7,
+                                             ""),
+                    row.names = levels(formation_list))
+
 #NO NEGATIVE VALUES!
 
 write.csv(X_sum_glob,
           "./Results/evolvability.global.summary.csv")
+
+## PLOT
+X_sum_glob$formation <- rownames(X_sum_glob)
+X_sum_glob$formation <- factor(X_sum_glob$formation, 
+                               levels = c("NKLS", "NKBS",
+                                          "Tewkesbury", "Waipuru",
+                                          "Upper Kai-Iwi", "Tainui",
+                                          "SHCSBSB", "modern"))
+
+X_sum_glob$form.trans <- c("NKLS to NKBS",
+                           "NKBS to Tewkesbury",
+                           "Tewkesbury to Waipuru", 
+                           "Waipuru to Upper Kai-Iwi",
+                           "Upper Kai-Iwi to Tainui", 
+                           "Tainui to SHCSBSB",
+                           "SHCSBSB to modern",
+                           "")
+X_sum_glob$form.trans <- factor(X_sum_glob$form.trans, 
+                                levels = c("NKLS to NKBS", 
+                                           "NKBS to Tewkesbury",
+                                           "Tewkesbury to Waipuru", 
+                                           "Waipuru to Upper Kai-Iwi",
+                                           "Upper Kai-Iwi to Tainui", 
+                                           "Tainui to SHCSBSB",
+                                           "SHCSBSB to modern",
+                                           ""))
+
+X_sum_glob.trim <- X_sum_glob[1:7,]
+p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.min[1]),
+               color = "darkgray", linetype = "dashed") +
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.max[1]),
+               color = "darkgray", linetype = "dashed") +
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1])) +
+    geom_point(aes(y = as.numeric(observed_e_glob)),
+               size = 5, shape = 17) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Evolvability") +
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+ggsave(p.evol_glob, 
+       file = "./Results/globalG.evolvability.w.modern.png", 
+       width = 14, height = 10, units = "cm")
 
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
@@ -1079,25 +1122,17 @@ angle_degrees.Glob_max_tai <- angle_radians.Glob_max_tai * (180 / pi)
 #49.55738; was 40.81748
 
 # Calculate the dot product of the unit vectors
-dot_product.Glob_max_SHCSBSB <- sum(Gmax_glob_norm * evolved_difference_unit_length_t6)
+dot_product.Glob_max_SHCSBSB <- sum(Gmax_glob_norm * evolved_difference_unit_length_t7)
 # Calculate the angle in radians
 angle_radians.Glob_max_SHCSBSB <- acos(dot_product.Glob_max_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Glob_max_SHCSBSB <- angle_radians.Glob_max_SHCSBSB * (180 / pi)
-#49.55738; was 50.65786
-
-# Calculate the dot product of the unit vectors
-dot_product.Glob_max_mod <- sum(Gmax_glob_norm * evolved_difference_unit_length_t7)
-# Calculate the angle in radians
-angle_radians.Glob_max_mod <- acos(dot_product.Glob_max_mod)
-# Convert the angle to degrees
-angle_degrees.Glob_max_mod <- angle_radians.Glob_max_mod * (180 / pi)
-#95.32893; was 131.2871
+#95.32893; was 88.28694
 
 angle_diff_Glob_max_to_P <- c(angle_degrees.Glob_max_NKLS, angle_degrees.Glob_max_NKBS,
                               angle_degrees.Glob_max_tewk, angle_degrees.Glob_max_wai,
                               angle_degrees.Glob_max_uki, angle_degrees.Glob_max_tai,
-                              angle_degrees.Glob_max_SHCSBSB, angle_degrees.Glob_max_mod)
+                              angle_degrees.Glob_max_SHCSBSB, "")
 angle_diff_between_Glob_max_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Glob_max_to_P))
 colnames(angle_diff_between_Glob_max_P) <- c("formation", "angle_diff_Glob_max_to_P")
 angle_diff_between_Glob_max_P$angle_diff_Glob_max_to_P <- as.numeric(angle_diff_between_Glob_max_P$angle_diff_Glob_max_to_P)
@@ -1258,7 +1293,7 @@ p.pge.size <- ggplot(P_G_E_size) +
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Sizes of P and E",
                        limits = c(0, .25)) +
-    ggtitle("Diagonals of P (triangle), G (cirlce), and E (X)")
+    ggtitle("Size (diagonals) of P (triangle), G (cirlce), and E (X)")
     #scale_shape_manual(name = "Matrix",
     #                   values = c("P matrix" = 17,
     #                              "G matrix" = 4,
@@ -1266,6 +1301,52 @@ p.pge.size <- ggplot(P_G_E_size) +
 
 ggsave(p.pge.size, 
        file = "./Results/p.g.e.size.png", 
+       width = 20, height = 20, units = "cm")
+
+## P v G
+p.pg.size <- ggplot(P_G_E_size) +
+    geom_point(aes(y = as.numeric(P_size), x = as.numeric(G_size)),
+               size = 5,
+               color = "black") + 
+    theme(text = element_text(size = 16),
+          #legend.position = "right",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA)) +
+    scale_x_continuous(name = "G matrix size") +
+    scale_y_continuous(name = "P matrix size") +
+    ggtitle("Size of P v G")
+
+summary(lm(as.numeric(P_G_E_size$P_size) ~ as.numeric(P_G_E_size$G_size)))
+#slope = -0.077, p-value = 0.93, r2 = 0
+
+ggsave(p.pg.size, 
+       file = "./Results/p.g.size.png", 
+       width = 20, height = 20, units = "cm")
+
+## P v E
+p.pe.size <- ggplot(P_G_E_size) +
+    geom_point(aes(y = as.numeric(P_size), x = as.numeric(E_size)),
+               size = 5, shape = 4,
+               color = "black") + 
+    theme(text = element_text(size = 16),
+          #legend.position = "right",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA)) +
+    scale_x_continuous(name = "E matrix size") +
+    scale_y_continuous(name = "P matrix size") +
+    ggtitle("Size of P v E")
+
+summary(lm(as.numeric(P_G_E_size$P_size) ~ as.numeric(P_G_E_size$E_size)))
+#slope = 0.70, p-value = 0.005655, r2 = 0.70
+
+ggsave(p.pe.size, 
+       file = "./Results/p.e.size.png", 
        width = 20, height = 20, units = "cm")
 
 #### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO EMAX ----
@@ -1321,25 +1402,17 @@ angle_degrees.Emax_tai_max <- angle_radians.Emax_tai_max * (180 / pi)
 #61.79681; Gmax is 40.81748
 
 # Calculate the dot product of the unit vectors
-dot_product.Emax_SHCSBSB_max <- sum(Emax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+dot_product.Emax_SHCSBSB_max <- sum(Emax_SHCSBSB_norm * evolved_difference_unit_length_t7)
 # Calculate the angle in radians
 angle_radians.Emax_SHCSBSB_max <- acos(dot_product.Emax_SHCSBSB_max)
 # Convert the angle to degrees
 angle_degrees.Emax_SHCSBSB_max <- angle_radians.Emax_SHCSBSB_max * (180 / pi)
-#63.61717; Gmax is 50.65786
-
-# Calculate the dot product of the unit vectors
-dot_product.Emax_mod_max <- sum(Emax_mod_norm * evolved_difference_unit_length_t7)
-# Calculate the angle in radians
-angle_radians.Emax_mod_max <- acos(dot_product.Emax_mod_max)
-# Convert the angle to degrees
-angle_degrees.Emax_mod_max <- angle_radians.Emax_mod_max * (180 / pi)
-#101.1701; Gmax is 131.2871
+#100.5322; Gmax is 88.28694
 
 angle_diff_Emax_to_P <- c(angle_degrees.Emax_NKLS_max, angle_degrees.Emax_NKBS_max,
                           angle_degrees.Emax_tewk_max, angle_degrees.Emax_wai_max,
                           angle_degrees.Emax_uki_max, angle_degrees.Emax_tai_max,
-                          angle_degrees.Emax_SHCSBSB_max, angle_degrees.Emax_mod_max)
+                          angle_degrees.Emax_SHCSBSB_max, "")
 angle_diff_between_Emax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Emax_to_P))
 colnames(angle_diff_between_Emax_P) <- c("formation", "angle_diff_Emax_to_P")
 angle_diff_between_Emax_P$angle_diff_Emax_to_P <- as.numeric(angle_diff_between_Emax_P$angle_diff_Emax_to_P)
@@ -1356,8 +1429,3 @@ for(i in 1:nrow(angle_diff_between_Emax_P)){
 write.csv(angle_diff_between_Emax_P,
           "./Results/angle.differences.between.Emax.P.w.modern.csv",
           row.names = FALSE)
-
-##### PLOT P, E, AND G VARIATION ----
-# E = units
-# P = cov or units + colony id
-# G = estimate or colony id
