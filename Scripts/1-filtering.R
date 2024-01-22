@@ -221,7 +221,7 @@ images.df <- rbind(output.fossil,
 nrow(images.df) #6650
 
 write.csv(images.df,
-          "./Data/images.filtered_8Dec2023.csv",
+          "./Data/images.filtered_19Jan2024.csv",
           row.names = FALSE)
 
 #### FILTER STUFF ----

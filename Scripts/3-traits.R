@@ -210,15 +210,25 @@ traits.df$ln.area <- log(traits.df$area)
 ##### MINIMUM 5 ZOOIDS PER COLONY -----
 samp.zoo <- traits.df %>%
     dplyr::group_by(colony.id) %>%
-    dplyr::summarize(n.zooid = length(unique(zooid.id)))
-nrow(samp.zoo) #750 colonies total
+    dplyr::summarize(n.zooid = length(unique(zooid.id)),
+                     formation = formation[1]) %>%
+    as.data.frame()
+nrow(samp.zoo) #749 colonies total
 
-length(samp.zoo$colony.id[samp.zoo$n.zooid < 5]) #161 colonies to remove
+too.few <- samp.zoo[samp.zoo$n.zooid < 5,]
+nrow(too.few) #161 colonies to remove
+#low samples for: Waipuru, Upper Kai-Iwi, Tainui, Modern
+#see which ones are removed and if can't redo them
+low.samp <- c("Waipuru", "Upper Kai-Iwi", "Tainui", "modern")
+too.few[too.few$formation %in% low.samp,]
+#would add 8 Upper Kai-Iwi; 1 Waipuru; 2 modern; and 8 Tainui
+#i.e., not enough still
+
 keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
-length(keep) #589 colonies
+length(keep) #588 colonies
 
 df <- traits.df[traits.df$colony.id %in% keep,]
-nrow(df) #6185
+nrow(df) #6178
 
 #### WRITE OUT DATASET ----
 
