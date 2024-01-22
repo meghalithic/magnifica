@@ -46,7 +46,24 @@ load(file="./Results/global_ext.w.modern.RData") #load the g matrices calculated
 Glob_ext
 
 load(file = "./Results/model_G.w.modern.RData") #load the g matrices calculated above 
-Gmat <- model_G
+g.model <- model_G
+traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
+                      "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
+ntraits = 8
+Gmat = lapply(g.model, function (x) { 
+    matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
+#label lists as formations
+names(Gmat) = names(by_form) #formation_list or form_data
+#traits in Gmat are in different order than Pmat based on VCV 
+
+# why aren't traits labeled??
+for (i in seq_along(Gmat)){
+    colnames(Gmat[[i]]) <- traits
+}
+for (i in seq_along(Gmat)){
+    rownames(Gmat[[i]]) <- traits
+}
+
 p.cov = lapply(form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
 Pmat = p.cov
 
@@ -1623,7 +1640,7 @@ for(i in 1:length(formation_list)){
     Emat[[i]] <- as.matrix(Pmat[[i]]) - as.matrix(Gmat[[i]])
 }
 
-names(Emat) = names(by_form)
+names(Emat) = names(by_form.n)
 
 ##### E_ext -----
 
