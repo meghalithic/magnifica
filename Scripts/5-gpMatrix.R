@@ -568,7 +568,9 @@ paste("Random Skewers similarity matrix")
 corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 
 #### SAVE ALL OUTPUTS ----
-data.list = list(P_ext, G_ext,
+data.list = list(Pmat, Gmat,
+                 p.eig_variances, g.eig_variances,
+                 P_ext, G_ext,
                  df, dat_lg_N, 
                  mean_by_formation, mean_by_formation_colony, 
                  form_data, by_form.n, col_form.n,

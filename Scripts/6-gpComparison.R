@@ -31,41 +31,26 @@ oxy.18 <- read.csv("Data/∂18O.csv",
 
 load(file = "./Results/data.list.w.modern.RData") #load the g matrices calculated above 
 
-P_ext <- data.list[[1]]
-G_ext <- data.list[[2]]
-df <- data.list[[3]]
-dat_lg_N <- data.list[[4]]
-mean_by_formation <- data.list[[5]]
-mean_by_formation_colony <- data.list[[6]]
-form_data <- data.list[[7]]
-by_form.n <- data.list[[8]]
-col_form.n <- data.list[[9]]
-means <- data.list[[10]]
+Pmat <- data.list[[1]]
+Gmat <- data.list[[2]]
+P_ext <- data.list[[3]]
+G_ext <- data.list[[4]]
+p.eig_variances <- data.list[[5]]
+g.eig_variances <- data.list[[6]]
+df <- data.list[[7]]
+dat_lg_N <- data.list[[8]]
+mean_by_formation <- data.list[[8]]
+mean_by_formation_colony <- data.list[[10]]
+form_data <- data.list[[11]]
+by_form.n <- data.list[[12]]
+col_form.n <- data.list[[13]]
+means <- data.list[[14]]
 
 load(file="./Results/global_ext.w.modern.RData") #load the g matrices calculated above 
 Glob_ext
 
 load(file = "./Results/model_G.w.modern.RData") #load the g matrices calculated above 
 g.model <- model_G
-traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
-                      "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
-ntraits = 8
-Gmat = lapply(g.model, function (x) { 
-    matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
-#label lists as formations
-names(Gmat) = names(by_form) #formation_list or form_data
-#traits in Gmat are in different order than Pmat based on VCV 
-
-# why aren't traits labeled??
-for (i in seq_along(Gmat)){
-    colnames(Gmat[[i]]) <- traits
-}
-for (i in seq_along(Gmat)){
-    rownames(Gmat[[i]]) <- traits
-}
-
-p.cov = lapply(form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
-Pmat = p.cov
 
 #### CORR OF G & P ----
 
