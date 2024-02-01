@@ -27,7 +27,7 @@ There is also a file, "[Protocol Steginoporella magnifica.docx](https://github.c
 
 ## Location metadata
 
-NEED TO DO: create file of formation, abbreviation, and locality informaion.
+[Metadata for each formation](https://github.com/megbalk/stegino_metadata/blob/main/newMetadata/formations.csv) found in [Di Martino & Liow 2021](https://doi.org/10.1098/rspb.2020.2047).
 
 # Traits
 
