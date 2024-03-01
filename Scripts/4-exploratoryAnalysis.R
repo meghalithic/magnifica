@@ -13,19 +13,9 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("Results/traits_8Dec2023.csv", #30Nov2023,29Sept2023.csv",
+df <- read.csv("Results/traits_26Feb2024.csv", #30Nov2023,29Sept2023.csv",
                header = TRUE)
 #output from traits.R
-
-form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv", header = TRUE)
-
-#this is downloaded from: http://www.lorraine-lisiecki.com/LR04_MISboundaries.txt
-oxy.18 <- read.csv("Data/∂18O.csv",
-                   header = TRUE)
-
-#this is from Emanuela and is in the stegino_metadata repository
-locality.df <- read.csv("Data/All.NZ.Samples_EDM_31.07.2023_sheet1.csv",
-                        header = TRUE)
 
 #### MANIPULATE DATA ----
 traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
@@ -33,8 +23,8 @@ traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d",
 
 df$formation <- factor(df$formation, 
                        levels = c("NKLS", "NKBS", "Tewkesbury",
-                                  "Waipuru", "Upper Kai-Iwi",
-                                  "Tainui", "SHCSBSB", "modern"))
+                                  "Upper Kai-Iwi", "Tainui",
+                                  "SHCSBSB", "modern"))
 
 ##### DISTRIBUTION -----
 p.ln.zh <- ggplot(df) +
@@ -131,7 +121,7 @@ length(unique(reg.colonies$colony.id)) #557
 
 ##### WRITE OUT DATASET ----
 write.csv(reg.colonies,
-          "./Results/colonies.traits_8Dec2023.csv",
+          "./Results/colonies.traits_26Feb2024.csv",
           row.names = FALSE)
 
 
@@ -179,43 +169,52 @@ mean_by_formation = df %>%
                      max.zh = max(ln.zh, na.rm = T),
                      avg.zh = mean(ln.zh, na.rm = T),
                      sd.zh = sd(ln.zh, na.rm = T),
+                     var.zh = var(ln.zh, na.rm = T),
                      
                      min.mpw.b = min(ln.mpw.b, na.rm = T),
                      max.mpw.b = max(ln.mpw.b, na.rm = T),
                      avg.mpw.b = mean(ln.mpw.b, na.rm = T),
                      sd.mpw.b = sd(ln.mpw.b, na.rm = T),
+                     var.mpw.b = var(ln.mpw.b, na.rm = T),
                      
                      min.cw.m = min(ln.cw.m, na.rm = T),
                      max.cw.m = max(ln.cw.m, na.rm = T),
                      avg.cw.m = mean(ln.cw.m, na.rm = T),
                      sd.cw.m = sd(ln.cw.m, na.rm = T),
+                     var.cw.m = var(ln.cw.m, na.rm = T),
                      
                      min.cw.d = min(ln.cw.d, na.rm = T),
                      max.cw.d = max(ln.cw.d, na.rm = T),
                      avg.cw.d = mean(ln.cw.d, na.rm = T),
                      sd.cw.d = sd(ln.cw.d, na.rm = T),
+                     var.cw.d = var(ln.cw.d, na.rm = T),
                      
                      min.ow.m = min(ln.ow.m, na.rm = T),
                      max.ow.m = max(ln.ow.m, na.rm = T),
                      avg.ow.m = mean(ln.ow.m, na.rm = T),
                      sd.ow.m = sd(ln.ow.m, na.rm = T),
+                     var.ow.m = var(ln.ow.m, na.rm = T),
                      
                      min.oh = min(ln.oh, na.rm = T),
                      max.oh = max(ln.oh, na.rm = T),
                      avg.oh = mean(ln.oh, na.rm = T),
                      sd.oh = sd(ln.oh, na.rm = T),
+                     var.oh = var(ln.oh, na.rm = T),
                      
                      min.o.side = min(ln.o.side, na.rm = T),
                      max.o.side = max(ln.o.side, na.rm = T),
                      avg.o.side = mean(ln.o.side, na.rm = T),
                      sd.o.side = sd(ln.o.side, na.rm = T),
+                     var.o.side = var(ln.o.side, na.rm = T),
                      
                      min.c.side = min(ln.c.side, na.rm = T),
                      max.c.side = max(ln.c.side, na.rm = T),
                      avg.c.side = mean(ln.c.side, na.rm = T),
-                     sd.c.side = sd(ln.c.side, na.rm = T)) %>%
+                     sd.c.side = sd(ln.c.side, na.rm = T),
+                     var.c.side = var(ln.c.side, na.rm = T)) %>%
     as.data.frame()
 ## Grabowski & Porto claim sampling of 60 per sp...
+#NKBS has heighest variance in traits because high sample size
 
 colony_means = df %>%
     dplyr::group_by(colony.id) %>%
@@ -335,21 +334,38 @@ mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_format
 mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]
 #-0.1627765 (decrease in width)
 
-##between formations
-mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "NKBS"]
-#0.03156643 (0.9298943 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "NKBS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Tewkesbury"]
-#-0.002326976 (0.9946563 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "Tewkesbury"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Waipuru"]
-#-0.04762085 (0.8961468 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "Waipuru"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Upper Kai-Iwi"]
-#-0.1132389 (0.7704795 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "Upper Kai-Iwi"] - mean_by_formation$avg.zh[mean_by_formation$formation == "Tainui"]
-#-0.03510717 (0.9223438 diff)
-mean_by_formation$avg.zh[mean_by_formation$formation == "Tainui"] - mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"]
-#0.01531607 (1.015434 diff); THIS IS THE SAME
-mean_by_formation$avg.zh[mean_by_formation$formation == "SHCSBSB"] - mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]
-#0.05769168 (1.142067 diff)
+diff.ln.zh <- c()
+diff.ln.mpw.b <- c()
+diff.ln.cw.m <- c()
+diff.ln.cw.d <- c()
+diff.ln.ow.m <- c()
+diff.ln.oh <- c()
+diff.ln.o.side <- c()
+diff.ln.c.side <- c()
+for(i in 1:(nrow(mean_by_formation)-1)){
+    diff.ln.zh[i] <- mean_by_formation$avg.zh[i+1] - mean_by_formation$avg.zh[i]
+    diff.ln.mpw.b[i] <- mean_by_formation$avg.mpw.b[i+1] - mean_by_formation$avg.mpw.b[i]
+    diff.ln.cw.m[i] <- mean_by_formation$avg.cw.m[i+1] - mean_by_formation$avg.cw.m[i]
+    diff.ln.cw.d[i] <- mean_by_formation$avg.cw.d[i+1] - mean_by_formation$avg.cw.d[i]
+    diff.ln.ow.m[i] <- mean_by_formation$avg.ow.m[i+1] - mean_by_formation$avg.ow.m[i]
+    diff.ln.oh[i] <- mean_by_formation$avg.oh[i+1] - mean_by_formation$avg.oh[i]
+    diff.ln.o.side[i] <- mean_by_formation$avg.o.side[i+1] - mean_by_formation$avg.o.side[i]
+    diff.ln.c.side[i] <- mean_by_formation$avg.c.side[i+1] - mean_by_formation$avg.c.side[i]
+}
+diff.form <- c("NKLS to NKBS", "NKBS to Tewkesbury",
+               "Tewkesbury to Upper Kai-Iwi", "Upper Kai-Iwi to Tainui",
+               "Tainui to SHCSBSB", "SHCSBSB to modern")
+diff.stats <- as.data.frame(cbind(diff.form, diff.ln.zh, diff.ln.mpw.b, 
+                                  diff.ln.cw.m, diff.ln.cw.d, diff.ln.ow.m, 
+                                  diff.ln.oh, diff.ln.o.side, diff.ln.c.side))
+diff.stats$diff.zh <- exp(as.numeric(diff.stats$diff.ln.zh))
+diff.stats$diff.mpw.b <- exp(as.numeric(diff.stats$diff.ln.mpw.b))
+diff.stats$diff.cw.m <- exp(as.numeric(diff.stats$diff.ln.cw.m))
+diff.stats$diff.cw.d <- exp(as.numeric(diff.stats$diff.ln.cw.d))
+diff.stats$diff.ow.m <- exp(as.numeric(diff.stats$diff.ln.ow.m))
+diff.stats$diff.oh <- exp(as.numeric(diff.stats$diff.ln.oh))
+diff.stats$diff.o.side <- exp(as.numeric(diff.stats$diff.ln.o.side))
+diff.stats$diff.c.side <- exp(as.numeric(diff.stats$diff.ln.c.side))
 
 ## how is sd a function of sample size (number of zooids and number of colonies)?
 #plot sd per colony by zooid no
@@ -361,6 +377,22 @@ ggplot(mean_by_formation_colony) +
   scale_x_continuous(name = "Number of Zooids per Colony") +
   scale_y_continuous(expression(sd~ln~Zooid~Height~(mu*m))) +
   scale_color_manual(values = col.form)
+summary(lm(mean_by_formation_colony$sd.zh ~ mean_by_formation_colony$n.zooid))
+#sig but slope close to 0
+summary(lm(mean_by_formation_colony$sd.mpw.b ~ mean_by_formation_colony$n.zooid))
+#nonsig and slope close 0
+summary(lm(mean_by_formation_colony$sd.cw.m ~ mean_by_formation_colony$n.zooid))
+#nonsig and slop close to 0
+summary(lm(mean_by_formation_colony$sd.cw.d ~ mean_by_formation_colony$n.zooid))
+#nonsig and slope close to 0
+summary(lm(mean_by_formation_colony$sd.ow.m ~ mean_by_formation_colony$n.zooid))
+#nonsig and slope close to 0
+summary(lm(mean_by_formation_colony$sd.oh ~ mean_by_formation_colony$n.zooid))
+#nonsig and slope around 0
+summary(lm(mean_by_formation_colony$sd.o.side ~ mean_by_formation_colony$n.zooid))
+#nonsig and slope close to 0 
+summary(lm(mean_by_formation_colony$sd.c.side ~ mean_by_formation_colony$n.zooid))
+#sig and slope around 0
 
 #plot sd per formation by colony no
 ggplot(mean_by_formation) + 
@@ -373,51 +405,58 @@ ggplot(mean_by_formation) +
   scale_color_manual(values = col.form)
 
 anova(lm(mean_by_formation$sd.zh ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+#nonsig
+anova(lm(mean_by_formation$sd.mpw.b ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+#nonsig
+anova(lm(mean_by_formation$sd.cw.m ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+#nonsig
+anova(lm(mean_by_formation$sd.cw.d ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+#nonsig
+anova(lm(mean_by_formation$sd.ow.m ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+#nonsig
+anova(lm(mean_by_formation$sd.oh ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+#nonsig
+anova(lm(mean_by_formation$sd.o.side ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+#nonsig
+anova(lm(mean_by_formation$sd.c.side ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+#nonsig
 
 #use formation means
 #mean_by_formation
-
 ggplot(data = mean_by_formation.meta) +
-  geom_point(aes(x = as.numeric(age.range), y = avg.zh,
+  geom_point(aes(x = as.numeric(age.range), y = var.zh,
                  col = formation)) + 
   theme(text = element_text(size = 16),
         legend.position = "none") +
   scale_x_continuous(name = "Age Range (Ma)") +
-  scale_y_continuous(name = "Average Zooid Height (um)") +
+  scale_y_continuous(name = "Variation of Zooid Height (um)") +
   scale_color_manual(values = col.form)
 
-mean_by_formation.meta$formation <- factor(mean_by_formation.meta$formation, 
-                                           levels = c("NKLS", "NKBS", "Tewkesbury", 
-                                                      "Waipuru", "Upper Kai-Iwi", 
-                                                      "Tainui", "SHCSBSB", "modern")) 
-p.zh.age <- ggplot(data = mean_by_formation.meta) +
-  geom_point(aes(x = as.numeric(mean.age), y = avg.zh,
-                 col = formation),
-             size = 5, shape = 17) + 
-  theme(text = element_text(size = 16),
-        #legend.position = "none",
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        plot.background = element_rect(fill='transparent', color=NA)) +
-  scale_x_reverse(name = "Age (Ma)", limits = c(2.5, 0)) +
-  scale_y_continuous(expression(Average~ln~Zooid~Height~(mu*m))) +
-  scale_color_manual(values = col.form)
+summary(lm(mean_by_formation.meta$var.zh ~ mean_by_formation.meta$age.range))
+#nonsig
+summary(lm(mean_by_formation.meta$var.mpw.b ~ mean_by_formation.meta$age.range))
+#nonsig
+summary(lm(mean_by_formation.meta$var.cw.m ~ mean_by_formation.meta$age.range))
+#nonsig
+summary(lm(mean_by_formation.meta$var.cw.d ~ mean_by_formation.meta$age.range))
+#nonsig
+summary(lm(mean_by_formation.meta$var.ow.m ~ mean_by_formation.meta$age.range))
+#nonsig
+summary(lm(mean_by_formation.meta$var.oh ~ mean_by_formation.meta$age.range))
+#nonsig
+summary(lm(mean_by_formation.meta$var.o.side ~ mean_by_formation.meta$age.range))
+#nonsig
+summary(lm(mean_by_formation.meta$var.c.side ~ mean_by_formation.meta$age.range))
+#nonsig
 
-ggsave(p.zh.age, 
-       file = "./Results/ln.zh.time.w.modern.png", 
-       width = 14, height = 10, units = "cm")
-
+## figure goes with mean_by_formation table
 df.form.meta <- merge(df, form.df,
                       by.x = "formation",
                       by.y = "formationCode")
           
-
 traits.melt$formation <- factor(traits.melt$formation,
                                 levels = c("NKLS", "NKBS", "Tewkesbury", 
-                                           "Waipuru", "Upper Kai-Iwi", 
-                                           "Tainui", "SHCSBSB", "modern")) 
+                                           "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern")) 
 
 box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",], 
        aes(x = formation, 
@@ -442,21 +481,249 @@ ggsave(box.ln.zh,
        file = "./Results/boxplot.ln.zh.w.modern.png", 
        width = 14, height = 10, units = "cm")
 
-#diff in variance across formations
-var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
-                                 traits.melt$formation == "NKLS"])
-var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
-                                     traits.melt$formation == "NKBS"])
-var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
-                                     traits.melt$formation == "Tewkesbury"])
-var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
-                                     traits.melt$formation == "Waipuru"])
-var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
-                                     traits.melt$formation == "Upper Kai-Iwi"])
-var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
-                                     traits.melt$formation == "Tainui"])
-var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
-                                     traits.melt$formation == "SHCSBSB"])
-var(traits.melt$measurementValue[traits.melt$measurementType == "ln.zh" &
-                                     traits.melt$formation == "modern"])
-#all very similar!! Except NKBS, which is quite high
+box.ln.mpw.b <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.mpw.b",], 
+                    aes(x = formation, 
+                        y = measurementValue, 
+                        fill = formation)) +
+    geom_boxplot() +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    ggtitle("Boxplots of LN Zooid Median Process Width") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    ylab(expression(ln~Zooid~Median~Process~Width~(mu*m))) + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+ggsave(box.ln.mpw.b, 
+       file = "./Results/boxplot.ln.mpw.b.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+box.ln.cw.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m",], 
+                       aes(x = formation, 
+                           y = measurementValue, 
+                           fill = formation)) +
+    geom_boxplot() +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    ggtitle("Boxplots of LN Zooid Cryptocyst Width at Midline") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    ylab(expression(ln~Zooid~Cryptocyst~Width~at~Midline~(mu*m))) + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+ggsave(box.ln.cw.m, 
+       file = "./Results/boxplot.ln.cw.m.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+box.ln.cw.d <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.d",], 
+                      aes(x = formation, 
+                          y = measurementValue, 
+                          fill = formation)) +
+    geom_boxplot() +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    ggtitle("Boxplots of LN Zooid Cryptocyst Width at Distal end") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    ylab(expression(ln~Zooid~Cryptocyst~Width~at~Distal~end~(mu*m))) + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+ggsave(box.ln.cw.d, 
+       file = "./Results/boxplot.ln.cw.d.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+box.ln.ow.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m",], 
+                      aes(x = formation, 
+                          y = measurementValue, 
+                          fill = formation)) +
+    geom_boxplot() +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    ggtitle("Boxplots of LN Zooid Operculum Width at Midline") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    ylab(expression(ln~Zooid~Operculum~Width~at~Midline~(mu*m))) + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+ggsave(box.ln.ow.m, 
+       file = "./Results/boxplot.ln.ow.m.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",], 
+                      aes(x = formation, 
+                          y = measurementValue, 
+                          fill = formation)) +
+    geom_boxplot() +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    ggtitle("Boxplots of LN Zooid Operculum Height") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    ylab(expression(ln~Zooid~Operculum~Height~(mu*m))) + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+ggsave(box.ln.oh, 
+       file = "./Results/boxplot.ln.oh.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+box.ln.o.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.o.side",], 
+                    aes(x = formation, 
+                        y = measurementValue, 
+                        fill = formation)) +
+    geom_boxplot() +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    ggtitle("Boxplots of LN Zooid Operculum side Length") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    ylab(expression(ln~Zooid~Operculum~side~Length~(mu*m))) + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+ggsave(box.ln.o.side, 
+       file = "./Results/boxplot.ln.o.side.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+box.ln.c.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.side",], 
+                        aes(x = formation, 
+                            y = measurementValue, 
+                            fill = formation)) +
+    geom_boxplot() +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    ggtitle("Boxplots of LN Zooid Cryptocyst side Length") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    ylab(expression(ln~Zooid~Cryptocyst~side~Length~(mu*m))) + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+ggsave(box.ln.c.side, 
+       file = "./Results/boxplot.ln.c.side.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+#### LOOK AT CHANGES IN TEMP OVER TIME ----
+#temp
+form.meta$temp <- 16.5 - (4.3*form.meta$med.O18) + (0.14*(form.meta$med.O18^2))
+
+form.meta$formationCode <- factor(form.meta$formationCode, 
+                                  levels = c("NKLS", "NKBS", "Tewkesbury",
+                                             "Upper Kai-Iwi", "Tainui",
+                                             "SHCSBSB", "modern"))
+forms <- c("NKLS", "NKBS", "Tewkesbury",
+           "Upper Kai-Iwi", "Tainui",
+           "SHCSBSB", "modern")
+
+form.meta.trim <- form.meta[form.meta$formationCode %in% forms,]
+
+p.deltaO <- ggplot(form.meta.trim) +
+    geom_point(aes(formationCode, med.O18),
+               shape = 16, size = 5) +
+    scale_x_discrete(guide = guide_axis(angle = 45)) +
+    ylab(expression(delta^18~O)) + 
+    xlab(label = "Formation") +
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+#warmer is more negative
+ggsave(p.deltaO, 
+       file = "./Results/delta.O.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+p.temp <- ggplot(form.meta.trim) +
+    geom_point(aes(formationCode, temp),
+               shape = 16, size = 5) +
+    scale_x_discrete(guide = guide_axis(angle = 45)) +
+    ylab("Temperature (˚C)") + 
+    xlab(label = "Formation") + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+ggsave(p.temp, 
+       file = "./Results/temp.w.modern.png", 
+       width = 14, height = 10, units = "cm")
+
+## does anything vary with temperature?
+mean_by_formation.meta <- merge(mean_by_formation,
+                                form.meta,
+                                by.x = "formation",
+                                by.y = "formationCode")
+
+ggplot(mean_by_formation.meta) +
+    geom_point(aes(temp, avg.zh),
+               shape = 16, size = 5) +
+    scale_x_discrete(guide = guide_axis(angle = 45)) +
+    xlab("Temperature (˚C)") + 
+    ylab(expression(ln~Zooid~Height~(mu*m))) + 
+    theme(text = element_text(size = 16),
+          legend.position = "none",
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "black"),
+          plot.background = element_rect(fill='transparent', color=NA))
+
+summary(lm(mean_by_formation.meta$avg.zh ~ mean_by_formation.meta$temp))
+#nonsig
+summary(lm(mean_by_formation.meta$avg.mpw.b ~ mean_by_formation.meta$temp))
+#nonsig
+summary(lm(mean_by_formation.meta$avg.cw.m ~ mean_by_formation.meta$temp))
+#nonsig
+summary(lm(mean_by_formation.meta$avg.cw.d ~ mean_by_formation.meta$temp))
+#nonsig
+summary(lm(mean_by_formation.meta$avg.ow.m ~ mean_by_formation.meta$temp))
+#nonsig
+summary(lm(mean_by_formation.meta$avg.oh ~ mean_by_formation.meta$temp))
+#nonsig
+summary(lm(mean_by_formation.meta$avg.o.side ~ mean_by_formation.meta$temp))
+#nonsig
+summary(lm(mean_by_formation.meta$avg.c.side ~ mean_by_formation.meta$temp))
+#nonsig

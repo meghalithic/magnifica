@@ -11,7 +11,7 @@
 
 source("./Scripts/0-env.R")
 
-images.df <- read.csv("./Data/images.filtered_8Dec2023.csv", #images.merged_30Nov2023.csv,
+images.df <- read.csv("./Data/images.filtered_26Feb2024.csv", #images.merged_30Nov2023.csv,
                       header = TRUE, 
                       sep = ",")
 
@@ -22,8 +22,8 @@ nrow(images.df) #6650
 
 images.df$formation <- factor(images.df$formation, 
                               levels = c("NKLS", "NKBS", "Tewkesbury",
-                                         "Waipuru", "Upper Kai-Iwi",
-                                         "Tainui", "SHCSBSB", "modern")) 
+                                         "Upper Kai-Iwi", "Tainui",
+                                         "SHCSBSB", "modern")) 
 
 colnames(images.df)[colnames(images.df) == 'new.id'] <- 'zooid.id'
 colnames(images.df)[colnames(images.df) == 'specimenNR'] <- 'colony.id'
@@ -189,12 +189,12 @@ traits.df <- data.frame(boxID = images.df$box_id,
                         o.side = o.side.avg/.606,
                         mpw.b = mpw.b/.606, #pt = polypide tube
                         cw.m = cw.m/.606, #c = cryptocyst
-                        cw.b = cw.b/.606,
+                        #cw.b = cw.b/.606,
                         cw.d = cw.d/.606, #d = distal
-                        c.side = c.side.avg/.606,
-                        zh.zw = zh/cw.d, #similar to LZ/WZ
-                        oh.ow = oh/ow.m,
-                        area = zh*cw.d) # similar to LO/WO 
+                        c.side = c.side.avg/.606)
+                        #zh.zw = zh/cw.d, #similar to LZ/WZ
+                        #oh.ow = oh/ow.m,
+                        #area = zh*cw.d) # similar to LO/WO 
 
 ##### LN TRANSFORM -----
 traits.df$ln.zh <- log(traits.df$zh)
@@ -205,7 +205,7 @@ traits.df$ln.ow.m <- log(traits.df$ow.m)
 traits.df$ln.oh <- log(traits.df$oh)
 traits.df$ln.o.side <- log(traits.df$o.side)
 traits.df$ln.c.side <- log(traits.df$c.side)
-traits.df$ln.area <- log(traits.df$area)
+#cw.b too variable??
 
 ##### MINIMUM 5 ZOOIDS PER COLONY -----
 samp.zoo <- traits.df %>%
@@ -219,9 +219,9 @@ too.few <- samp.zoo[samp.zoo$n.zooid < 5,]
 nrow(too.few) #161 colonies to remove
 #low samples for: Waipuru, Upper Kai-Iwi, Tainui, Modern
 #see which ones are removed and if can't redo them
-low.samp <- c("Waipuru", "Upper Kai-Iwi", "Tainui", "modern")
+low.samp <- c("Upper Kai-Iwi", "Tainui", "modern")
 too.few[too.few$formation %in% low.samp,]
-#would add 8 Upper Kai-Iwi; 1 Waipuru; 2 modern; and 8 Tainui
+#would add 8 Upper Kai-Iwi; 2 modern; and 8 Tainui
 #i.e., not enough still
 
 keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
@@ -233,9 +233,8 @@ nrow(df) #6178
 #### WRITE OUT DATASET ----
 
 write.csv(df,
-          "./Results/traits_8Dec2023.csv",
+          "./Results/traits_26Feb2024.csv",
           row.names = FALSE)
-
 
 ####compare
 traits.old <- read.csv("./Results/traits_29Sept2023.csv")

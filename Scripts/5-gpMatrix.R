@@ -40,17 +40,12 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("./Results/colonies.traits_8Dec2023.csv",
+df <- read.csv("./Results/colonies.traits_26Feb2024.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
 #already have small zooid removed and at least 5 zooids per colony
 #output from exploratoryAnalysis.R
-
-form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv",
-                      header = TRUE,
-                      sep = ",",
-                      stringsAsFactors = FALSE)
 
 load(file = "./Results/sum.data.list.w.modern.RData") #load the g matrices calculated above 
 mean_by_formation <- sum.data.list[[1]]
@@ -66,8 +61,8 @@ length(colony_list) #558 (was 742 without modern)
 
 # arrange formations from oldest to youngest
 df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
-                                                "Waipuru", "Upper Kai-Iwi", 
-                                                "Tainui", "SHCSBSB", "modern")) 
+                                                "Upper Kai-Iwi",  "Tainui", 
+                                                "SHCSBSB", "modern")) 
 formation_list <- unique(df$formation)
 length(formation_list) #8
 
@@ -273,13 +268,13 @@ form_data = lapply(by_form, function(x) x[complete.cases(x),])
 form <- levels(formation_list)
 col.samp <- c(col_form.n[[1]], col_form.n[[2]], col_form.n[[3]],
               col_form.n[[4]], col_form.n[[5]], col_form.n[[6]],
-              col_form.n[[7]], col_form.n[[8]])
+              col_form.n[[7]])
 zoo.samp <- c(by_form.n[[1]], by_form.n[[2]], by_form.n[[3]],
               by_form.n[[4]], by_form.n[[5]], by_form.n[[6]],
-              by_form.n[[7]], by_form.n[[8]])
+              by_form.n[[7]])
 samp <- cbind(form, col.samp, zoo.samp)
 write.csv(samp,
-          "./Results/sampling.per.formation.w.moder.csv",
+          "./Results/sampling.per.formation.w.modern.csv",
           row.names = FALSE)
 
 #### P MATRIX ----
@@ -306,6 +301,11 @@ p.eig_percent = lapply(p.eig_variances, function (x) {x/sum(x)})
 p.eig_per_mat = do.call(rbind, p.eig_percent)
 p.eig_per_mat = data.frame(p.eig_per_mat, rownames(p.eig_per_mat))
 p.eig_per = melt(p.eig_per_mat)
+p.eig_per$rownames.p.eig_per_mat. <- factor(p.eig_per$rownames.p.eig_per_mat., 
+                                            levels = c("NKLS", "NKBS", "Tewkesbury",
+                                                       "Upper Kai-Iwi", "Tainui",
+                                                       "SHCSBSB", "modern"))
+    
 #dev.off()
 P_PC_dist = ggplot(p.eig_per,
                    aes(x = variable, y = value,
@@ -314,7 +314,10 @@ P_PC_dist = ggplot(p.eig_per,
   geom_line(aes(linetype = rownames.p.eig_per_mat.)) +
   geom_point() +
   xlab("Principal component rank") +
-  ylab("%Variation in the PC")
+  ylab("%Variation in the PC") +
+  scale_color_manual(values = col.form)
+
+                      
 P_PC_dist #none negative; none above 1; dim 8 close to 0
 
 ggsave(P_PC_dist, 
@@ -717,7 +720,7 @@ comp_sampleN = matrix(0, 8, 8) #calculating the smallest sample size in the comp
 
 for (i in 1:length(sample_sizes_G)){
     for (j in 1:length(sample_sizes_G)){
-        comp_sampleN[i,j]=min(as.numeric(sample_sizes_G[i]),as.numeric(sample_sizes_G[j]))
+        comp_sampleN[i,j] = min(as.numeric(sample_sizes_G[i]), as.numeric(sample_sizes_G[j]))
     }
 }
 

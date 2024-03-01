@@ -138,7 +138,7 @@ output.fossil$formation[output.fossil$form.no >= 800 &
 output.fossil$formation[output.fossil$form.no >= 1000 & 
                         output.fossil$form.no <= 1099] <- "Upper Kai-Iwi"
 output.fossil$formation[output.fossil$form.no >= 1100 & 
-                        output.fossil$form.no <= 1199] <- "Waipuru"
+                        output.fossil$form.no <= 1199] <- "Tewkesbury" #formerly Waipuru
 unique(output.fossil$formation)
 output.fossil[output.fossil$formation == "",]
 # 1200CC is Pukenni Limestone
@@ -221,7 +221,7 @@ images.df <- rbind(output.fossil,
 nrow(images.df) #6650
 
 write.csv(images.df,
-          "./Data/images.filtered_19Jan2024.csv",
+          "./Data/images.filtered_26Feb2024.csv",
           row.names = FALSE)
 
 #### FILTER STUFF ----
