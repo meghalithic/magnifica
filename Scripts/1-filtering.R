@@ -211,6 +211,12 @@ output.fossil[output.fossil$image == "099_CV_1_15v_x35_BSE",] #5
 output.fossil <- output.fossil[output.fossil$image %in% keep,]
 nrow(output.fossil) #6431; lost 5 images, all 099_CV_1_15v_x35_BSE
 
+##remove other:
+# 005_CV_1: have two of them (NKBS)
+# 099_CV_1: mag is 35 (NKBS)
+rm.img <- c("005_CV_1_15v_x30", "099_CV_1_15v_x35_BSE")
+output.fossil <- output.fossil[!(output.fossil$image %in% rm.img),]
+
 #### COMBINE DATASETS AND WRITE OUT DATASET ----
 #make columns match
 setdiff(colnames(output.fossil), colnames(output.modern))
