@@ -16,7 +16,7 @@ images.df <- read.csv("./Data/images.filtered_26Feb2024.csv", #images.merged_30N
                       sep = ",")
 
 #### EXPLORE DATA ----
-nrow(images.df) #6650
+nrow(images.df) #6649
 
 #### MANIPULATE DATA ####
 
@@ -92,8 +92,7 @@ o.side.avg <- rowMeans(cbind(o.side.r, o.side.l))
 p.o.side.rl <- ggplot() +
   geom_point(aes(x = o.side.l, y = o.side.r)) +
   ggtitle(paste0("Operculum Side Length, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  plot.theme +
   scale_y_continuous(name = "Operculum Length Right Side (pixels)") +
   scale_x_continuous(name = "Operculum Length Left Side (pixels)")
 
@@ -142,8 +141,7 @@ c.side.avg <- rowMeans(cbind(c.side.r, c.side.l))
 p.c.side.rl <- ggplot() +
   geom_point(aes(x = c.side.l, y = c.side.l)) +
   ggtitle(paste0("Cryptocyst Side Length, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  plot.theme +
   scale_y_continuous(name = "Cryptocyst Length Right Side (pixels)") +
   scale_x_continuous(name = "Cryptocyst Length Left Side (pixels)")
 
@@ -158,8 +156,7 @@ summary(lm(c.side.r ~ c.side.l))
 p.oh.rl <- ggplot() +
   geom_point(aes(x = oh.l, y = oh.r)) +
   ggtitle(paste0("Operculum Height, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  plot.theme +
   scale_y_continuous(name = "Operculum Height Right Side (pixels)") +
   scale_x_continuous(name = "Operculum Height Left Side (pixels)")
 

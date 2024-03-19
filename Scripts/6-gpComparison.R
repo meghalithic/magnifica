@@ -20,6 +20,11 @@
 
 source("./Scripts/0-env.R")
 
+load(file = "./Results/sum.data.list.w.modern.RData") #load the g matrices calculated above 
+mean_by_formation <- sum.data.list[[1]]
+mean_by_formation_colony <- sum.data.list[[2]]
+means <- sum.data.list[[3]]
+
 load(file = "./Results/data.list.w.modern.RData") #load the g matrices calculated above 
 
 Pmat <- data.list[[1]]
@@ -30,12 +35,9 @@ p.eig_variances <- data.list[[5]]
 g.eig_variances <- data.list[[6]]
 df <- data.list[[7]]
 dat_lg_N <- data.list[[8]]
-mean_by_formation <- data.list[[8]]
-mean_by_formation_colony <- data.list[[10]]
-form_data <- data.list[[11]]
-by_form.n <- data.list[[12]]
-col_form.n <- data.list[[13]]
-means <- data.list[[14]]
+form_data <- data.list[[9]]
+by_form.n <- data.list[[10]]
+col_form.n <- data.list[[11]]
 
 load(file="./Results/global_ext.w.modern.RData") #load the g matrices calculated above 
 Glob_ext
@@ -418,13 +420,7 @@ p.evol <- ggplot(X_sum.trim, aes(x = form.trans)) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Evolvability") +
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
         
 ggsave(p.evol, 
        file = "./Results/evolvability.w.modern.png", 
@@ -649,25 +645,14 @@ df.diff$formation <- factor(df.diff$formation,
 ggplot(data = df.diff) +
     geom_point(aes(x = age.range, y = angle_diff_Gmax_to_P),
                shape = 15) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black")) +
+    plot.theme +
     scale_x_continuous(name = "Age Range (Ma)") +
     scale_y_continuous(name = "Angle away from Gmax")
 
 p.ang_gmax <- ggplot(data = df.diff) +
     geom_point(aes(x = formation, y = angle_diff_Gmax_to_P),
                size = 5, shape = 15) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     #scale_x_reverse(name = "Age (Ma)", limits = c(2.5, 0)) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
@@ -685,13 +670,7 @@ p.ang_g <- ggplot(angle_diff_between_Gs) +
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Angle difference between G matrices", 
                        lim = c(0, 90)) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(p.ang_g, 
        file = "./Results/angle.g.diff.w.modern.png", 
@@ -735,13 +714,7 @@ ggplot(P_G_size) +
     geom_point(aes(y = as.numeric(G_size), x = form.name),
                size = 5, shape = 15, 
                color = "black") + 
-    theme(text = element_text(size = 17),
-          #legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Sizes of P and G",
@@ -777,13 +750,7 @@ ggplot(P_G_dir) +
     geom_point((aes(y = as.numeric(G_size), x = G_dir)),
                size = 5, shape = 15,
                color = col.form) + 
-    theme(text = element_text(size = 16),
-          #legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     scale_x_continuous(name = "PC 1 of P and G",
                        limits = c(0, .15)) +
     scale_y_continuous(name = "Sizes of P and G",
@@ -815,13 +782,7 @@ p.pc1.temp <- ggplot(df.form.pc[-1,]) +
     geom_smooth(aes(x = med.O18,
                     y = as.numeric(PC1_P)),
                 method = "lm") +
-    theme(text = element_text(size = 16),
-          #legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     scale_x_continuous(name = expression(Median~delta^18~O)) +
     scale_y_continuous(name = expression(PC1~of~P[mat])) +
     ggtitle("PC1 as a function of temperature without modern")
@@ -1000,13 +961,7 @@ p.p_evol <- ggplot(p_X_sum.trim, aes(x = form.trans)) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Evolvability") +
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(p.p_evol, 
        file = "./Results/p_evolvability.w.modern.png", 
@@ -1230,25 +1185,14 @@ df.diff$formation <- factor(df.diff$formation,
 
 ggplot(data = df.diff) +
     geom_point(aes(x = age.range, y = angle_diff_Pmax_to_P)) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black")) +
+    plot.theme +
     scale_x_continuous(name = "Age Range (Ma)") +
     scale_y_continuous(name = "Angle away from Gmax")
 
 p.ang_pmax <- ggplot(data = df.diff) +
     geom_point(aes(x = formation, y = angle_diff_Pmax_to_P),
                size = 5, shape = 17) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     #scale_x_reverse(name = "Age (Ma)", limits = c(2.5, 0)) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
@@ -1267,13 +1211,7 @@ p.ang_p <- ggplot(angle_diff_between_Ps) +
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Angle difference between G matrices", 
                        lim = c(0, 90)) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(p.ang_p, 
        file = "./Results/angle.p.diff.w.modern.png", 
@@ -1391,13 +1329,7 @@ p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Evolvability") +
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(p.evol_glob, 
        file = "./Results/globalG.evolvability.w.modern.png", 
@@ -1607,13 +1539,7 @@ p.pge.size <- ggplot(P_G_E_size) +
     geom_point(aes(y = as.numeric(E_size), x = form.name,
                    group = form.name, col = form.name),
                size = 5, shape = 16) + 
-    theme(text = element_text(size = 16),
-          #legend.position = "right",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Sizes of P and E",
@@ -1634,13 +1560,7 @@ p.pg.size <- ggplot(P_G_E_size) +
     geom_point(aes(y = as.numeric(P_size), x = as.numeric(G_size),
                    group = form.name, col = form.name),
                size = 5) + 
-    theme(text = element_text(size = 16),
-          #legend.position = "right",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     scale_x_continuous(name = "G matrix size") +
     scale_y_continuous(name = "P matrix size") +
     scale_color_manual(values = col.form) +
@@ -1662,13 +1582,7 @@ p.pg.size.trim <- ggplot(pge.trim) +
     geom_point(aes(y = as.numeric(P_size), x = as.numeric(G_size),
                    group = form.name, col = form.name),
                size = 5) + 
-    theme(text = element_text(size = 16),
-          #legend.position = "right",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     scale_x_continuous(name = "G matrix size") + 
     scale_y_continuous(name = "P matrix size") +
     scale_color_manual(values = col.form.trim) +
@@ -1684,13 +1598,7 @@ p.pe.size <- ggplot(P_G_E_size) +
     geom_point(aes(y = as.numeric(P_size), x = as.numeric(E_size),
                    group = form.name, col = form.name),
                size = 5, shape = 16) + 
-    theme(text = element_text(size = 16),
-          #legend.position = "right",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     scale_x_continuous(name = "E matrix size") +
     scale_y_continuous(name = "P matrix size") +
     scale_color_manual(values = col.form) +

@@ -30,8 +30,7 @@ df$formation <- factor(df$formation,
 p.ln.zh <- ggplot(df) +
     geom_density(aes(x = ln.zh)) +
     ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+    plot.theme +
     scale_y_continuous(name = "Density") +
     scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
 
@@ -41,8 +40,7 @@ p.ln.zh.form <- ggplot(df) +
                      col = formation)) + #lots are bimodal
     ggtitle(paste0("Distribution of traits, N zooids = ", length(unique(df$zooid.id)),
                    ", N colony = ", length(unique(df$colony.id)))) +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+    plot.theme +
     scale_y_continuous(name = "Density") +
     scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
 
@@ -68,8 +66,7 @@ p.dist <- ggplot(traits.melt.trim) +
                      group = measurementType,
                      col = measurementType)) + #lots are bimodal
     ggtitle(paste0("Distribution of traits, N zooids = ", length(unique(traits.melt$zooid.id)), ", N colony = ", length(unique(traits.melt$colony.id)))) +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+    plot.theme +
     scale_y_continuous(name = "Density") +
     scale_x_continuous(expression(ln~trait~(mu*m)))
 
@@ -88,7 +85,7 @@ df.bin.f <- df.bins %>%
   as.data.frame()
 View(df.bin.f)
 #(6.2,6.3]
-#6.25 like I eyeballed
+#6.25 like I eyeballed if sort by bin size
 
 sm.traits <- df[df$ln.zh < 6.25,]
 sm.colonies <- unique(sm.traits$colony.id)
@@ -367,16 +364,20 @@ diff.stats$diff.oh <- exp(as.numeric(diff.stats$diff.ln.oh))
 diff.stats$diff.o.side <- exp(as.numeric(diff.stats$diff.ln.o.side))
 diff.stats$diff.c.side <- exp(as.numeric(diff.stats$diff.ln.c.side))
 
+write.csv(diff.stats,
+          "./Results/diff.in.traits.csv",
+          row.names = FALSE)
+
 ## how is sd a function of sample size (number of zooids and number of colonies)?
 #plot sd per colony by zooid no
 ggplot(mean_by_formation_colony) + 
   geom_point(aes(x = n.zooid, y = sd.zh,
                  col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = "Number of Zooids per Colony") +
   scale_y_continuous(expression(sd~ln~Zooid~Height~(mu*m))) +
   scale_color_manual(values = col.form)
+
 summary(lm(mean_by_formation_colony$sd.zh ~ mean_by_formation_colony$n.zooid))
 #sig but slope close to 0
 summary(lm(mean_by_formation_colony$sd.mpw.b ~ mean_by_formation_colony$n.zooid))
@@ -398,8 +399,7 @@ summary(lm(mean_by_formation_colony$sd.c.side ~ mean_by_formation_colony$n.zooid
 ggplot(mean_by_formation) + 
   geom_point(aes(x = num.col, y = sd.zh,
                  col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = "Number of Colonies per Colony") +
   scale_y_continuous(expression(sd~ln~Zooid~Height~(mu*m))) +
   scale_color_manual(values = col.form)
@@ -426,8 +426,7 @@ anova(lm(mean_by_formation$sd.c.side ~ mean_by_formation$num.col + mean_by_forma
 ggplot(data = mean_by_formation.meta) +
   geom_point(aes(x = as.numeric(age.range), y = var.zh,
                  col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = "Age Range (Ma)") +
   scale_y_continuous(name = "Variation of Zooid Height (um)") +
   scale_color_manual(values = col.form)
@@ -469,13 +468,7 @@ box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",],
   scale_x_discrete(name = "Formation",
                    guide = guide_axis(angle = 45)) +
   ylab(expression(ln~Zooid~Height~(mu*m))) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none",
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        plot.background = element_rect(fill='transparent', color=NA))
+  plot.theme
 
 ggsave(box.ln.zh, 
        file = "./Results/boxplot.ln.zh.w.modern.png", 
@@ -492,13 +485,7 @@ box.ln.mpw.b <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.mpw
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     ylab(expression(ln~Zooid~Median~Process~Width~(mu*m))) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(box.ln.mpw.b, 
        file = "./Results/boxplot.ln.mpw.b.w.modern.png", 
@@ -515,13 +502,7 @@ box.ln.cw.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     ylab(expression(ln~Zooid~Cryptocyst~Width~at~Midline~(mu*m))) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(box.ln.cw.m, 
        file = "./Results/boxplot.ln.cw.m.w.modern.png", 
@@ -538,13 +519,7 @@ box.ln.cw.d <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.d
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     ylab(expression(ln~Zooid~Cryptocyst~Width~at~Distal~end~(mu*m))) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(box.ln.cw.d, 
        file = "./Results/boxplot.ln.cw.d.w.modern.png", 
@@ -561,13 +536,7 @@ box.ln.ow.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     ylab(expression(ln~Zooid~Operculum~Width~at~Midline~(mu*m))) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(box.ln.ow.m, 
        file = "./Results/boxplot.ln.ow.m.w.modern.png", 
@@ -584,13 +553,7 @@ box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",],
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     ylab(expression(ln~Zooid~Operculum~Height~(mu*m))) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(box.ln.oh, 
        file = "./Results/boxplot.ln.oh.w.modern.png", 
@@ -607,13 +570,7 @@ box.ln.o.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.o.
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     ylab(expression(ln~Zooid~Operculum~side~Length~(mu*m))) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(box.ln.o.side, 
        file = "./Results/boxplot.ln.o.side.w.modern.png", 
@@ -630,100 +587,8 @@ box.ln.c.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     ylab(expression(ln~Zooid~Cryptocyst~side~Length~(mu*m))) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
+    plot.theme
 
 ggsave(box.ln.c.side, 
        file = "./Results/boxplot.ln.c.side.w.modern.png", 
        width = 14, height = 10, units = "cm")
-
-#### LOOK AT CHANGES IN TEMP OVER TIME ----
-#temp
-form.meta$temp <- 16.5 - (4.3*form.meta$med.O18) + (0.14*(form.meta$med.O18^2))
-
-form.meta$formationCode <- factor(form.meta$formationCode, 
-                                  levels = c("NKLS", "NKBS", "Tewkesbury",
-                                             "Upper Kai-Iwi", "Tainui",
-                                             "SHCSBSB", "modern"))
-forms <- c("NKLS", "NKBS", "Tewkesbury",
-           "Upper Kai-Iwi", "Tainui",
-           "SHCSBSB", "modern")
-
-form.meta.trim <- form.meta[form.meta$formationCode %in% forms,]
-
-p.deltaO <- ggplot(form.meta.trim) +
-    geom_point(aes(formationCode, med.O18),
-               shape = 16, size = 5) +
-    scale_x_discrete(guide = guide_axis(angle = 45)) +
-    ylab(expression(delta^18~O)) + 
-    xlab(label = "Formation") +
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
-#warmer is more negative
-ggsave(p.deltaO, 
-       file = "./Results/delta.O.w.modern.png", 
-       width = 14, height = 10, units = "cm")
-
-p.temp <- ggplot(form.meta.trim) +
-    geom_point(aes(formationCode, temp),
-               shape = 16, size = 5) +
-    scale_x_discrete(guide = guide_axis(angle = 45)) +
-    ylab("Temperature (˚C)") + 
-    xlab(label = "Formation") + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
-ggsave(p.temp, 
-       file = "./Results/temp.w.modern.png", 
-       width = 14, height = 10, units = "cm")
-
-## does anything vary with temperature?
-mean_by_formation.meta <- merge(mean_by_formation,
-                                form.meta,
-                                by.x = "formation",
-                                by.y = "formationCode")
-
-ggplot(mean_by_formation.meta) +
-    geom_point(aes(temp, avg.zh),
-               shape = 16, size = 5) +
-    scale_x_discrete(guide = guide_axis(angle = 45)) +
-    xlab("Temperature (˚C)") + 
-    ylab(expression(ln~Zooid~Height~(mu*m))) + 
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA))
-
-summary(lm(mean_by_formation.meta$avg.zh ~ mean_by_formation.meta$temp))
-#nonsig
-summary(lm(mean_by_formation.meta$avg.mpw.b ~ mean_by_formation.meta$temp))
-#nonsig
-summary(lm(mean_by_formation.meta$avg.cw.m ~ mean_by_formation.meta$temp))
-#nonsig
-summary(lm(mean_by_formation.meta$avg.cw.d ~ mean_by_formation.meta$temp))
-#nonsig
-summary(lm(mean_by_formation.meta$avg.ow.m ~ mean_by_formation.meta$temp))
-#nonsig
-summary(lm(mean_by_formation.meta$avg.oh ~ mean_by_formation.meta$temp))
-#nonsig
-summary(lm(mean_by_formation.meta$avg.o.side ~ mean_by_formation.meta$temp))
-#nonsig
-summary(lm(mean_by_formation.meta$avg.c.side ~ mean_by_formation.meta$temp))
-#nonsig

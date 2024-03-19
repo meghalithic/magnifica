@@ -7,9 +7,9 @@ library(evolqg)
 #library(evolvability)
 require(ggplot2)
 #library(graphics)
-#library(grid)
-#library(gridBase)
-#library(gridExtra)
+library(grid)
+library(gridBase)
+library(gridExtra)
 #require(lmodel2)
 #library(magrittr)
 library(MASS)
@@ -41,6 +41,15 @@ col.form = c("#F8766D", "#CD9600",  "#00BE67", #"#7CAE00"
 col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
                "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
 
+plot.theme <- theme(text = element_text(size = 16),
+      legend.position = "none",
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      panel.background = element_blank(), 
+      axis.line = element_line(colour = "black"),
+      plot.background = element_rect(fill = 'transparent', color = NA))
+
+#### TEMPERATURE ----
 form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv", header = TRUE)
 
 #this is downloaded from: http://www.lorraine-lisiecki.com/LR04_MISboundaries.txt
@@ -58,3 +67,17 @@ for (i in 1:nrow(form.meta)){
     form.meta$sd.med.O18[i] = sd(temp)
     form.meta$n.O18[i] <- length(temp)
 }
+
+#convert ot ˚C
+form.meta$temp <- 16.5 - (4.3*form.meta$med.O18) + (0.14*(form.meta$med.O18^2))
+
+#make factors
+form.meta$formationCode <- factor(form.meta$formationCode, 
+                                  levels = c("NKLS", "NKBS", "Tewkesbury",
+                                             "Upper Kai-Iwi", "Tainui",
+                                             "SHCSBSB", "modern"))
+
+
+#write.csv(form.meta,
+#          "./Results/formation.with.isotopes.csv",
+#          row.names = FALSE)

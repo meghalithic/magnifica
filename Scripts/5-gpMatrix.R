@@ -50,21 +50,22 @@ df <- read.csv("./Results/colonies.traits_26Feb2024.csv",
 load(file = "./Results/sum.data.list.w.modern.RData") #load the g matrices calculated above 
 mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
+means <- sum.data.list[[3]]
 
 #### MANIPULATE DATA ----
 
 zooid_list <- unique(df$zooid.id)
-length(zooid_list) #5694 (was 15773 without modern)
+length(zooid_list) #5686
 
 colony_list <- unique(df$colony.id)
-length(colony_list) #558 (was 742 without modern)
+length(colony_list) #557
 
 # arrange formations from oldest to youngest
 df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
                                                 "Upper Kai-Iwi",  "Tainui", 
                                                 "SHCSBSB", "modern")) 
 formation_list <- unique(df$formation)
-length(formation_list) #8
+length(formation_list) #7
 
 #same order as in df
 names(df)
@@ -87,8 +88,7 @@ p.zh = ggplot(data = df) +
   geom_density(aes(x = df[, traits[1]], 
                    group = formation,
                    col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = traits[1]) +
   scale_color_manual(values = col.form)
 
@@ -96,8 +96,7 @@ p.mpw.b = ggplot(data = df) +
   geom_density(aes(x = df[, traits[2]], 
                    group = formation,
                    col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = traits[2]) +
   scale_color_manual(values = col.form)
 
@@ -105,8 +104,7 @@ p.cw.m = ggplot(data = df) +
   geom_density(aes(x = df[, traits[3]], 
                    group = formation,
                    col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = traits[3]) +
   scale_color_manual(values = col.form)
 
@@ -114,8 +112,7 @@ p.cw.d = ggplot(data = df) +
   geom_density(aes(x = df[, traits[4]], 
                    group = formation,
                    col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = traits[4]) +
   scale_color_manual(values = col.form)
 
@@ -123,8 +120,7 @@ p.ow.m = ggplot(data = df) +
   geom_density(aes(x = df[, traits[5]], 
                    group = formation,
                    col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = traits[5]) +
   scale_color_manual(values = col.form)
 
@@ -132,8 +128,7 @@ p.oh = ggplot(data = df) +
   geom_density(aes(x = df[, traits[6]], 
                    group = formation,
                    col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = traits[6]) +
   scale_color_manual(values = col.form)
 
@@ -141,8 +136,7 @@ p.c.side = ggplot(data = df) +
   geom_density(aes(x = df[, traits[7]], 
                    group = formation,
                    col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = traits[7]) +
   scale_color_manual(values = col.form)
 
@@ -150,8 +144,7 @@ p.o.side = ggplot(data = df) +
   geom_density(aes(x = df[, traits[8]], 
                    group = formation,
                    col = formation)) + 
-  theme(text = element_text(size = 16),
-        legend.position = "none") +
+  plot.theme +
   scale_x_continuous(name = traits[8]) +
   scale_color_manual(values = col.form)
 
@@ -574,10 +567,8 @@ corrplot.mixed(g.corr_mat,upper = "number", lower = "pie")
 data.list = list(Pmat, Gmat,
                  p.eig_variances, g.eig_variances,
                  P_ext, G_ext,
-                 df, dat_lg_N, 
-                 mean_by_formation, mean_by_formation_colony, 
-                 form_data, by_form.n, col_form.n,
-                 means)
+                 df, dat_lg_N,
+                 form_data, by_form.n, col_form.n)
 save(data.list,
      file = "./Results/data.list.w.modern.RData")
 
@@ -618,14 +609,6 @@ abline(0, 1)
 summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]])))
 #slope = 3.5; r2=0.8; p is sig 0.002
 
-plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
-     pch = 19, col = col.form[4],
-     xlab = "G non-standardized diagonal",
-     ylab = "P non-standardized diagonal",
-     main = "Waipuru")
-abline(0, 1)
-summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]]))) 
-#slope = 1.7; r2 = 0.7; p is sig 0.009
 
 plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      pch = 19, col = col.form[5],
@@ -747,13 +730,7 @@ p.rare <- ggplot() +
                col = "#00BFC4", pch = 19, size = 2) + 
     geom_point(aes(obs_melt$N[25], obs_melt$RS[25]), #using to check where the points are
                col = "red", pch = 19, size = 2) +
-    theme(text = element_text(size = 16),
-          legend.position = "none",
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank(),
-          panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"),
-          plot.background = element_rect(fill='transparent', color=NA)) +
+    plot.theme +
     scale_x_continuous(name = "Sample size") +
     scale_y_continuous(name = "Similarity") 
 
