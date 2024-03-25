@@ -311,7 +311,7 @@ P_PC_dist = ggplot(p.eig_per,
   scale_color_manual(values = col.form)
 
                       
-P_PC_dist #none negative; none above 1; dim 8 close to 0
+P_PC_dist #none negative; none above 1; dim 8 close to 0; could keep 7
 
 ggsave(P_PC_dist, 
        file = "./Results/P.PC.dist.w.modern.png", 
@@ -357,9 +357,9 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 }
 
 save(model_G,
-     file = "./Results/model_G.w.modern.RData")
+     file = "./Results/model_G.w.modern.no.wai.RData")
 
-load(file = "./Results/model_G.w.modern.RData") #load the g matrices calculated above 
+load(file = "./Results/model_G.w.modern.no.wai.RData") #load the g matrices calculated above 
 
 ##### CHECK MODELS -----
 formation_list #order of formations
@@ -534,11 +534,13 @@ G_PC_dist = ggplot(g.eig_per,
   geom_point() +
   xlab("Principal component rank") +
   ylab("%Variation in the PC")
-G_PC_dist #Tainui negative; none above 1; Upper Kai-Iwi looks FUNKY
-## Waipuru 5th dim is wild; may only ret 4 dim?
+G_PC_dist 
+#none above 1
+#Tainui, modern, upper kai-iwi negative at dim 6, then go back to positive
+#only to dim 5...
 
 ggsave(G_PC_dist, 
-       file = "./Results/G.PC.dist.w.modern.png", 
+       file = "./Results/G.PC.dist.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
@@ -570,7 +572,7 @@ data.list = list(Pmat, Gmat,
                  df, dat_lg_N,
                  form_data, by_form.n, col_form.n)
 save(data.list,
-     file = "./Results/data.list.w.modern.RData")
+     file = "./Results/data.list.w.modern.no.wai.RData")
 
 load(file = "./Results/data.list.w.modern.RData") #load the g matrices calculated above 
 
@@ -699,7 +701,7 @@ mean.df_complete_cases <- mean.df.sub[complete.cases(mean.df.sub), ] #remove row
 colony_samples = split.data.frame(mean.df_complete_cases, mean.df_complete_cases$formation) #Sample size
 sample_sizes_G = lapply(colony_samples, function(x){dim(x)[1]})
 
-comp_sampleN = matrix(0, 8, 8) #calculating the smallest sample size in the comparison among pairs of G 
+comp_sampleN = matrix(0, 7, 8) #calculating the smallest sample size in the comparison among pairs of G 
 
 for (i in 1:length(sample_sizes_G)){
     for (j in 1:length(sample_sizes_G)){
@@ -735,14 +737,13 @@ p.rare <- ggplot() +
     scale_y_continuous(name = "Similarity") 
 
 ggsave(p.rare, 
-       file = "./Results/rarefaction.w.modern.png", 
+       file = "./Results/rarefaction.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
 ## find which ones are outside of the gray
 #low sample size, smallest similarity
-which.min(obs_melt$RS)
-obs_melt[25,] #0.6630677
-comp_mat$correlations #.663 is corr between modern and Upper Kai-Iwi
+obs_melt[which.min(obs_melt$RS),] #0.6558468
+comp_mat$correlations #0.6558468 is the corr between modern and Upper Kai-Iwi
 
 ## COLOR MODERN
 

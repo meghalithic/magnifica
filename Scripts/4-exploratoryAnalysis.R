@@ -464,15 +464,45 @@ box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",],
   geom_boxplot() +
   scale_color_manual(values = col.form) +
   scale_fill_manual(values = col.form) +
-  ggtitle("Boxplots of LN Zooid Heights") +
   scale_x_discrete(name = "Formation",
                    guide = guide_axis(angle = 45)) +
-  ylab(expression(ln~Zooid~Height~(mu*m))) + 
+  scale_y_continuous(expression(Zooid~Height~(mu*m)),
+                     limits = c(5.5, 7.75),
+                     breaks = c(log(250), log(400),
+                                log(650), log(1000),
+                                log(1450), log(2000)),
+                     labels = c(250, 400,
+                                650, 1000,
+                                1450, 2000)) +
   plot.theme
 
 ggsave(box.ln.zh, 
-       file = "./Results/boxplot.ln.zh.w.modern.png", 
+       file = "./Results/boxplot.ln.zh.w.modern.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
+
+box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",], 
+                    aes(x = formation, 
+                        y = measurementValue, 
+                        fill = formation)) +
+    geom_boxplot() +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(expression(Zooid~Height~(mu*m)),
+                       limits = c(-3, -.5),
+                       breaks = c(log(0.05), log(0.1),
+                                  log(.15), log(.25),
+                                  log(.5)),
+                       labels = c(0.05, 0.1,
+                                  0.15, 0.25,
+                                  0.5)) +
+    plot.theme
+
+ggsave(box.ln.zh, 
+       file = "./Results/boxplot.ln.zh.w.modern.new.y.axis.png", 
+       width = 14, height = 10, units = "cm")
+
 
 box.ln.mpw.b <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.mpw.b",], 
                     aes(x = formation, 
