@@ -18,6 +18,7 @@ diff.df <- read.csv("./Results/diff.in.traits.csv",
                     header = TRUE,
                     sep = ",",
                     stringsAsFactors = FALSE)
+diff.df <- diff.df[1:6,]
 
 #### TEMPERATURE COMPARITONS ----
 forms <- c("NKLS", "NKBS", "Tewkesbury",
@@ -55,6 +56,7 @@ p.temp.age <- ggplot(form.meta.trim) +
     ylab("Temperature (˚C)") + 
     xlab(label = "Age (mya)") + 
     plot.theme
+
 ggsave(p.temp.age, 
        file = "./Results/temp.age.w.modern.png", 
        width = 14, height = 10, units = "cm")
@@ -242,6 +244,8 @@ plot(pf.wid ~ pf.mart)
 plot(pf.len ~ pf.mat)
 plot(pf.wid ~ pf.mat)
 
+
+#### OLD ----
 #difference in small zooids to large zooids is ~400µm:
 #y = mx + b
 #y = zh

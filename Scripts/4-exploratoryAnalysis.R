@@ -339,6 +339,25 @@ diff.ln.ow.m <- c()
 diff.ln.oh <- c()
 diff.ln.o.side <- c()
 diff.ln.c.side <- c()
+
+diff.zh <- c()
+diff.mpw.b <- c()
+diff.cw.m <- c()
+diff.cw.d <- c()
+diff.ow.m <- c()
+diff.oh <- c()
+diff.o.side <- c()
+diff.c.side <- c()
+
+diff.zh.per <- c()
+diff.mpw.b.per <- c()
+diff.cw.m.per <- c()
+diff.cw.d.per <- c()
+diff.ow.m.per <- c()
+diff.oh.per <- c()
+diff.o.side.per <- c()
+diff.c.side.per <- c()
+
 for(i in 1:(nrow(mean_by_formation)-1)){
     diff.ln.zh[i] <- mean_by_formation$avg.zh[i+1] - mean_by_formation$avg.zh[i]
     diff.ln.mpw.b[i] <- mean_by_formation$avg.mpw.b[i+1] - mean_by_formation$avg.mpw.b[i]
@@ -348,24 +367,64 @@ for(i in 1:(nrow(mean_by_formation)-1)){
     diff.ln.oh[i] <- mean_by_formation$avg.oh[i+1] - mean_by_formation$avg.oh[i]
     diff.ln.o.side[i] <- mean_by_formation$avg.o.side[i+1] - mean_by_formation$avg.o.side[i]
     diff.ln.c.side[i] <- mean_by_formation$avg.c.side[i+1] - mean_by_formation$avg.c.side[i]
+    
+    diff.zh[i] <- exp(mean_by_formation$avg.zh[i+1]) - exp(mean_by_formation$avg.zh[i])
+    diff.mpw.b[i] <- exp(mean_by_formation$avg.mpw.b[i+1]) - exp(mean_by_formation$avg.mpw.b[i])
+    diff.cw.m[i] <- exp(mean_by_formation$avg.cw.m[i+1]) - exp(mean_by_formation$avg.cw.m[i])
+    diff.cw.d[i] <- exp(mean_by_formation$avg.cw.d[i+1]) - exp(mean_by_formation$avg.cw.d[i])
+    diff.ow.m[i] <- exp(mean_by_formation$avg.ow.m[i+1]) - exp(mean_by_formation$avg.ow.m[i])
+    diff.oh[i] <- exp(mean_by_formation$avg.oh[i+1]) - exp(mean_by_formation$avg.oh[i])
+    diff.o.side[i] <- exp(mean_by_formation$avg.o.side[i+1]) - exp(mean_by_formation$avg.o.side[i])
+    diff.c.side[i] <- exp(mean_by_formation$avg.c.side[i+1]) - exp(mean_by_formation$avg.c.side[i])
+    
+    diff.zh.per[i] <- (abs(exp(mean_by_formation$avg.zh[i+1]) - exp(mean_by_formation$avg.zh[i]))/exp(mean_by_formation$avg.zh[i]))*100
+    diff.mpw.b.per[i] <- (abs(exp(mean_by_formation$avg.mpw.b[i+1]) - exp(mean_by_formation$avg.mpw.b[i]))/exp(mean_by_formation$avg.mpw.b[i]))*100
+    diff.cw.m.per[i] <- (abs(exp(mean_by_formation$avg.cw.m[i+1]) - exp(mean_by_formation$avg.cw.m[i]))/exp(mean_by_formation$avg.cw.m[i]))*100
+    diff.cw.d.per[i] <- (abs(exp(mean_by_formation$avg.cw.d[i+1]) - exp(mean_by_formation$avg.cw.d[i]))/exp(mean_by_formation$avg.cw.d[i]))*100
+    diff.ow.m.per[i] <- (abs(exp(mean_by_formation$avg.ow.m[i+1]) - exp(mean_by_formation$avg.ow.m[i]))/exp(mean_by_formation$avg.ow.m[i]))*100
+    diff.oh.per[i] <- (abs(exp(mean_by_formation$avg.oh[i+1]) - exp(mean_by_formation$avg.oh[i]))/exp(mean_by_formation$avg.oh[i]))*100
+    diff.o.side.per[i] <- (abs(exp(mean_by_formation$avg.o.side[i+1]) - exp(mean_by_formation$avg.o.side[i]))/exp(mean_by_formation$avg.o.side[i]))*100
+    diff.c.side.per[i] <- (abs(exp(mean_by_formation$avg.c.side[i+1]) - exp(mean_by_formation$avg.c.side[i]))/exp(mean_by_formation$avg.c.side[i]))*100
 }
+
+
+exp(mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.oh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.oh[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"])
+
+(abs(exp(mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.oh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.oh[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.oh[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"]))*100
+
+
+
 diff.form <- c("NKLS to NKBS", "NKBS to Tewkesbury",
                "Tewkesbury to Upper Kai-Iwi", "Upper Kai-Iwi to Tainui",
                "Tainui to SHCSBSB", "SHCSBSB to modern")
 diff.stats <- as.data.frame(cbind(diff.form, diff.ln.zh, diff.ln.mpw.b, 
                                   diff.ln.cw.m, diff.ln.cw.d, diff.ln.ow.m, 
-                                  diff.ln.oh, diff.ln.o.side, diff.ln.c.side))
-diff.stats$diff.zh <- exp(as.numeric(diff.stats$diff.ln.zh))
-diff.stats$diff.mpw.b <- exp(as.numeric(diff.stats$diff.ln.mpw.b))
-diff.stats$diff.cw.m <- exp(as.numeric(diff.stats$diff.ln.cw.m))
-diff.stats$diff.cw.d <- exp(as.numeric(diff.stats$diff.ln.cw.d))
-diff.stats$diff.ow.m <- exp(as.numeric(diff.stats$diff.ln.ow.m))
-diff.stats$diff.oh <- exp(as.numeric(diff.stats$diff.ln.oh))
-diff.stats$diff.o.side <- exp(as.numeric(diff.stats$diff.ln.o.side))
-diff.stats$diff.c.side <- exp(as.numeric(diff.stats$diff.ln.c.side))
+                                  diff.ln.oh, diff.ln.o.side, diff.ln.c.side,
+                                  
+                                  diff.zh, diff.mpw.b, 
+                                  diff.cw.m, diff.cw.d, diff.ow.m, 
+                                  diff.oh, diff.o.side, diff.c.side,
+                                  
+                                  diff.zh.per, diff.mpw.b.per, 
+                                  diff.cw.m.per, diff.cw.d.per, diff.ow.m.per, 
+                                  diff.oh.per, diff.o.side.per, diff.c.side.per))
 
 write.csv(diff.stats,
-          "./Results/diff.in.traits.csv",
+          "./Results/diff.in.traits.no.wai.csv",
           row.names = FALSE)
 
 ## how is sd a function of sample size (number of zooids and number of colonies)?
@@ -489,7 +548,7 @@ box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",],
     scale_fill_manual(values = col.form) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    scale_y_continuous(expression(Zooid~Height~(mu*m)),
+    scale_y_continuous(expression(Operculum~Height~(mu*m)),
                        limits = c(-3, -.5),
                        breaks = c(log(0.05), log(0.1),
                                   log(.15), log(.25),
@@ -499,8 +558,8 @@ box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",],
                                   0.5)) +
     plot.theme
 
-ggsave(box.ln.zh, 
-       file = "./Results/boxplot.ln.zh.w.modern.new.y.axis.png", 
+ggsave(box.ln.oh, 
+       file = "./Results/boxplot.ln.oh.w.modern.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 
@@ -511,14 +570,20 @@ box.ln.mpw.b <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.mpw
     geom_boxplot() +
     scale_color_manual(values = col.form) +
     scale_fill_manual(values = col.form) +
-    ggtitle("Boxplots of LN Zooid Median Process Width") +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    ylab(expression(ln~Zooid~Median~Process~Width~(mu*m))) + 
+    scale_y_continuous(expression(Median~Process~Width~(mu*m)),
+                       limits = c(3.5, 6),
+                       breaks = c(log(50), log(100),
+                                  log(150), log(250),
+                                  log(400)),
+                       labels = c(50, 100,
+                                  150, 250,
+                                  400)) +
     plot.theme
 
 ggsave(box.ln.mpw.b, 
-       file = "./Results/boxplot.ln.mpw.b.w.modern.png", 
+       file = "./Results/boxplot.ln.mpw.b.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.cw.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m",], 
@@ -528,14 +593,20 @@ box.ln.cw.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m
     geom_boxplot() +
     scale_color_manual(values = col.form) +
     scale_fill_manual(values = col.form) +
-    ggtitle("Boxplots of LN Zooid Cryptocyst Width at Midline") +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    ylab(expression(ln~Zooid~Cryptocyst~Width~at~Midline~(mu*m))) + 
+    scale_y_continuous(expression(Cryptocyst~Width~at~Midline~(mu*m)),
+                       limits = c(4, 7),
+                       breaks = c(log(100), log(150),
+                                  log(250), log(400),
+                                  log(600), log(1000)),
+                       labels = c(100, 150,
+                                  250, 400,
+                                  600, 1000)) +
     plot.theme
 
 ggsave(box.ln.cw.m, 
-       file = "./Results/boxplot.ln.cw.m.w.modern.png", 
+       file = "./Results/boxplot.ln.cw.m.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.cw.d <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.d",], 
@@ -545,14 +616,20 @@ box.ln.cw.d <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.d
     geom_boxplot() +
     scale_color_manual(values = col.form) +
     scale_fill_manual(values = col.form) +
-    ggtitle("Boxplots of LN Zooid Cryptocyst Width at Distal end") +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    ylab(expression(ln~Zooid~Cryptocyst~Width~at~Distal~end~(mu*m))) + 
+    scale_y_continuous(expression(Cryptocyst~Width~at~Distal~end~(mu*m)),
+                       limits = c(4, 7),
+                       breaks = c(log(100), log(150),
+                                  log(250), log(400),
+                                  log(600), log(1000)),
+                       labels = c(100, 150,
+                                  250, 400,
+                                  600, 1000)) +
     plot.theme
 
 ggsave(box.ln.cw.d, 
-       file = "./Results/boxplot.ln.cw.d.w.modern.png", 
+       file = "./Results/boxplot.ln.cw.d.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.ow.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m",], 
@@ -562,14 +639,20 @@ box.ln.ow.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m
     geom_boxplot() +
     scale_color_manual(values = col.form) +
     scale_fill_manual(values = col.form) +
-    ggtitle("Boxplots of LN Zooid Operculum Width at Midline") +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    ylab(expression(ln~Zooid~Operculum~Width~at~Midline~(mu*m))) + 
+    scale_y_continuous(expression(Operculum~Width~(mu*m)),
+                       limits = c(4, 7),
+                       breaks = c(log(100), log(150),
+                                  log(250), log(400),
+                                  log(600), log(1000)),
+                       labels = c(100, 150,
+                                  250, 400,
+                                  600, 1000)) +
     plot.theme
 
 ggsave(box.ln.ow.m, 
-       file = "./Results/boxplot.ln.ow.m.w.modern.png", 
+       file = "./Results/boxplot.ln.ow.m.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",], 
@@ -579,14 +662,18 @@ box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",],
     geom_boxplot() +
     scale_color_manual(values = col.form) +
     scale_fill_manual(values = col.form) +
-    ggtitle("Boxplots of LN Zooid Operculum Height") +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    ylab(expression(ln~Zooid~Operculum~Height~(mu*m))) + 
+    scale_y_continuous(expression(Operculum~Height~(mu*m)),
+                       limits = c(-3, -.75),
+                       breaks = c(log(.05), log(.1),
+                                  log(.2), log(.5)),
+                       labels = c(0.05, 0.1,
+                                  0.2, 0.5)) + 
     plot.theme
 
 ggsave(box.ln.oh, 
-       file = "./Results/boxplot.ln.oh.w.modern.png", 
+       file = "./Results/boxplot.ln.oh.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.o.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.o.side",], 
@@ -596,14 +683,20 @@ box.ln.o.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.o.
     geom_boxplot() +
     scale_color_manual(values = col.form) +
     scale_fill_manual(values = col.form) +
-    ggtitle("Boxplots of LN Zooid Operculum side Length") +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    ylab(expression(ln~Zooid~Operculum~side~Length~(mu*m))) + 
+    scale_y_continuous(expression(Operculum~side~Length~(mu*m)),
+                       limits = c(4, 7),
+                       breaks = c(log(100), log(150),
+                                  log(250), log(400),
+                                  log(600), log(1000)),
+                       labels = c(100, 150,
+                                  250, 400,
+                                  600, 1000)) +
     plot.theme
 
 ggsave(box.ln.o.side, 
-       file = "./Results/boxplot.ln.o.side.w.modern.png", 
+       file = "./Results/boxplot.ln.o.side.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.c.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.side",], 
@@ -613,12 +706,18 @@ box.ln.c.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.
     geom_boxplot() +
     scale_color_manual(values = col.form) +
     scale_fill_manual(values = col.form) +
-    ggtitle("Boxplots of LN Zooid Cryptocyst side Length") +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    ylab(expression(ln~Zooid~Cryptocyst~side~Length~(mu*m))) + 
+    scale_y_continuous(expression(Cryptocyst~side~Length~(mu*m)),
+                       limits = c(4, 7),
+                       breaks = c(log(100), log(150),
+                                  log(250), log(400),
+                                  log(600), log(1000)),
+                       labels = c(100, 150,
+                                  250, 400,
+                                  600, 1000)) +
     plot.theme
 
 ggsave(box.ln.c.side, 
-       file = "./Results/boxplot.ln.c.side.w.modern.png", 
+       file = "./Results/boxplot.ln.c.side.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")

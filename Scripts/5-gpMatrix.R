@@ -730,7 +730,7 @@ p.rare <- ggplot() +
                pch = 19, col = "grey", size = 2) +
     geom_point(aes(obs_melt$N, obs_melt$RS),
                col = "#00BFC4", pch = 19, size = 2) + 
-    geom_point(aes(obs_melt$N[25], obs_melt$RS[25]), #using to check where the points are
+    geom_point(aes(obs_melt$N[which.min(obs_melt$RS)], obs_melt$RS[which.min(obs_melt$RS)]), #using to check where the points are
                col = "red", pch = 19, size = 2) +
     plot.theme +
     scale_x_continuous(name = "Sample size") +
@@ -770,9 +770,9 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
                          prior = prior.glob, verbose = TRUE)
 
 save(model_Global, 
-     file = "./Results/global_matrix.w.modern.RData")
+     file = "./Results/global_matrix.w.modern.no.wai.RData")
 
-load(file="./Results/global_matrix.w.modern.RData") #load the g matrices calculated above 
+load(file="./Results/global_matrix.w.modern.no.wai.RData") #load the g matrices calculated above 
 model_Global
 
 ##### CHECK MODELS -----
@@ -813,7 +813,7 @@ Glob_PC_dist = ggplot(glob.eig_per_mat,
 Glob_PC_dist #one negative; none above 1!
 
 ggsave(Glob_PC_dist, 
-       file = "./Results/GlobalG.PC.dist.reg.png", 
+       file = "./Results/GlobalG.PC.dist.reg.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
@@ -840,8 +840,8 @@ paste("Random Skewers similarity matrix")
 corrplot.mixed(glob.corr_mat,upper = "number", lower = "pie")
 
 save(Glob_ext, 
-     file = "./Results/global_ext.w.modern.RData")
+     file = "./Results/global_ext.w.modern.no.wai.RData")
 
-load(file="./Results/global_ext.w.modern.RData") #load the g matrices calculated above 
+load(file="./Results/global_ext.w.modern.no.wai.RData") #load the g matrices calculated above 
 Glob_ext
 

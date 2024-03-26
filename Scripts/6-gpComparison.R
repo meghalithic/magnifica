@@ -25,24 +25,24 @@ mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
 means <- sum.data.list[[3]]
 
-load(file = "./Results/data.list.w.modern.RData") #load the g matrices calculated above 
+load(file = "./Results/data.list.w.modern.no.wai.RData") #load the g matrices calculated above 
 
 Pmat <- data.list[[1]]
 Gmat <- data.list[[2]]
-P_ext <- data.list[[3]]
-G_ext <- data.list[[4]]
-p.eig_variances <- data.list[[5]]
-g.eig_variances <- data.list[[6]]
+p.eig_variances <- data.list[[3]]
+g.eig_variances <- data.list[[4]]
+P_ext <- data.list[[5]]
+G_ext <- data.list[[6]]
 df <- data.list[[7]]
 dat_lg_N <- data.list[[8]]
 form_data <- data.list[[9]]
 by_form.n <- data.list[[10]]
 col_form.n <- data.list[[11]]
 
-load(file="./Results/global_ext.w.modern.RData") #load the g matrices calculated above 
+load(file="./Results/global_ext.w.modern.no.wai.RData") #load the g matrices calculated above 
 Glob_ext
 
-load(file = "./Results/model_G.w.modern.RData") #load the g matrices calculated above 
+load(file = "./Results/model_G.w.modern.no.wai.RData") #load the g matrices calculated above 
 g.model <- model_G
 
 #### CORR OF G & P ----
@@ -115,7 +115,7 @@ colnames(corr.p.g.form) <- c("formation", "correlation")
 corr.p.g.form
 
 write.csv(corr.p.g.form,
-          "Results/correlation.p.g.w.modern.csv",
+          "Results/correlation.p.g.w.modern.no.wai.csv",
           row.names = FALSE)
 
 ##### GLOBAL G THROUGH TIME -----
@@ -178,7 +178,7 @@ colnames(corr.p.glob.form) <- c("formation", "correlation")
 corr.p.glob.form
 
 write.csv(corr.p.glob.form,
-          "Results/correlation.p.glob.w.modern.csv",
+          "Results/correlation.p.glob.w.modern.no.wai.csv",
           row.names = FALSE)
 
 #### POSITIVE DEFINITE ----
@@ -250,27 +250,20 @@ is.positive.definite(P_ext_mod)
 
 #### EVOLVABILITY ----
 
-# Function to convert vector to norm length 
-f.normalize_vector <- function(vector) {
-    norm_length <- sqrt(sum(vector^2))
-    normalized_vector <- vector / norm_length
-    return(normalized_vector)
-}
-
 #trait means by time
 mean_by_formation
 #order of formations:
 # "NKLS"  "NKBS" "Tewkesbury" "Upper Kai-Iwi" "Tainui" "SHCSBSB"
 
 ### Calculate the vector that defines the observed divergence between sample/formation 1 an 2
-
-NKLS <- as.numeric(mean_by_formation[1, c(7, 11, 15, 19, 23, 27, 31, 35)]) # A vector containing trait means from sample/formation 1 
-NKBS <- as.numeric(mean_by_formation[2, c(7, 11, 15, 19, 23, 27, 31, 35)]) # A vector containing trait means from sample/formation 2 
-tewk <- as.numeric(mean_by_formation[3, c(7, 11, 15, 19, 23, 27, 31, 35)]) # A vector containing trait means from sample/formation 3
-uki <- as.numeric(mean_by_formation[5, c(7, 11, 15, 19, 23, 27, 31, 35)]) # A vector containing trait means from sample/formation 5 
-tai <- as.numeric(mean_by_formation[6, c(7, 11, 15, 19, 23, 27, 31, 35)]) # A vector containing trait means from sample/formation 6 
-SHCSBSB <- as.numeric(mean_by_formation[7, c(7, 11, 15, 19, 23, 27, 31, 35)]) # A vector containing trait means from sample/formation 7
-mod <- as.numeric(mean_by_formation[8, c(7, 11, 15, 19, 23, 27, 31, 35)]) # A vector containing trait means from sample/formation 7
+# A vector containing trait means from sample/formation
+NKLS <- as.numeric(mean_by_formation[mean_by_formation == "NKLS", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")]) 
+NKBS <- as.numeric(mean_by_formation[mean_by_formation == "NKBS", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
+tewk <- as.numeric(mean_by_formation[mean_by_formation == "Tewkesbury", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
+uki <- as.numeric(mean_by_formation[mean_by_formation == "Upper Kai-Iwi", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
+tai <- as.numeric(mean_by_formation[mean_by_formation == "Tainui", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
+SHCSBSB <- as.numeric(mean_by_formation[mean_by_formation == "SHCSBSB", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
+mod <- as.numeric(mean_by_formation[mean_by_formation == "modern", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
 
 #second - first
 #t1 = NKBS - NKLS
@@ -351,7 +344,7 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
                                sumX_t7$Averages[[3]]),
                     c.min = c(sumX_t1$Minimum[[3]], sumX_t2$Minimum[[3]], sumX_t3$Minimum[[3]],
                               sumX_t4$Minimum[[3]], sumX_t5$Minimum[[3]], sumX_t6$Minimum[[3]],
-                              sumX_t7$Minimum[[3]],),
+                              sumX_t7$Minimum[[3]]),
                     c.max = c(sumX_t1$Maximum[[3]], sumX_t2$Maximum[[3]], sumX_t3$Maximum[[3]],
                               sumX_t4$Maximum[[3]], sumX_t5$Maximum[[3]], sumX_t6$Maximum[[3]],
                               sumX_t7$Maximum[[3]]),
@@ -382,7 +375,7 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
 #NO NEGATIVE VALUES!
 
 write.csv(X_sum,
-          "./Results/evolvability.summary.csv")
+          "./Results/evolvability.summary.no.wai.csv")
 
 ## PLOT
 X_sum$formation <- rownames(X_sum)
@@ -405,7 +398,7 @@ X_sum$form.trans <- factor(X_sum$form.trans, levels = c("NKLS to NKBS",
                                                         "SHCSBSB to modern",
                                                         ""))
 
-X_sum.trim <- X_sum[1:7,]
+X_sum.trim <- X_sum[1:6,]
 p.evol <- ggplot(X_sum.trim, aes(x = form.trans)) +
     geom_boxplot(aes(ymin = e.min, 
                      lower = e.min,
@@ -416,14 +409,14 @@ p.evol <- ggplot(X_sum.trim, aes(x = form.trans)) +
                  stat = "identity", fill = "gray") +
     geom_point(aes(y = as.numeric(observed_e),
                    color = "black"),
-               size = 5, shape = 15, color = "black") +
+               size = 5, shape = 17, color = "black") +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Evolvability") +
     plot.theme
         
 ggsave(p.evol, 
-       file = "./Results/evolvability.w.modern.png", 
+       file = "./Results/evolvability.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
 # By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
@@ -459,7 +452,7 @@ Gmax_SHCSBSB_norm <- f.normalize_vector(Gmax_SHCSBSB)
 Gmax_mod_norm <- f.normalize_vector(Gmax_mod)
 
 # Calculate the dot product of the unit vectors; tells number 0 to 1
-dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm)
+dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm) #-0.9916566
 # Calculate the angle in radians
 angle_radians.Gmax_NKLS_NKBS <- acos(dot_product.Gmax_NKLS_NKBS)
 # Convert the angle to degrees
@@ -536,7 +529,7 @@ diff_between_Gs$angle.diff_Gs.time <- factor(diff_between_Gs$angle.diff_Gs.time,
                                                          "SHCSBSB to modern"))
 
 write.csv(diff_between_Gs,
-          "./Results/differences.between.Gs.w.modern.csv",
+          "./Results/differences.between.Gs.w.modern.no.wai.csv",
           row.names = FALSE)
 
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
@@ -566,7 +559,6 @@ angle_radians.Gmax_tewk_max <- acos(dot_product.Gmax_tewk_max)
 # Convert the angle to degrees
 angle_degrees.Gmax_tewk_max <- angle_radians.Gmax_tewk_max * (180 / pi)
 #122.1798
-
 
 # Calculate the dot product of the unit vectors
 dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t4)
@@ -600,7 +592,7 @@ angle_diff_Gmax_to_P <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_m
                           angle_degrees.Gmax_tewk_max,
                           angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
                           angle_degrees.Gmax_SHCSBSB_max, "")
-diff_between_Gmax_P <- as.data.frame(cbind(levels(formation_list), corr.diff_Gmax_to_P, angle_diff_Gmax_to_P))
+diff_between_Gmax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Gmax_to_P, corr.diff_Gmax_to_P))
 colnames(diff_between_Gmax_P) <- c("formation", "angle_diff_Gmax_to_P", "corr.diff_Gmax_to_P")
 diff_between_Gmax_P$angle_diff_Gmax_to_P <- as.numeric(diff_between_Gmax_P$angle_diff_Gmax_to_P)
 
@@ -614,11 +606,11 @@ for(i in 1:nrow(diff_between_Gmax_P)){
 }
 
 write.csv(diff_between_Gmax_P,
-          "./Results/differences.between.Gmax.P.w.modern.csv",
+          "./Results/differences.between.Gmax.P.w.modern.no.wai.csv",
           row.names = FALSE)
 
 #### LOOK AT TRENDS AS A FUNCTION OF TIME -----
-form.df <- form.meta[c(1:7, 12),] #in same order as mean_by_formation
+form.df <- form.meta[c(1:3, 5:8),] #in same order as mean_by_formation
 mean_by_formation
 
 for(i in 1:nrow(form.df)){
@@ -631,7 +623,7 @@ for(i in 1:nrow(form.df)){
 }
 form.df$age.range <- as.numeric(form.df$age.range)
 
-df.diff <- merge(angle_diff_between_Gmax_P, form.df,
+df.diff <- merge(diff_between_Gmax_P, form.df,
                  by.x = "formation",
                  by.y = "formationCode")
 df.diff <- merge(df.diff, mean_by_formation,
@@ -649,21 +641,22 @@ ggplot(data = df.diff) +
     scale_x_continuous(name = "Age Range (Ma)") +
     scale_y_continuous(name = "Angle away from Gmax")
 
-p.ang_gmax <- ggplot(data = df.diff) +
-    geom_point(aes(x = formation, y = angle_diff_Gmax_to_P),
+df.diff$corr.diff_Gmax_to_P <- as.numeric(df.diff$corr.diff_Gmax_to_P)
+
+p.dot.prod_gmax <- ggplot(data = df.diff) +
+    geom_point(aes(x = formation, y = corr.diff_Gmax_to_P),
                size = 5, shape = 15) + 
     plot.theme +
     #scale_x_reverse(name = "Age (Ma)", limits = c(2.5, 0)) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    scale_y_continuous(name = "Angle of Phenotypic change from Gmax",
-                       lim = c(0, 90))
+    scale_y_continuous(name = "Dot Product of Phenotypic change from Gmax")
 
-ggsave(p.ang_gmax, 
-       file = "./Results/angle.gmax.p.diff.w.modern.png", 
+ggsave(p.dot.prod_gmax, 
+       file = "./Results/corr.gmax.p.diff.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
-p.ang_g <- ggplot(angle_diff_between_Gs) +
+p.ang_g <- ggplot(diff_between_Gs) +
     geom_point(aes(x = angle.diff_Gs.time, y = angle_diff_Gs),
                size = 5, shape = 15) +
     scale_x_discrete(name = "Formation Transition",
@@ -673,7 +666,20 @@ p.ang_g <- ggplot(angle_diff_between_Gs) +
     plot.theme
 
 ggsave(p.ang_g, 
-       file = "./Results/angle.g.diff.w.modern.png", 
+       file = "./Results/angle.g.diff.w.modern.no.wai.png", 
+       width = 20, height = 20, units = "cm")
+
+diff_between_Gs$corr.diff_Gs <- as.numeric(diff_between_Gs$corr.diff_Gs)
+p.dot.prod_g <- ggplot(diff_between_Gs) +
+    geom_point(aes(x = angle.diff_Gs.time, y = abs(corr.diff_Gs)),
+               size = 5, shape = 15) +
+    scale_x_discrete(name = "Formation Transition",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Dot prodcut between G matrices") + 
+    plot.theme
+
+ggsave(p.dot.prod_g, 
+       file = "./Results/dot.prod.g.diff.w.modern.no.wai.png", 
        width = 20, height = 20, units = "cm")
 
 ##### SIZE OF P AND G ACROSS TIME AND ANGLE -----
@@ -693,7 +699,8 @@ G_size <- c(sum(diag(G_ext_NKBS)),
             sum(diag(G_ext_SHCSBSB)),
             sum(diag(G_ext_mod)))
 
-form.name <- form.df$formationCode
+form.name <- as.character(form.df$formationCode)
+
 P_G_size <- as.data.frame(cbind(form.name, P_size, G_size))
 P_G_size$form.name <- factor(P_G_size$form.name, levels = c("NKLS", "NKBS",
                                                             "Tewkesbury",
@@ -705,7 +712,6 @@ P_G_size$form.name <- factor(P_G_size$form.name, levels = c("NKLS", "NKBS",
 #proportion G to P
 P_G_size$prop.g.p <- as.numeric(P_G_size$G_size)/as.numeric(P_G_size$P_size)
 range(P_G_size$prop.g.p)
-#31 to 57 %
 
 ggplot(P_G_size) +
     geom_point(aes(y = as.numeric(P_size), x = form.name),
@@ -729,8 +735,7 @@ P_dir <- c(p.eig_variances[[1]][1],
            p.eig_variances[[4]][1],
            p.eig_variances[[5]][1],
            p.eig_variances[[6]][1],
-           p.eig_variances[[7]][1],
-           p.eig_variances[[8]][1])
+           p.eig_variances[[7]][1])
 
 G_dir <- c(g.eig_variances[[1]][1],
            g.eig_variances[[2]][1],
@@ -738,8 +743,7 @@ G_dir <- c(g.eig_variances[[1]][1],
            g.eig_variances[[4]][1],
            g.eig_variances[[5]][1],
            g.eig_variances[[6]][1],
-           g.eig_variances[[7]][1],
-           g.eig_variances[[8]][1])
+           g.eig_variances[[7]][1])
 
 P_G_dir <- as.data.frame(cbind(P_G_size, P_dir, G_dir))
 
@@ -923,7 +927,7 @@ p_X_sum <- data.frame(p_c.mean = c(p_sumX_t1$Averages[[3]], p_sumX_t2$Averages[[
 #NO NEGATIVE VALUES!
 
 write.csv(p_X_sum,
-          "./Results/p_evolvability.summary.csv")
+          "./Results/p_evolvability.summary.no.wai.csv")
 
 ## PLOT
 p_X_sum$formation <- rownames(p_X_sum)
@@ -946,7 +950,7 @@ p_X_sum$form.trans <- factor(p_X_sum$form.trans, levels = c("NKLS to NKBS",
                                                             "SHCSBSB to modern",
                                                             ""))
 
-p_X_sum.trim <- p_X_sum[1:7,]
+p_X_sum.trim <- p_X_sum[1:6,]
 p.p_evol <- ggplot(p_X_sum.trim, aes(x = form.trans)) +
     geom_boxplot(aes(ymin = p_e.min, 
                      lower = p_e.min,
@@ -964,7 +968,7 @@ p.p_evol <- ggplot(p_X_sum.trim, aes(x = form.trans)) +
     plot.theme
 
 ggsave(p.p_evol, 
-       file = "./Results/p_evolvability.w.modern.png", 
+       file = "./Results/p_evolvability.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
 # By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
@@ -1077,13 +1081,13 @@ diff_between_Ps$angle.diff_Ps.time <- factor(diff_between_Ps$angle.diff_Ps.time,
                                                               "SHCSBSB to modern"))
 
 write.csv(diff_between_Ps,
-          "./Results/differences.between.Ps.w.modern.csv",
+          "./Results/differences.between.Ps.w.modern.no.wai.csv",
           row.names = FALSE)
 
-##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
+##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO PMAX -----
 
-### See if change is in direction of G max
-## use Gmax of t1 and compare to ∆z
+### See if change is in direction of P max
+## use Pmax of t1 and compare to ∆z
 # Calculate the dot product of the unit vectors
 dot_product.Pmax_NKLS_max <- sum(Pmax_NKLS_norm * evolved_difference_unit_length_t1)
 # Calculate the angle in radians
@@ -1141,9 +1145,10 @@ angle_diff_Pmax_to_P <- c(angle_degrees.Pmax_NKLS_max, angle_degrees.Pmax_NKBS_m
                           angle_degrees.Pmax_tewk_max,
                           angle_degrees.Pmax_uki_max, angle_degrees.Pmax_tai_max,
                           angle_degrees.Pmax_SHCSBSB_max, "")
-diff_between_Pmax_P <- as.data.frame(cbind(levels(formation_list), corr.diff_Pmax_to_P, angle_diff_Pmax_to_P))
+diff_between_Pmax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Pmax_to_P, corr.diff_Pmax_to_P))
 colnames(diff_between_Pmax_P) <- c("formation", "angle_diff_Pmax_to_P", "corr.diff_Pmax_to_P")
-diff_between_Pmax_P$diff_Pmax_to_P <- as.numeric(diff_between_Pmax_P$angle_diff_Pmax_to_P)
+diff_between_Pmax_P$angle_diff_Pmax_to_P <- as.numeric(diff_between_Pmax_P$angle_diff_Pmax_to_P)
+diff_between_Pmax_P$corr.diff_Pmax_to_P <- as.numeric(diff_between_Pmax_P$corr.diff_Pmax_to_P)
 
 for(i in 1:nrow(diff_between_Pmax_P)){
     if(isTRUE(diff_between_Pmax_P$angle_diff_Pmax_to_P[i] > 90)){
@@ -1155,41 +1160,29 @@ for(i in 1:nrow(diff_between_Pmax_P)){
 }
 
 write.csv(diff_between_Pmax_P,
-          "./Results/differences.between.Pmax.P.w.modern.csv",
+          "./Results/differences.between.Pmax.P.w.modern.no.wai.csv",
           row.names = FALSE)
 
 #### LOOK AT TRENDS AS A FUNCTION OF TIME -----
-form.df <- form.meta[c(1:7, 12),] #in same order as mean_by_formation
-mean_by_formation
 
-for(i in 1:nrow(form.df)){
-    form.df$mean.age[i] <- mean(form.df$Start_age[i], form.df$End_age[i], na.rm = TRUE)
-}
-
-form.df$age.range <- ""
-for(i in 1:nrow(form.df)){
-    form.df$age.range[i] <- form.df$Start_age[i] - form.df$End_age[i]
-}
-form.df$age.range <- as.numeric(form.df$age.range)
-
-df.diff <- merge(angle_diff_between_Pmax_P, form.df,
+df.diff.p <- merge(diff_between_Pmax_P, form.df,
                  by.x = "formation",
                  by.y = "formationCode")
-df.diff <- merge(df.diff, mean_by_formation,
+df.diff.p <- merge(df.diff.p, mean_by_formation,
                  by.x = "formation",
                  by.y = "formation")
-df.diff$formation <- factor(df.diff$formation,
+df.diff.p$formation <- factor(df.diff.p$formation,
                             levels = c("NKLS", "NKBS",
                                        "Tewkesbury", "Upper Kai-Iwi",
                                        "Tainui", "SHCSBSB", "modern"))
 
-ggplot(data = df.diff) +
+ggplot(data = df.diff.p) +
     geom_point(aes(x = age.range, y = angle_diff_Pmax_to_P)) + 
     plot.theme +
     scale_x_continuous(name = "Age Range (Ma)") +
     scale_y_continuous(name = "Angle away from Gmax")
 
-p.ang_pmax <- ggplot(data = df.diff) +
+p.ang_pmax <- ggplot(df.diff.p) +
     geom_point(aes(x = formation, y = angle_diff_Pmax_to_P),
                size = 5, shape = 17) + 
     plot.theme +
@@ -1200,22 +1193,30 @@ p.ang_pmax <- ggplot(data = df.diff) +
                        lim = c(0, 90))
 
 ggsave(p.ang_pmax, 
-       file = "./Results/angle.pmax.p.diff.w.modern.png", 
+       file = "./Results/angle.pmax.p.diff.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
 
-p.ang_p <- ggplot(angle_diff_between_Ps) +
+p.ang_p <- ggplot(diff_between_Ps) +
     geom_point(aes(x = angle.diff_Ps.time, y = angle_diff_Ps),
                size = 5, shape = 17) +
     scale_x_discrete(name = "Formation Transition",
                      guide = guide_axis(angle = 45)) +
-    scale_y_continuous(name = "Angle difference between G matrices", 
+    scale_y_continuous(name = "Angle difference between P matrices", 
                        lim = c(0, 90)) + 
     plot.theme
 
 ggsave(p.ang_p, 
-       file = "./Results/angle.p.diff.w.modern.png", 
+       file = "./Results/angle.p.diff.w.modern.no.wai.png", 
        width = 20, height = 20, units = "cm")
+
+p.dot.prod_p <- ggplot(diff_between_Ps) +
+    geom_point(aes(x = angle.diff_Ps.time, y = as.numeric(corr.diff_Ps)),
+               size = 5, shape = 17) +
+    scale_x_discrete(name = "Formation Transition",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Angle difference between P matrices") + 
+    plot.theme
 
 #### USE GLOBAL G ----
 #no differences in G matrices based on size
@@ -1230,7 +1231,6 @@ observed_evolvability_in_direction_of_change_glob_t3 <- t(evolved_difference_uni
 observed_evolvability_in_direction_of_change_glob_t4 <- t(evolved_difference_unit_length_t4)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t4
 observed_evolvability_in_direction_of_change_glob_t5 <- t(evolved_difference_unit_length_t5)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t5
 observed_evolvability_in_direction_of_change_glob_t6 <- t(evolved_difference_unit_length_t6)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t6
-observed_evolvability_in_direction_of_change_glob_t7 <- t(evolved_difference_unit_length_t7)%*%as.matrix(Glob_ext)%*%evolved_difference_unit_length_t7
 
 ###### OBSERVED CONDITIONAL EVOLVABILITY ------
 ### The conditional evolvability in the direction of divergence
@@ -1241,7 +1241,6 @@ observed_conditional_evolvability_in_direction_of_change_glob_t3 <- 1/(t(evolved
 observed_conditional_evolvability_in_direction_of_change_glob_t4 <- 1/(t(evolved_difference_unit_length_t4)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t4)
 observed_conditional_evolvability_in_direction_of_change_glob_t5 <- 1/(t(evolved_difference_unit_length_t5)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t5)
 observed_conditional_evolvability_in_direction_of_change_glob_t6 <- 1/(t(evolved_difference_unit_length_t6)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t6)
-observed_conditional_evolvability_in_direction_of_change_glob_t7 <- 1/(t(evolved_difference_unit_length_t7)%*%solve(as.matrix(Glob_ext))%*%evolved_difference_unit_length_t7)
 
 ### Generate 10,000 selection gradients in random directions in the n-dimensional space
 #n_dimensions <- 8 # number of traits in G matrix
@@ -1264,19 +1263,18 @@ X_glob <- evolvabilityBeta(as.matrix(Glob_ext), Beta)
 sumX_glob <- summary(X_glob) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 sumX_glob
 
-X_sum_glob <- data.frame(c.mean = c(sumX_glob$Averages[[3]], rep("", 7)),
-                         c.min = c(sumX_glob$Minimum[[3]], rep("", 7)),
-                         c.max = c(sumX_glob$Maximum[[3]], rep("", 7)),
-                         e.mean = c(sumX_glob$Averages[[1]], rep("", 7)),
-                         e.min = c(sumX_glob$Minimum[[1]], rep("", 7)),
-                         e.max = c(sumX_glob$Maximum[[1]], rep("", 7)),
+X_sum_glob <- data.frame(c.mean = c(sumX_glob$Averages[[3]], rep("", 6)),
+                         c.min = c(sumX_glob$Minimum[[3]], rep("", 6)),
+                         c.max = c(sumX_glob$Maximum[[3]], rep("", 6)),
+                         e.mean = c(sumX_glob$Averages[[1]], rep("", 6)),
+                         e.min = c(sumX_glob$Minimum[[1]], rep("", 6)),
+                         e.max = c(sumX_glob$Maximum[[1]], rep("", 6)),
                          observed_e_glob = c(observed_evolvability_in_direction_of_change_glob_t1,
                                              observed_evolvability_in_direction_of_change_glob_t2,
                                              observed_evolvability_in_direction_of_change_glob_t3,
                                              observed_evolvability_in_direction_of_change_glob_t4,
                                              observed_evolvability_in_direction_of_change_glob_t5,
                                              observed_evolvability_in_direction_of_change_glob_t6,
-                                             observed_evolvability_in_direction_of_change_glob_t7,
                                              ""),
                          observed_c_glob = c(observed_conditional_evolvability_in_direction_of_change_glob_t1,
                                              observed_conditional_evolvability_in_direction_of_change_glob_t2,
@@ -1284,14 +1282,13 @@ X_sum_glob <- data.frame(c.mean = c(sumX_glob$Averages[[3]], rep("", 7)),
                                              observed_conditional_evolvability_in_direction_of_change_glob_t4,
                                              observed_conditional_evolvability_in_direction_of_change_glob_t5,
                                              observed_conditional_evolvability_in_direction_of_change_glob_t6,
-                                             observed_conditional_evolvability_in_direction_of_change_glob_t7,
                                              ""),
                     row.names = levels(formation_list))
 
 #NO NEGATIVE VALUES!
 
 write.csv(X_sum_glob,
-          "./Results/evolvability.global.summary.csv")
+          "./Results/evolvability.global.summary.no.wai.csv")
 
 ## PLOT
 X_sum_glob$formation <- rownames(X_sum_glob)
@@ -1317,7 +1314,7 @@ X_sum_glob$form.trans <- factor(X_sum_glob$form.trans,
                                            "SHCSBSB to modern",
                                            ""))
 
-X_sum_glob.trim <- X_sum_glob[1:7,]
+X_sum_glob.trim <- X_sum_glob[1:6,]
 p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.min[1]),
                color = "darkgray", linetype = "dashed") +
@@ -1332,7 +1329,7 @@ p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     plot.theme
 
 ggsave(p.evol_glob, 
-       file = "./Results/globalG.evolvability.w.modern.png", 
+       file = "./Results/globalG.evolvability.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----

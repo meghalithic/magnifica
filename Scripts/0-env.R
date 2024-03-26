@@ -4,7 +4,7 @@ library(corrplot)
 #library(data.table)
 #require(dplyr)
 library(evolqg) 
-#library(evolvability)
+library(evolvability)
 require(ggplot2)
 #library(graphics)
 library(grid)
@@ -13,7 +13,7 @@ library(gridExtra)
 #require(lmodel2)
 #library(magrittr)
 library(MASS)
-#library(matrixcalc)
+library(matrixcalc)
 library(MCMCglmm)
 #library(nse)
 require(reshape2)
@@ -23,6 +23,9 @@ require(reshape2)
 require(stringr)
 #library(tibble)
 require(tidyverse)
+
+#### FUNCTIONS ----
+source("./Scripts/norm.vector.funct.R")
 
 #### PLOT THEME ----
 #formations and colors: 
@@ -41,6 +44,15 @@ col.form = c("#F8766D", "#CD9600",  "#00BE67", #"#7CAE00"
 col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
                "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
 
+col.traits.repo <- c("#F8766D", #zh
+                     "#CD9600", #oh
+                     "#B79F00", #ow.m
+                     "#00BE67", #o.side
+                     "#00C094", #mpw.b
+                     "#619CFF", #cw.d
+                     "#00BFC4", #cw.m
+                     "#C77CFF") #c.side)
+
 plot.theme <- theme(text = element_text(size = 16),
       legend.position = "none",
       panel.grid.major = element_blank(), 
@@ -48,6 +60,12 @@ plot.theme <- theme(text = element_text(size = 16),
       panel.background = element_blank(), 
       axis.line = element_line(colour = "black"),
       plot.background = element_rect(fill = 'transparent', color = NA))
+
+#pch code
+# P = triangle = 17
+# G = square = 15
+# Global g = diamond = 18
+# Temp = circle = 16
 
 #### TEMPERATURE ----
 form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv", header = TRUE)
