@@ -586,6 +586,28 @@ ggsave(box.ln.mpw.b,
        file = "./Results/boxplot.ln.mpw.b.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
+box.mpw.b.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.mpw.b",], 
+       aes(x = formation, 
+           y = measurementValue, 
+           fill = formation)) +
+    geom_boxplot(outlier.shape = NA) +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(expression(Median~Process~Width~(mu*m)),
+                       limits = c(4.5, 6),
+                       breaks = c(log(100),
+                                  log(150), log(250),
+                                  log(400)),
+                       labels = c(100,
+                                  150, 250,
+                                  400)) +
+    plot.theme
+ggsave(box.mpw.b.simple, 
+       file = "./Results/simple.boxplot.ln.mpw.b.w.modern.no.wai.new.y.axis.png", 
+       width = 14, height = 10, units = "cm")
+
 box.ln.cw.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m",], 
                        aes(x = formation, 
                            y = measurementValue, 
@@ -607,6 +629,28 @@ box.ln.cw.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m
 
 ggsave(box.ln.cw.m, 
        file = "./Results/boxplot.ln.cw.m.w.modern.no.wai.new.y.axis.png", 
+       width = 14, height = 10, units = "cm")
+
+box.cw.m.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m",], 
+                           aes(x = formation, 
+                               y = measurementValue, 
+                               fill = formation)) +
+    geom_boxplot(outlier.shape = NA) +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(expression(Cryptocyst~Width~at~Midline~(mu*m)),
+                       limits = c(5, 7),
+                       breaks = c(log(150),
+                                  log(250), log(400),
+                                  log(600), log(1000)),
+                       labels = c(150,
+                                  250, 400,
+                                  600, 1000)) +
+    plot.theme
+ggsave(box.cw.m.simple, 
+       file = "./Results/simple.boxplot.ln.cw.m.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.cw.d <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.d",], 
@@ -653,6 +697,27 @@ box.ln.ow.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m
 
 ggsave(box.ln.ow.m, 
        file = "./Results/boxplot.ln.ow.m.w.modern.no.wai.new.y.axis.png", 
+       width = 14, height = 10, units = "cm")
+
+box.ow.m.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m",], 
+                          aes(x = formation, 
+                              y = measurementValue, 
+                              fill = formation)) +
+    geom_boxplot(outlier.shape = NA) +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(expression(Operculum~Width~(mu*m)),
+                       limits = c(5.5, 6.5),
+                       breaks = c(log(250), log(300), 
+                                  log(400),
+                                  log(650)),
+                       labels = c(250, 300,
+                                  400, 650)) +
+    plot.theme
+ggsave(box.ow.m.simple, 
+       file = "./Results/simple.boxplot.ln.ow.m.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",], 
@@ -720,4 +785,26 @@ box.ln.c.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.
 
 ggsave(box.ln.c.side, 
        file = "./Results/boxplot.ln.c.side.w.modern.no.wai.new.y.axis.png", 
+       width = 14, height = 10, units = "cm")
+
+box.c.side.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.side",], 
+                          aes(x = formation, 
+                              y = measurementValue, 
+                              fill = formation)) +
+    geom_boxplot(outlier.shape = NA) +
+    scale_color_manual(values = col.form) +
+    scale_fill_manual(values = col.form) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(expression(Cryptocyst~side~Length~(mu*m)),
+                       limits = c(5, 6.5),
+                       breaks = c(log(150),
+                                  log(250), log(400),
+                                  log(650)),
+                       labels = c(150,
+                                  250, 400,
+                                  650)) +
+    plot.theme
+ggsave(box.c.side.simple, 
+       file = "./Results/simple.boxplot.ln.c.side.w.modern.no.wai.new.y.axis.png", 
        width = 14, height = 10, units = "cm")

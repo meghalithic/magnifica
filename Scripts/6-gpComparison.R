@@ -1084,6 +1084,31 @@ write.csv(diff_between_Ps,
           "./Results/differences.between.Ps.w.modern.no.wai.csv",
           row.names = FALSE)
 
+diff_between_Ps$corr.diff_Ps <- as.numeric(diff_between_Ps$corr.diff_Ps )
+p.dot.prod_p <- ggplot(diff_between_Ps) +
+    geom_point(aes(x = angle.diff_Ps.time, y = abs(corr.diff_Ps)),
+               size = 5, shape = 17) +
+    scale_x_discrete(name = "Formation Transition",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Dot prodcut between P matrices") + 
+    plot.theme
+
+ggsave(p.dot.prod_p, 
+       file = "./Results/dot.prod.p.diff.w.modern.no.wai.png", 
+       width = 20, height = 20, units = "cm")
+
+p.ang_p <- ggplot(diff_between_Ps) +
+    geom_point(aes(x = angle.diff_Ps.time, y = angle_diff_Ps),
+               size = 5, shape = 17) +
+    scale_x_discrete(name = "Formation Transition",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Angle between P matrices") + 
+    plot.theme
+
+ggsave(p.ang_p, 
+       file = "./Results/ang.p.diff.w.modern.no.wai.png", 
+       width = 20, height = 20, units = "cm")
+
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO PMAX -----
 
 ### See if change is in direction of P max
