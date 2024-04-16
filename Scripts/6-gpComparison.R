@@ -14,7 +14,14 @@
 # 7. see how G changes in relation to temperature
 
 ## the outputs are:
-# -  
+# -  comparison of estimated evolvability from G and Global G to 
+# observed evolvability (table and graph)
+# - comparison of adjacent G matrices through time (table and graph)
+# - comparison of direction of ∆z compared to Gmax (table and graph)
+# - comparison of ∆z to temperature (linear model; graph)
+# - calculation of beta (table and graph)
+# - looking at P for G by redoing evolvability using P and comparing 
+# effect of Pmax on ∆z (table and graph)
 
 #### LOAD DATA ----
 
