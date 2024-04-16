@@ -798,6 +798,107 @@ ggsave(p.pc1.temp,
 summary(lm(as.numeric(df.form.pc$PC1_P[-1]) ~ df.form.pc$med.O18[-1]))
 #slope = 0.04, p-value = 0.53, r2 = 0
 
+#### CALCULATE BETA ----
+#∆z = ß*G
+#ß = ∆z/G
+#∆z = vector of change
+#G is matrix at t1
+
+beta_t1 = evolved_difference_unit_length_t1%*%solve(G_ext_NKLS)
+beta_t2 = evolved_difference_unit_length_t2%*%solve(G_ext_NKBS)
+beta_t3 = evolved_difference_unit_length_t3%*%solve(G_ext_tewk)
+beta_t4 = evolved_difference_unit_length_t4%*%solve(G_ext_uki)
+beta_t5 = evolved_difference_unit_length_t5%*%solve(G_ext_tai)
+beta_t6 = evolved_difference_unit_length_t6%*%solve(G_ext_SHCSBSB)
+
+beta_t1_norm <- f.normalize_vector(beta_t1)
+beta_t2_norm <- f.normalize_vector(beta_t2)
+beta_t3_norm <- f.normalize_vector(beta_t3)
+beta_t4_norm <- f.normalize_vector(beta_t4)
+beta_t5_norm <- f.normalize_vector(beta_t5)
+beta_t6_norm <- f.normalize_vector(beta_t6)
+
+##### DOT PRODUCT BETA TO GMAX T2 -----
+#this will be compared to dot product of Gmax t1 and Gmax t2
+# Calculate the dot product of the unit vectors; tells number 0 to 1
+dot_product.beta_t1_Gmax_t2 <- sum(beta_t1_norm * Gmax_NKBS_norm) #0.02259102
+dot_product.beta_t2_Gmax_t3 <- sum(beta_t2_norm * Gmax_tewk_norm) #0.1196895
+dot_product.beta_t3_Gmax_t4 <- sum(beta_t3_norm * Gmax_uki_norm) #-0.1624826
+dot_product.beta_t4_Gmax_t5 <- sum(beta_t4_norm * Gmax_tai_norm) #-0.1096417
+dot_product.beta_t5_Gmax_t6 <- sum(beta_t5_norm * Gmax_SHCSBSB_norm) #0.1450568
+dot_product.beta_t6_Gmax_t7 <- sum(beta_t6_norm * Gmax_mod_norm) #-0.199752
+
+##### MAGNITUDE BETA TO DIFF IN DOT PROD -----
+## calculate magnitude ß
+#use magnitude function
+
+mag.beta_t1 <- magnitude(beta_t1)
+mag.beta_t2 <- magnitude(beta_t2)
+mag.beta_t3 <- magnitude(beta_t3)
+mag.beta_t4 <- magnitude(beta_t4)
+mag.beta_t5 <- magnitude(beta_t5)
+mag.beta_t6 <- magnitude(beta_t6)
+
+mag.beta <- c(mag.beta_t1, mag.beta_t2,
+              mag.beta_t3, mag.beta_t4,
+              mag.beta_t5, mag.beta_t6)
+
+## calculate difference in dot product
+# dot prod Gmax t1 and Gmax t2 - dot product ß t1 and Gmax t2
+diff.gmax.b.nkls.nkbs <- abs(dot_product.Gmax_NKLS_NKBS) - abs(dot_product.beta_t1_Gmax_t2)
+diff.gmax.b.nkbs.tewk <- abs(dot_product.Gmax_NKBS_tewk) - abs(dot_product.beta_t2_Gmax_t3)
+diff.gmax.b.tewk.uki <- abs(dot_product.Gmax_tewk_uki) - abs(dot_product.beta_t3_Gmax_t4)
+diff.gmax.b.uki.tai <- abs(dot_product.Gmax_uki_tai) - abs(dot_product.beta_t4_Gmax_t5)
+diff.gmax.b.tai.shcsbsb <- abs(dot_product.Gmax_tai_SHCSBSB) - abs(dot_product.beta_t5_Gmax_t6)
+diff.gmax.b.shcsbsb.mod <- abs(dot_product.Gmax_SHCSBSB_mod) - abs(dot_product.beta_t6_Gmax_t7)
+
+diff.gmax.b <- c(diff.gmax.b.nkls.nkbs, diff.gmax.b.nkbs.tewk,
+                 diff.gmax.b.tewk.uki, diff.gmax.b.uki.tai,
+                 diff.gmax.b.tai.shcsbsb, diff.gmax.b.shcsbsb.mod)
+
+## make df
+diffs <- c("NKLS to NKBS", 
+           "NKBS to Tewkesbury",
+           "Tewkesbury to Upper Kai-Iwi",
+           "Upper Kai-Iwi to Tainui", 
+           "Tainui to SHCSBSB",
+           "SHCSBSB to modern")
+
+diff.beta.gmax.df <- as.data.frame(cbind(mag.beta, diff.gmax.b, diffs))
+
+diff.beta.gmax.df$diffs <- factor(diff.beta.gmax.df$diffs,
+                                      levels = c("NKLS to NKBS", 
+                                                 "NKBS to Tewkesbury",
+                                                 "Tewkesbury to Upper Kai-Iwi",
+                                                 "Upper Kai-Iwi to Tainui", 
+                                                 "Tainui to SHCSBSB",
+                                                 "SHCSBSB to modern"))
+
+
+## plot
+#expectations: positive, negative, or no relationship
+#no relationship means no effect of ß on Gmax
+
+p.diff.b.gmax <- ggplot(diff.beta.gmax.df,
+       aes(x = as.numeric(mag.beta), y = as.numeric(diff.gmax.b))) + 
+    geom_point() +
+    geom_smooth(method = "lm") +
+    plot.theme +
+    scale_x_continuous(expression(Magnitude~beta)) +
+    scale_y_continuous(expression(reduction~of~correlation~of~G[max]~and~beta))
+
+ggsave(p.diff.b.gmax, 
+       file = "./Results/reduction.gmax.beta.to.mag.beta.png", 
+       width = 14, height = 10, units = "cm")
+
+summary(lm(as.numeric(diff.gmax.b) ~ as.numeric(mag.beta),
+           data = diff.beta.gmax.df)) #nonsig; no relationship
+
+##### REIMANN DISTANCE -----
+# look at magnitude of beta (x axis) as a function of reimann distance
+# this is the distance (subtraction) between two matrices
+
+G_ext_NKBS-G_ext_NKLS
 
 #### SUBSTITUTE P FOR G ----
 

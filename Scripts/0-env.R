@@ -26,6 +26,8 @@ require(tidyverse)
 
 #### FUNCTIONS ----
 source("./Scripts/norm.vector.funct.R")
+source("./Scripts/magnitudeFunction.R")
+
 
 #### PLOT THEME ----
 #formations and colors: 
