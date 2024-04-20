@@ -464,42 +464,42 @@ dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm) #-0.9916566
 angle_radians.Gmax_NKLS_NKBS <- acos(dot_product.Gmax_NKLS_NKBS)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKLS_NKBS <- angle_radians.Gmax_NKLS_NKBS * (180 / pi)
-#7.792976
+#172.5935; 7.4065
 
 dot_product.Gmax_NKBS_tewk <- sum(Gmax_NKBS_norm * Gmax_tewk_norm)
 # Calculate the angle in radians
 angle_radians.Gmax_NKBS_tewk <- acos(dot_product.Gmax_NKBS_tewk)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKBS_tewk <- angle_radians.Gmax_NKBS_tewk * (180 / pi)
-#6.538487
+#173.1507; 6.85
 
 dot_product.Gmax_tewk_uki <- sum(Gmax_tewk_norm * Gmax_uki_norm)
 # Calculate the angle in radians
 angle_radians.Gmax_tewk_uki <- acos(dot_product.Gmax_tewk_uki)
 # Convert the angle to degrees
 angle_degrees.Gmax_tewk_uki <- angle_radians.Gmax_tewk_uki * (180 / pi)
-#97.61231
+#21.41828
 
 dot_product.Gmax_uki_tai <- sum(Gmax_uki_norm * Gmax_tai_norm)
 # Calculate the angle in radians
 angle_radians.Gmax_uki_tai <- acos(dot_product.Gmax_uki_tai)
 # Convert the angle to degrees
 angle_degrees.Gmax_uki_tai <- angle_radians.Gmax_uki_tai * (180 / pi)
-#31.89257
+#33.88979
 
 dot_product.Gmax_tai_SHCSBSB <- sum(Gmax_tai_norm * Gmax_SHCSBSB_norm)
 # Calculate the angle in radians
 angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
-#28.97957
+#28.05736
 
 dot_product.Gmax_SHCSBSB_mod <- sum(Gmax_SHCSBSB_norm * Gmax_mod_norm)
 # Calculate the angle in radians
 angle_radians.Gmax_SHCSBSB_mod <- acos(dot_product.Gmax_SHCSBSB_mod)
 # Convert the angle to degrees
 angle_degrees.Gmax_SHCSBSB_mod <- angle_radians.Gmax_SHCSBSB_mod * (180 / pi)
-#64.5733
+#61.57682
 
 corr.diff_Gs <- c(dot_product.Gmax_NKLS_NKBS, dot_product.Gmax_NKBS_tewk,
                   dot_product.Gmax_tewk_uki, dot_product.Gmax_uki_tai,
@@ -835,6 +835,31 @@ dot_product.beta_t4_Gmax_t5 <- sum(beta_t4_norm * Gmax_tai_norm) #-0.1096417
 dot_product.beta_t5_Gmax_t6 <- sum(beta_t5_norm * Gmax_SHCSBSB_norm) #0.1450568
 dot_product.beta_t6_Gmax_t7 <- sum(beta_t6_norm * Gmax_mod_norm) #-0.199752
 
+#convert to angle
+angle_radians.beta_t1_Gmax_t2 <- acos(dot_product.beta_t1_Gmax_t2)
+# Convert the angle to degrees
+angle_degrees..beta_t1_Gmax_t2 <- angle_radians.beta_t1_Gmax_t2 * (180 / pi) #88.70552
+
+angle_radians.beta_t2_Gmax_t3 <- acos(dot_product.beta_t2_Gmax_t3)
+# Convert the angle to degrees
+angle_degrees.beta_t2_Gmax_t3 <- angle_radians.beta_t2_Gmax_t3 * (180 / pi) #83.12582
+
+angle_radians.beta_t3_Gmax_t4 <- acos(dot_product.beta_t3_Gmax_t4)
+# Convert the angle to degrees
+angle_degrees.beta_t3_Gmax_t4 <- angle_radians.beta_t3_Gmax_t4 * (180 / pi) #99.35
+
+angle_radians.beta_t4_Gmax_t5 <- acos(dot_product.beta_t4_Gmax_t5)
+# Convert the angle to degrees
+angle_degrees.beta_t4_Gmax_t5 <- angle_radians.beta_t4_Gmax_t5 * (180 / pi) #96.29; 83.71
+
+angle_radians.beta_t5_Gmax_t6 <- acos(dot_product.beta_t5_Gmax_t6)
+# Convert the angle to degrees
+angle_degrees.beta_t5_Gmax_t6 <- angle_radians.beta_t5_Gmax_t6 * (180 / pi) #81.66
+
+angle_radians.beta_t6_Gmax_t7 <- acos(dot_product.beta_t6_Gmax_t7)
+# Convert the angle to degrees
+angle_degrees.beta_t6_Gmax_t7 <- angle_radians.beta_t6_Gmax_t7 * (180 / pi) #101.5; 78.5
+
 ##### MAGNITUDE BETA TO DIFF IN DOT PROD -----
 ## calculate magnitude ß
 #use magnitude function
@@ -863,6 +888,18 @@ diff.gmax.b <- c(diff.gmax.b.nkls.nkbs, diff.gmax.b.nkbs.tewk,
                  diff.gmax.b.tewk.uki, diff.gmax.b.uki.tai,
                  diff.gmax.b.tai.shcsbsb, diff.gmax.b.shcsbsb.mod)
 
+#angle
+ang.diff.gmax.b.nkls.nkbs <- abs(angle_degrees.Gmax_NKLS_NKBS) - abs(angle_radians.beta_t1_Gmax_t2)
+ang.diff.gmax.b.nkbs.tewk <- abs(angle_degrees.Gmax_NKBS_tewk) - abs(angle_radians.beta_t2_Gmax_t3)
+ang.diff.gmax.b.tewk.uki <- abs(angle_degrees.Gmax_tewk_uki) - abs(angle_radians.beta_t3_Gmax_t4)
+ang.diff.gmax.b.uki.tai <- abs(angle_degrees.Gmax_uki_tai) - abs(angle_radians.beta_t4_Gmax_t5)
+ang.diff.gmax.b.tai.shcsbsb <- abs(angle_degrees.Gmax_tai_SHCSBSB) - abs(angle_radians.beta_t5_Gmax_t6)
+ang.diff.gmax.b.shcsbsb.mod <- abs(angle_degrees.Gmax_SHCSBSB_mod) - abs(angle_radians.beta_t6_Gmax_t7)
+
+ang.diff.gmax.b <- c(ang.diff.gmax.b.nkls.nkbs, ang.diff.gmax.b.nkbs.tewk,
+                     ang.diff.gmax.b.tewk.uki, ang.diff.gmax.b.uki.tai,
+                     ang.diff.gmax.b.tai.shcsbsb, ang.diff.gmax.b.shcsbsb.mod)
+
 ## make df
 diffs <- c("NKLS to NKBS", 
            "NKBS to Tewkesbury",
@@ -871,7 +908,7 @@ diffs <- c("NKLS to NKBS",
            "Tainui to SHCSBSB",
            "SHCSBSB to modern")
 
-diff.beta.gmax.df <- as.data.frame(cbind(mag.beta, diff.gmax.b, diffs))
+diff.beta.gmax.df <- as.data.frame(cbind(mag.beta, diff.gmax.b, diffs, ang.diff.gmax.b))
 
 diff.beta.gmax.df$diffs <- factor(diff.beta.gmax.df$diffs,
                                       levels = c("NKLS to NKBS", 
@@ -901,11 +938,52 @@ ggsave(p.diff.b.gmax,
 summary(lm(as.numeric(diff.gmax.b) ~ as.numeric(mag.beta),
            data = diff.beta.gmax.df)) #nonsig; no relationship
 
+p.ang.diff.b.gmax <- ggplot(diff.beta.gmax.df,
+                        aes(x = as.numeric(mag.beta), y = as.numeric(ang.diff.gmax.b))) + 
+    geom_point() +
+    geom_smooth(method = "lm") +
+    plot.theme +
+    scale_x_continuous(expression(Magnitude~beta)) +
+    scale_y_continuous(expression(reduction~of~correlation~of~G[max]~and~beta))
+
+ggsave(p.ang.diff.b.gmax, 
+       file = "./Results/reduction.ang.gmax.beta.to.mag.beta.png", 
+       width = 14, height = 10, units = "cm")
+
+summary(lm(as.numeric(ang.diff.gmax.b) ~ as.numeric(mag.beta),
+           data = diff.beta.gmax.df)) #nonsig; no relationship
+
 ##### REIMANN DISTANCE -----
 # look at magnitude of beta (x axis) as a function of reimann distance
 # this is the distance (subtraction) between two matrices
 
-G_ext_NKBS-G_ext_NKLS
+dist.NKLS_NKBS <- RiemannDist(G_ext_NKBS, G_ext_NKLS)
+dist.NKBS_tewk <- RiemannDist(G_ext_NKLS, G_ext_tewk)
+dist.tewk_uki <- RiemannDist(G_ext_tewk, G_ext_uki)
+dist.uki_tai <- RiemannDist(G_ext_uki, G_ext_tai)
+dist.tai_SHCSBSB <- RiemannDist(G_ext_tai, G_ext_SHCSBSB)
+dist.SHCSBSB_mod <- RiemannDist(G_ext_SHCSBSB, G_ext_mod)
+
+dist.gmat <- c(dist.NKLS_NKBS, dist.NKBS_tewk,
+               dist.tewk_uki, dist.uki_tai, 
+               dist.tai_SHCSBSB, dist.SHCSBSB_mod)
+
+diff.beta.gmax.df <- cbind(diff.beta.gmax.df, dist.gmat)
+
+p.dist.gmat.b <- ggplot(diff.beta.gmax.df,
+                        aes(x = as.numeric(mag.beta), y = as.numeric(dist.gmat))) + 
+    geom_point() +
+    geom_smooth(method = "lm") +
+    plot.theme +
+    scale_x_continuous(expression(Magnitude~beta)) +
+    scale_y_continuous(expression(distance~between~G~matrices~and~beta))
+
+ggsave(p.dist.gmat.b, 
+       file = "./Results/dist.g.mat.to.mag.beta.png", 
+       width = 14, height = 10, units = "cm")
+
+summary(lm(as.numeric(dist.gmat) ~ as.numeric(mag.beta),
+           data = diff.beta.gmax.df)) #nonsig; no relationship
 
 #### SUBSTITUTE P FOR G ----
 
