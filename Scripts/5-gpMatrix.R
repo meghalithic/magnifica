@@ -151,10 +151,11 @@ p.o.side = ggplot(data = df) +
 Fig = list(p.zh, p.mpw.b, p.cw.m, p.cw.d, p.ow.m, p.oh, p.c.side, p.o.side)
 ml <- marrangeGrob(Fig, nrow = 4, ncol = 2)
 ml
+#see a really big shift between Tewkesbury and earlier and Upper Kai-Iwi and after
 
 ggsave(ml, 
        file = "./Results/trait.distribution.w.modern.png", 
-       width = 14, height = 10, units = "cm")
+       width = 14, height = 20, units = "cm")
 
 #### NORMALITY TESTS ----
 ## shapiro test; but need to subsample to be within 5000
@@ -283,7 +284,7 @@ p.variances = lapply(Pmat, diag)
 paste("Trait variances")
 head(p.variances)
 
-###### P EIGEN ------
+##### P EIGEN -----
 
 p.eig_variances = lapply(Pmat, function (x) {eigen(x)$values})
 # lapply(Pmat, function (x) {eigen(x)})
@@ -304,20 +305,50 @@ P_PC_dist = ggplot(p.eig_per,
                    aes(x = variable, y = value,
                        group = rownames.p.eig_per_mat.,
                        colour = rownames.p.eig_per_mat.)) +
-  geom_line(aes(linetype = rownames.p.eig_per_mat.)) +
-  geom_point() +
-  xlab("Principal component rank") +
-  ylab("%Variation in the PC") +
+    geom_line(aes(linetype = rownames.p.eig_per_mat.)) +
+    geom_point() +
+    scale_y_continuous("Principal component rank",
+                       limits = c(-.02, 0.7)) +
+    plot.theme + 
+    scale_x_discrete("Principal component rank",
+                     labels = c("PC1", "PC2", "PC3", "PC4",
+                                "PC5", "PC6", "PC7", "PC8")) +
   scale_color_manual(values = col.form)
 
                       
 P_PC_dist #none negative; none above 1; dim 8 close to 0; could keep 7
 
 ggsave(P_PC_dist, 
-       file = "./Results/P.PC.dist.w.modern.png", 
+       file = "./Results/P.PC.dist.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm") 
 
-###### P NOISE ------
+##### PC LOADINGS -----
+#p.eig_variances values = Pmax; loadings 1-8 because of dimensions = PC1-PC8
+#what does PC1 correlate with?
+
+#https://www.statology.org/principal-components-analysis-in-r/
+P_pc <- lapply(Pmat, function (x) {prcomp(x, scale = TRUE)})
+
+P_pc_NKLS <- P_pc$NKLS
+P_pc_NKBS <- P_pc$NKBS
+P_pc_tewk <- P_pc$Tewkesbury
+P_pc_uki <- P_pc$`Upper Kai-Iwi`
+P_pc_tai <- P_pc$Tainui
+P_pc_SHCSBSB <- P_pc$SHCSBSB
+P_pc_mod <- P_pc$modern
+
+biplot(P_pc_NKLS, scale = 0)
+biplot(P_pc_NKBS, scale = 0)
+biplot(P_pc_tewk, scale = 0)
+biplot(P_pc_uki, scale = 0)
+biplot(P_pc_tai, scale = 0)
+biplot(P_pc_SHCSBSB, scale = 0)
+biplot(P_pc_mod, scale = 0)
+#all kinda look the same, with modern looking most different;
+#where PC1 is length on left and width on right
+#and PC2 is operculum height v everything else
+
+##### P NOISE -----
 ##Controlling for noise
 #Extend G
 P_ext = lapply(Pmat, function (x){ ExtendMatrix(x, ret.dim = 5)$ExtMat}) #to match the G matrix
@@ -476,7 +507,7 @@ d.p.m.uki
 d.col.vcv.uki #this 'g' matrix are smaller
 d.col.vcv.uki < diag(Pmat[[5]]) # zh, mpw.b, cw.m, cw.d, ow.m, oh, c.side, o.side are smaller; all larger than G matrix 
 
-###### POSTERIOR G MATRIX ------
+##### POSTERIOR G MATRIX -----
 #Retrieving G from posterior
 g.model = model_G
 ntraits = 8
@@ -516,7 +547,7 @@ head(g.variances)
 #no spot with zero variance; 
 #so variance along certain directions are negative
 
-###### G EIGEN ------
+##### G EIGEN -----
 g.eig_variances = lapply(Gmat, function (x) {eigen(x)$values})
 paste("Eigenvalue variances")
 head(g.eig_variances)
@@ -530,10 +561,14 @@ G_PC_dist = ggplot(g.eig_per,
                    aes(x = variable, y = value,
                        group = rownames.g.eig_per_mat.,
                        colour = rownames.g.eig_per_mat.)) +
-  geom_line(aes(linetype = rownames.g.eig_per_mat.)) +
-  geom_point() +
-  xlab("Principal component rank") +
-  ylab("%Variation in the PC")
+    geom_line(aes(linetype = rownames.g.eig_per_mat.)) +
+    geom_point() +
+    plot.theme + 
+    scale_x_discrete("Principal component rank",
+                     labels = c("PC1", "PC2", "PC3", "PC4",
+                                "PC5", "PC6", "PC7", "PC8")) +
+    scale_y_continuous("%Variation in the PC",
+                       limits = c(-.02, 0.7))
 G_PC_dist 
 #none above 1
 #Tainui, modern, upper kai-iwi negative at dim 6, then go back to positive
@@ -547,7 +582,33 @@ ggsave(G_PC_dist,
 #This can cause a lot of trouble in analyses involving inverted matrices.
 #Solution from evolqg Marroig et al. 2012
 
-###### G NOISE ------
+##### PC LOADINGS -----
+#p.eig_variances values = Pmax; loadings 1-8 because of dimensions = PC1-PC8
+#what does PC1 correlate with?
+
+#https://www.statology.org/principal-components-analysis-in-r/
+G_pc <- lapply(Gmat, function (x) {prcomp(x, scale = TRUE)})
+
+G_pc_NKLS <- G_pc$NKLS
+G_pc_NKBS <- G_pc$NKBS
+G_pc_tewk <- G_pc$Tewkesbury
+G_pc_uki <- G_pc$`Upper Kai-Iwi`
+G_pc_tai <- G_pc$Tainui
+G_pc_SHCSBSB <- G_pc$SHCSBSB
+G_pc_mod <- G_pc$modern
+
+biplot(G_pc_NKLS, scale = 0)
+biplot(G_pc_NKBS, scale = 0)
+biplot(G_pc_tewk, scale = 0)
+biplot(G_pc_uki, scale = 0)
+biplot(G_pc_tai, scale = 0)
+biplot(G_pc_SHCSBSB, scale = 0)
+biplot(G_pc_mod, scale = 0)
+#all kinda look the same as the P matrix with modern and uki looking most different, 
+#where PC1 is length on left and width on right
+#and PC2 is operculum height v everything else
+
+##### G NOISE -----
 ##Controlling for noise
 #Extend G
 G_ext = lapply(Gmat, function (x){ ExtendMatrix(x, ret.dim = 5)$ExtMat}) #not 8 because last eigen value (#6) was negative

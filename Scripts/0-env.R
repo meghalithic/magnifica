@@ -69,6 +69,26 @@ plot.theme <- theme(text = element_text(size = 16),
 # Global g = diamond = 18
 # Temp = circle = 16
 
+#### FORMATIONS ----
+formation_transition <- c("NKLS to NKBS", 
+                          "NKBS to Tewkesbury",
+                          "Tewkesbury to Upper Kai-Iwi",
+                          "Upper Kai-Iwi to Tainui", 
+                          "Tainui to SHCSBSB",
+                          "SHCSBSB to modern")
+formation_transition <- factor(formation_transition,
+                               levels = c("NKLS to NKBS", 
+                                          "NKBS to Tewkesbury",
+                                          "Tewkesbury to Upper Kai-Iwi",
+                                          "Upper Kai-Iwi to Tainui", 
+                                          "Tainui to SHCSBSB",
+                                          "SHCSBSB to modern"))
+
+formation_list <- c("NKLS", "NKBS", "Tewkesbury", 
+                    "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern")
+formation_list <- factor(formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
+                                               "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern"))
+
 #### TEMPERATURE ----
 form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv", header = TRUE)
 

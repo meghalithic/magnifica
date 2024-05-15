@@ -1,6 +1,6 @@
 ## calculate magnitude ß
 magnitude <- function(vector) {
-    xx <- c()
+    sq.val <- c()
     for(i in 1:length(vector)){
         sq.val[i] <- vector[i]^2
     }

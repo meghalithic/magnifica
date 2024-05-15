@@ -56,12 +56,7 @@ g.model <- model_G
 
 #Gmat
 #Pmat
-df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
-                                                "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern")) 
-formation_list <- unique(df$formation)
-formation_list
 
-##### G MATRICES THROUGH TIME -----
 ## RANDOM SKEWERS OF P & G OF EACH FORMATION
 #NKLS
 NKLS_comp_mat = RandomSkewers(list(G_ext[[1]], P_ext[[1]])) #need at least
@@ -125,69 +120,6 @@ write.csv(corr.p.g.form,
           "Results/correlation.p.g.w.modern.no.wai.csv",
           row.names = FALSE)
 
-##### GLOBAL G THROUGH TIME -----
-#NKLS
-NKLS_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[1]])) #need at least
-NKLS_corr_mat.glob = NKLS_comp_mat.glob$correlations + t(NKLS_comp_mat.glob$correlations) 
-diag(NKLS_corr_mat.glob) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(NKLS_corr_mat.glob, upper = "number", lower = "pie")
-
-#NKBS
-NKBS_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[2]])) #need at least
-NKBS_corr_mat.glob = NKBS_comp_mat.glob$correlations + t(NKBS_comp_mat.glob$correlations) 
-diag(NKBS_corr_mat.glob) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(NKBS_corr_mat.glob, upper = "number", lower = "pie")
-
-#Tewkesbury
-Tewkesbury_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[3]])) #need at least
-Tewkesbury_corr_mat.glob = Tewkesbury_comp_mat.glob$correlations + t(Tewkesbury_comp_mat.glob$correlations) 
-diag(Tewkesbury_corr_mat.glob) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(Tewkesbury_corr_mat.glob, upper = "number", lower = "pie")
-
-#Upper Kai-Iwi
-UKai_Iwi_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[4]])) #need at least
-UKai_Iwi_corr_mat.glob = UKai_Iwi_comp_mat.glob$correlations + t(UKai_Iwi_comp_mat.glob$correlations) 
-diag(UKai_Iwi_corr_mat.glob) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(UKai_Iwi_corr_mat.glob, upper = "number", lower = "pie")
-
-#Tainui
-Tainui_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[5]])) #need at least
-Tainui_corr_mat.glob = Tainui_comp_mat.glob$correlations + t(Tainui_comp_mat.glob$correlations) 
-diag(Tainui_corr_mat.glob) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(Tainui_corr_mat.glob, upper = "number", lower = "pie")
-
-#SHCSBSB
-SHCSBSB_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[6]])) #need at least
-SHCSBSB_corr_mat.glob = SHCSBSB_comp_mat.glob$correlations + t(SHCSBSB_comp_mat.glob$correlations) 
-diag(SHCSBSB_corr_mat.glob) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(SHCSBSB_corr_mat.glob, upper = "number", lower = "pie")
-
-#modern
-modern_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[7]])) #need at least
-modern_corr_mat.glob = modern_comp_mat.glob$correlations + t(modern_comp_mat.glob$correlations) 
-diag(modern_corr_mat.glob) = 1
-paste("Random Skewers similarity matrix")
-corrplot.mixed(modern_corr_mat.glob, upper = "number", lower = "pie")
-
-corr.p.glob <- c(NKLS_corr_mat.glob[1,2], NKBS_corr_mat.glob[1,2],
-                 Tewkesbury_corr_mat.glob[1,2], UKai_Iwi_corr_mat.glob[1,2], 
-                 Tainui_corr_mat.glob[1,2], SHCSBSB_corr_mat.glob[1,2],
-                 modern_corr_mat.glob[1,2])
-
-corr.p.glob.form <- cbind(levels(formation_list), corr.p.glob)
-colnames(corr.p.glob.form) <- c("formation", "correlation")
-corr.p.glob.form
-
-write.csv(corr.p.glob.form,
-          "Results/correlation.p.glob.w.modern.no.wai.csv",
-          row.names = FALSE)
-
 #### POSITIVE DEFINITE ----
 ## check positive definite
 # round to 10 decimals to make it symmetric
@@ -200,7 +132,6 @@ G_ext_uki = round(as.matrix(G_ext[[4]]), 6) # The G matrix estimated for sample/
 G_ext_tai = round(as.matrix(G_ext[[5]]), 6) # The G matrix estimated for sample/formation 6
 G_ext_SHCSBSB = round(as.matrix(G_ext[[6]]), 6) # The G matrix estimated for sample/formation 7
 G_ext_mod = round(as.matrix(G_ext[[7]]), 6) # The G matrix estimated for sample/formation 7
-Glob_ext_pos = round(as.matrix(Glob_ext), 6)
 
 is.symmetric.matrix(G_ext_NKLS)
 is.positive.definite(G_ext_NKLS)
@@ -222,38 +153,6 @@ is.positive.definite(G_ext_SHCSBSB)
 
 is.symmetric.matrix(G_ext_mod)
 is.positive.definite(G_ext_mod)
-
-is.symmetric.matrix(Glob_ext_pos)
-is.positive.definite(Glob_ext_pos)
-
-P_ext_NKLS = round(as.matrix(P_ext[[1]]), 6) # The G matrix estimated for sample/formation 1
-P_ext_NKBS = round(as.matrix(P_ext[[2]]), 6) # The G matrix estimated for sample/formation 2
-P_ext_tewk = round(as.matrix(P_ext[[3]]), 6) # The G matrix estimated for sample/formation 3
-P_ext_uki = round(as.matrix(P_ext[[4]]), 6) # The G matrix estimated for sample/formation 5
-P_ext_tai = round(as.matrix(P_ext[[5]]), 6) # The G matrix estimated for sample/formation 6
-P_ext_SHCSBSB = round(as.matrix(P_ext[[6]]), 6) # The G matrix estimated for sample/formation 7
-P_ext_mod = round(as.matrix(P_ext[[7]]), 6) # The G matrix estimated for sample/formation 7
-
-is.symmetric.matrix(P_ext_NKLS)
-is.positive.definite(P_ext_NKLS)
-
-is.symmetric.matrix(P_ext_NKBS)
-is.positive.definite(P_ext_NKBS)
-
-is.symmetric.matrix(P_ext_tewk)
-is.positive.definite(P_ext_tewk)
-
-is.symmetric.matrix(P_ext_uki)
-is.positive.definite(P_ext_uki)
-
-is.symmetric.matrix(P_ext_tai)
-is.positive.definite(P_ext_tai)
-
-is.symmetric.matrix(P_ext_SHCSBSB)
-is.positive.definite(P_ext_SHCSBSB)
-
-is.symmetric.matrix(P_ext_mod)
-is.positive.definite(P_ext_mod)
 
 #### EVOLVABILITY ----
 
@@ -390,20 +289,14 @@ X_sum$formation <- factor(X_sum$formation, levels = c("NKLS", "NKBS",
                                                       "Tewkesbury", "Upper Kai-Iwi",
                                                       "Tainui", "SHCSBSB", "modern"))
 
-X_sum$form.trans <- c("NKLS to NKBS", 
-                      "NKBS to Tewkesbury",
-                      "Tewkesbury to Upper Kai-Iwi",
-                      "Upper Kai-Iwi to Tainui", 
-                      "Tainui to SHCSBSB",
-                      "SHCSBSB to modern",
-                      "")
-X_sum$form.trans <- factor(X_sum$form.trans, levels = c("NKLS to NKBS", 
-                                                        "NKBS to Tewkesbury",
-                                                        "Tewkesbury to Upper Kai-Iwi",
-                                                        "Upper Kai-Iwi to Tainui", 
-                                                        "Tainui to SHCSBSB",
-                                                        "SHCSBSB to modern",
-                                                        ""))
+X_sum$form.trans <- formation_transition
+X_sum$form.trans <- factor(X_sum$form.trans,
+                           levels = c("NKLS to NKBS", 
+                                      "NKBS to Tewkesbury",
+                                      "Tewkesbury to Upper Kai-Iwi",
+                                      "Upper Kai-Iwi to Tainui", 
+                                      "Tainui to SHCSBSB",
+                                      "SHCSBSB to modern"))
 
 X_sum.trim <- X_sum[1:6,]
 p.evol <- ggplot(X_sum.trim, aes(x = form.trans)) +
@@ -459,42 +352,42 @@ Gmax_SHCSBSB_norm <- f.normalize_vector(Gmax_SHCSBSB)
 Gmax_mod_norm <- f.normalize_vector(Gmax_mod)
 
 # Calculate the dot product of the unit vectors; tells number 0 to 1
-dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm) #-0.9916566
+dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm) #0.9916566
 # Calculate the angle in radians
 angle_radians.Gmax_NKLS_NKBS <- acos(dot_product.Gmax_NKLS_NKBS)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKLS_NKBS <- angle_radians.Gmax_NKLS_NKBS * (180 / pi)
-#172.5935; 7.4065
+#7.4065
 
-dot_product.Gmax_NKBS_tewk <- sum(Gmax_NKBS_norm * Gmax_tewk_norm)
+dot_product.Gmax_NKBS_tewk <- sum(Gmax_NKBS_norm * Gmax_tewk_norm) #0.9928632
 # Calculate the angle in radians
 angle_radians.Gmax_NKBS_tewk <- acos(dot_product.Gmax_NKBS_tewk)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKBS_tewk <- angle_radians.Gmax_NKBS_tewk * (180 / pi)
-#173.1507; 6.85
+#6.85
 
-dot_product.Gmax_tewk_uki <- sum(Gmax_tewk_norm * Gmax_uki_norm)
+dot_product.Gmax_tewk_uki <- sum(Gmax_tewk_norm * Gmax_uki_norm) #0.9309394
 # Calculate the angle in radians
 angle_radians.Gmax_tewk_uki <- acos(dot_product.Gmax_tewk_uki)
 # Convert the angle to degrees
 angle_degrees.Gmax_tewk_uki <- angle_radians.Gmax_tewk_uki * (180 / pi)
 #21.41828
 
-dot_product.Gmax_uki_tai <- sum(Gmax_uki_norm * Gmax_tai_norm)
+dot_product.Gmax_uki_tai <- sum(Gmax_uki_norm * Gmax_tai_norm) #0.8301117
 # Calculate the angle in radians
 angle_radians.Gmax_uki_tai <- acos(dot_product.Gmax_uki_tai)
 # Convert the angle to degrees
 angle_degrees.Gmax_uki_tai <- angle_radians.Gmax_uki_tai * (180 / pi)
 #33.88979
 
-dot_product.Gmax_tai_SHCSBSB <- sum(Gmax_tai_norm * Gmax_SHCSBSB_norm)
+dot_product.Gmax_tai_SHCSBSB <- sum(Gmax_tai_norm * Gmax_SHCSBSB_norm) #0.8824772
 # Calculate the angle in radians
 angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #28.05736
 
-dot_product.Gmax_SHCSBSB_mod <- sum(Gmax_SHCSBSB_norm * Gmax_mod_norm)
+dot_product.Gmax_SHCSBSB_mod <- sum(Gmax_SHCSBSB_norm * Gmax_mod_norm) #0.47598
 # Calculate the angle in radians
 angle_radians.Gmax_SHCSBSB_mod <- acos(dot_product.Gmax_SHCSBSB_mod)
 # Convert the angle to degrees
@@ -510,10 +403,15 @@ angle_diff_Gs <- c(angle_degrees.Gmax_NKLS_NKBS, angle_degrees.Gmax_NKBS_tewk,
                    angle_degrees.Gmax_uki_tai, angle_degrees.Gmax_tai_SHCSBSB,
                    angle_degrees.Gmax_SHCSBSB_mod)
 
-angle.diff_Gs.time <- c("NKLS to NKBS", "NKBS to Tewkesbury",
-                        "Tewkesbury to Upper Kai-Iwi",
-                        "Upper Kai-Iwi to Tainui", "Tainui to SHCSBSB",
-                        "SHCSBSB to modern")
+angle.diff_Gs.time <- formation_transition
+angle.diff_Gs.time <- factor(angle.diff_Gs.time,
+                             levels = c("NKLS to NKBS", 
+                                        "NKBS to Tewkesbury",
+                                        "Tewkesbury to Upper Kai-Iwi",
+                                        "Upper Kai-Iwi to Tainui", 
+                                        "Tainui to SHCSBSB",
+                                        "SHCSBSB to modern"))
+
 
 diff_between_Gs <- as.data.frame(cbind(angle.diff_Gs.time, angle_diff_Gs, corr.diff_Gs))
 diff_between_Gs$angle_diff_Gs <- as.numeric(diff_between_Gs$angle_diff_Gs)
@@ -544,77 +442,242 @@ write.csv(diff_between_Gs,
 ### See if change is in direction of G max
 ## use Gmax of t1 and compare to ∆z
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_NKLS_max <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1)
+dot_product.Gmax_NKLS <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1) #0.12008
 # Calculate the angle in radians
-angle_radians.Gmax_NKLS_max <- acos(dot_product.Gmax_NKLS_max)
+angle_radians.Gmax_NKLS <- acos(dot_product.Gmax_NKLS)
 # Convert the angle to degrees
-angle_degrees.Gmax_NKLS_max <- angle_radians.Gmax_NKLS_max * (180 / pi)
-#80.90905
+angle_degrees.Gmax_NKLS <- angle_radians.Gmax_NKLS * (180 / pi)
+#83.10328
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_NKBS_max <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2)
+dot_product.Gmax_NKBS <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2) #0.5914551
 # Calculate the angle in radians
-angle_radians.Gmax_NKBS_max <- acos(dot_product.Gmax_NKBS_max)
+angle_radians.Gmax_NKBS <- acos(dot_product.Gmax_NKBS)
 # Convert the angle to degrees
-angle_degrees.Gmax_NKBS_max <- angle_radians.Gmax_NKBS_max * (180 / pi)
-#43.14475
+angle_degrees.Gmax_NKBS <- angle_radians.Gmax_NKBS * (180 / pi)
+#53.73966
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_tewk_max <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3)
+dot_product.Gmax_tewk <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3) #-0.9511204
 # Calculate the angle in radians
-angle_radians.Gmax_tewk_max <- acos(dot_product.Gmax_tewk_max)
+angle_radians.Gmax_tewk <- acos(dot_product.Gmax_tewk)
 # Convert the angle to degrees
-angle_degrees.Gmax_tewk_max <- angle_radians.Gmax_tewk_max * (180 / pi)
-#122.1798
+angle_degrees.Gmax_tewk <- angle_radians.Gmax_tewk * (180 / pi)
+#162.0118; 17.9882
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_uki_max <- sum(Gmax_uki_norm * evolved_difference_unit_length_t4)
+dot_product.Gmax_uki <- sum(Gmax_uki_norm * evolved_difference_unit_length_t4) #-0.8357084
 # Calculate the angle in radians
-angle_radians.Gmax_uki_max <- acos(dot_product.Gmax_uki_max)
+angle_radians.Gmax_uki <- acos(dot_product.Gmax_uki)
 # Convert the angle to degrees
-angle_degrees.Gmax_uki_max <- angle_radians.Gmax_uki_max * (180 / pi)
-#145.7685
+angle_degrees.Gmax_uki <- angle_radians.Gmax_uki * (180 / pi)
+#146.6897; 33.3103
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_tai_max <- sum(Gmax_tai_norm * evolved_difference_unit_length_t5)
+dot_product.Gmax_tai <- sum(Gmax_tai_norm * evolved_difference_unit_length_t5) #0.7010653
 # Calculate the angle in radians
-angle_radians.Gmax_tai_max <- acos(dot_product.Gmax_tai_max)
+angle_radians.Gmax_tai <- acos(dot_product.Gmax_tai)
 # Convert the angle to degrees
-angle_degrees.Gmax_tai_max <- angle_radians.Gmax_tai_max * (180 / pi)
-#40.81748
+angle_degrees.Gmax_tai <- angle_radians.Gmax_tai * (180 / pi)
+#45.48746
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_SHCSBSB_max <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+dot_product.Gmax_SHCSBSB <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.01431066
 # Calculate the angle in radians
-angle_radians.Gmax_SHCSBSB_max <- acos(dot_product.Gmax_SHCSBSB_max)
+angle_radians.Gmax_SHCSBSB <- acos(dot_product.Gmax_SHCSBSB)
 # Convert the angle to degrees
-angle_degrees.Gmax_SHCSBSB_max <- angle_radians.Gmax_SHCSBSB_max * (180 / pi)
-#88.28694
+angle_degrees.Gmax_SHCSBSB <- angle_radians.Gmax_SHCSBSB * (180 / pi)
+#89.18003
 
-corr.diff_Gmax_to_P <- c(dot_product.Gmax_NKLS_max, dot_product.Gmax_NKBS_max,
-                    dot_product.Gmax_tewk_max, dot_product.Gmax_uki_max,
-                    dot_product.Gmax_tai_max, dot_product.Gmax_SHCSBSB_max, "")
+corr.diff_Gmax_to_z <- c(dot_product.Gmax_NKLS, dot_product.Gmax_NKBS,
+                    dot_product.Gmax_tewk, dot_product.Gmax_uki,
+                    dot_product.Gmax_tai, dot_product.Gmax_SHCSBSB)
 
-angle_diff_Gmax_to_P <- c(angle_degrees.Gmax_NKLS_max, angle_degrees.Gmax_NKBS_max,
-                          angle_degrees.Gmax_tewk_max,
-                          angle_degrees.Gmax_uki_max, angle_degrees.Gmax_tai_max,
-                          angle_degrees.Gmax_SHCSBSB_max, "")
-diff_between_Gmax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Gmax_to_P, corr.diff_Gmax_to_P))
-colnames(diff_between_Gmax_P) <- c("formation", "angle_diff_Gmax_to_P", "corr.diff_Gmax_to_P")
-diff_between_Gmax_P$angle_diff_Gmax_to_P <- as.numeric(diff_between_Gmax_P$angle_diff_Gmax_to_P)
+angle_diff_Gmax_to_z <- c(angle_degrees.Gmax_NKLS, angle_degrees.Gmax_NKBS,
+                          angle_degrees.Gmax_tewk,
+                          angle_degrees.Gmax_uki, angle_degrees.Gmax_tai,
+                          angle_degrees.Gmax_SHCSBSB)
 
-for(i in 1:nrow(diff_between_Gmax_P)){
-    if(isTRUE(diff_between_Gmax_P$angle_diff_Gmax_to_P[i] > 90)){
-        diff_between_Gmax_P$angle_diff_Gmax_to_P[i] <- 180 - as.numeric(diff_between_Gmax_P$angle_diff_Gmax_to_P[i])
+diff_between_Gmax_P <- as.data.frame(cbind(formation_transition, angle_diff_Gmax_to_z, corr.diff_Gmax_to_z))
+colnames(diff_between_Gmax_z) <- c("angle.diff.time", "angle_diff_Gmax_to_z", "corr.diff_Gmax_to_z")
+diff_between_Gmax_z$angle_diff_Gmax_to_z <- as.numeric(diff_between_Gmax_z$angle_diff_Gmax_to_z)
+diff_between_Gmax_z$angle.diff.time <- factor(diff_between_Gmax_z$angle.diff.time,
+                                             levels = c("NKLS to NKBS", 
+                                                        "NKBS to Tewkesbury",
+                                                        "Tewkesbury to Upper Kai-Iwi",
+                                                        "Upper Kai-Iwi to Tainui", 
+                                                        "Tainui to SHCSBSB",
+                                                        "SHCSBSB to modern"))
+
+
+for(i in 1:nrow(diff_between_Gmax_z)){
+    if(isTRUE(diff_between_Gmax_z$angle_diff_Gmax_to_z[i] > 90)){
+        diff_between_Gmax_z$angle_diff_Gmax_to_z[i] <- 180 - as.numeric(diff_between_Gmax_P$angle_diff_Gmax_to_z[i])
     }
     else{
         next
     }
 }
 
-write.csv(diff_between_Gmax_P,
-          "./Results/differences.between.Gmax.P.w.modern.no.wai.csv",
+write.csv(diff_between_Gmax_z,
+          "./Results/differences.between.Gmax.z.w.modern.no.wai.csv",
           row.names = FALSE)
+
+p.g.pheno <- ggplot(diff_between_Gmax_z) +
+    geom_point(aes(x = angle.diff.time, y = angle_diff_Gmax_to_z),
+               size = 5, shape = 17) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Angle difference between G matrices", 
+                       lim = c(0, 90)) + 
+    plot.theme
+
+ggsave(p.g.pheno, 
+       file = "./Results/angle.g.pheno.w.modern.no.wai.png", 
+       width = 14, height = 12, units = "cm")
+
+###### PC2-4 compared to Gmax -----
+## do for 2-4 as well
+G2_NKLS <- eigen(G_ext_NKLS)$vectors[,2]
+G2_NKBS <- eigen(G_ext_NKBS)$vectors[,2]
+G2_tewk <- eigen(G_ext_tewk)$vectors[,2]
+G2_uki <- eigen(G_ext_uki)$vectors[,2]
+G2_tai <- eigen(G_ext_tai)$vectors[,2]
+G2_SHCSBSB <- eigen(G_ext_SHCSBSB)$vectors[,2]
+G2_mod <- eigen(G_ext_mod)$vectors[,2]
+
+G3_NKLS <- eigen(G_ext_NKLS)$vectors[,3]
+G3_NKBS <- eigen(G_ext_NKBS)$vectors[,3]
+G3_tewk <- eigen(G_ext_tewk)$vectors[,3]
+G3_uki <- eigen(G_ext_uki)$vectors[,3]
+G3_tai <- eigen(G_ext_tai)$vectors[,3]
+G3_SHCSBSB <- eigen(G_ext_SHCSBSB)$vectors[,3]
+G3_mod <- eigen(G_ext_mod)$vectors[,3]
+
+G4_NKLS <- eigen(G_ext_NKLS)$vectors[,4]
+G4_NKBS <- eigen(G_ext_NKBS)$vectors[,4]
+G4_tewk <- eigen(G_ext_tewk)$vectors[,4]
+G4_uki <- eigen(G_ext_uki)$vectors[,4]
+G4_tai <- eigen(G_ext_tai)$vectors[,4]
+G4_SHCSBSB <- eigen(G_ext_SHCSBSB)$vectors[,4]
+G4_mod <- eigen(G_ext_mod)$vectors[,4]
+
+## normalize
+G2_NKLS_norm <- f.normalize_vector(G2_NKLS)
+G2_NKBS_norm <- f.normalize_vector(G2_NKBS)
+G2_tewk_norm <- f.normalize_vector(G2_tewk)
+G2_uki_norm <- f.normalize_vector(G2_uki)
+G2_tai_norm <- f.normalize_vector(G2_tai)
+G2_SHCSBSB_norm <- f.normalize_vector(G2_SHCSBSB)
+G2_mod_norm <- f.normalize_vector(G2_mod)
+
+G3_NKLS_norm <- f.normalize_vector(G3_NKLS)
+G3_NKBS_norm <- f.normalize_vector(G3_NKBS)
+G3_tewk_norm <- f.normalize_vector(G3_tewk)
+G3_uki_norm <- f.normalize_vector(G3_uki)
+G3_tai_norm <- f.normalize_vector(G3_tai)
+G3_SHCSBSB_norm <- f.normalize_vector(G3_SHCSBSB)
+G3_mod_norm <- f.normalize_vector(G3_mod)
+
+G4_NKLS_norm <- f.normalize_vector(G4_NKLS)
+G4_NKBS_norm <- f.normalize_vector(G4_NKBS)
+G4_tewk_norm <- f.normalize_vector(G4_tewk)
+G4_uki_norm <- f.normalize_vector(G4_uki)
+G4_tai_norm <- f.normalize_vector(G4_tai)
+G4_SHCSBSB_norm <- f.normalize_vector(G4_SHCSBSB)
+G4_mod_norm <- f.normalize_vector(G4_mod)
+
+
+## for 2-4 as well:
+dot_product.G2_NKLS <- sum(G2_NKLS_norm * evolved_difference_unit_length_t1) #0.12008
+angle_radians.G2_NKLS <- acos(dot_product.G2_NKLS)
+angle_degrees.G2_NKLS <- angle_radians.G2_NKLS * (180 / pi)
+#159.6616; 20.3384
+
+dot_product.G2_NKBS <- sum(G2_NKBS_norm * evolved_difference_unit_length_t2) #0.5914551
+angle_radians.G2_NKBS <- acos(dot_product.G2_NKBS)
+angle_degrees.G2_NKBS <- angle_radians.G2_NKBS * (180 / pi)
+#70.05125
+
+dot_product.G2_tewk <- sum(G2_tewk_norm * evolved_difference_unit_length_t3) #-0.9511204
+angle_radians.G2_tewk <- acos(dot_product.G2_tewk)
+angle_degrees.G2_tewk <- angle_radians.G2_tewk * (180 / pi)
+#94.81487; 85.18513
+
+dot_product.G2_uki <- sum(G2_uki_norm * evolved_difference_unit_length_t4) #-0.8357084
+angle_radians.G2_uki <- acos(dot_product.G2_uki)
+angle_degrees.G2_uki <- angle_radians.G2_uki * (180 / pi)
+#68.16801
+
+dot_product.G2_tai <- sum(G2_tai_norm * evolved_difference_unit_length_t5) #0.7010653
+angle_radians.G2_tai <- acos(dot_product.G2_tai)
+angle_degrees.G2_tai <- angle_radians.G2_tai * (180 / pi)
+#63.4257
+
+dot_product.G2_SHCSBSB <- sum(G2_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.01431066
+angle_radians.G2_SHCSBSB <- acos(dot_product.G2_SHCSBSB)
+angle_degrees.G2_SHCSBSB <- angle_radians.G2_SHCSBSB * (180 / pi)
+#123.0923; 56.9077
+
+dot_product.G3_NKLS <- sum(G3_NKLS_norm * evolved_difference_unit_length_t1) #0.13008
+angle_radians.G3_NKLS <- acos(dot_product.G3_NKLS)
+angle_degrees.G3_NKLS <- angle_radians.G3_NKLS * (180 / pi)
+#78.86789
+
+dot_product.G3_NKBS <- sum(G3_NKBS_norm * evolved_difference_unit_length_t3) #0.5914551
+angle_radians.G3_NKBS <- acos(dot_product.G3_NKBS)
+angle_degrees.G3_NKBS <- angle_radians.G3_NKBS * (180 / pi)
+#98.27991; 81.72
+
+dot_product.G3_tewk <- sum(G3_tewk_norm * evolved_difference_unit_length_t3) #-0.9511304
+angle_radians.G3_tewk <- acos(dot_product.G3_tewk)
+angle_degrees.G3_tewk <- angle_radians.G3_tewk * (180 / pi)
+#104.0133; 75.9867
+
+dot_product.G3_uki <- sum(G3_uki_norm * evolved_difference_unit_length_t4) #-0.8357084
+angle_radians.G3_uki <- acos(dot_product.G3_uki)
+angle_degrees.G3_uki <- angle_radians.G3_uki * (180 / pi)
+#98.4503; 81.5497
+
+dot_product.G3_tai <- sum(G3_tai_norm * evolved_difference_unit_length_t5) #0.7010653
+angle_radians.G3_tai <- acos(dot_product.G3_tai)
+angle_degrees.G3_tai <- angle_radians.G3_tai * (180 / pi)
+#116.1808; 63.8192
+
+dot_product.G3_SHCSBSB <- sum(G3_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.01431066
+angle_radians.G3_SHCSBSB <- acos(dot_product.G3_SHCSBSB)
+angle_degrees.G3_SHCSBSB <- angle_radians.G3_SHCSBSB * (180 / pi)
+#127.6396; 52.3604
+
+dot_product.G4_NKLS <- sum(G4_NKLS_norm * evolved_difference_unit_length_t1) #0.14008
+angle_radians.G4_NKLS <- acos(dot_product.G4_NKLS)
+angle_degrees.G4_NKLS <- angle_radians.G4_NKLS * (180 / pi)
+#78.63193
+
+dot_product.G4_NKBS <- sum(G4_NKBS_norm * evolved_difference_unit_length_t4) #0.5914551
+angle_radians.G4_NKBS <- acos(dot_product.G4_NKBS)
+angle_degrees.G4_NKBS <- angle_radians.G4_NKBS * (180 / pi)
+#117.8647; 62.1353
+
+dot_product.G4_tewk <- sum(G4_tewk_norm * evolved_difference_unit_length_t3) #-0.9511404
+angle_radians.G4_tewk <- acos(dot_product.G4_tewk)
+angle_degrees.G4_tewk <- angle_radians.G4_tewk * (180 / pi)
+#84.39312
+
+dot_product.G4_uki <- sum(G4_uki_norm * evolved_difference_unit_length_t4) #-0.8357084
+angle_radians.G4_uki <- acos(dot_product.G4_uki)
+angle_degrees.G4_uki <- angle_radians.G4_uki * (180 / pi)
+#110.6643; 69.3357
+
+dot_product.G4_tai <- sum(G4_tai_norm * evolved_difference_unit_length_t5) #0.7010653
+angle_radians.G4_tai <- acos(dot_product.G4_tai)
+angle_degrees.G4_tai <- angle_radians.G4_tai * (180 / pi)
+#108.2659; 71.7341
+
+dot_product.G4_SHCSBSB <- sum(G4_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.01431066
+angle_radians.G4_SHCSBSB <- acos(dot_product.G4_SHCSBSB)
+angle_degrees.G4_SHCSBSB <- angle_radians.G4_SHCSBSB * (180 / pi)
+#64.79187
 
 #### LOOK AT TRENDS AS A FUNCTION OF TIME -----
 form.df <- form.meta[c(1:3, 5:8),] #in same order as mean_by_formation
@@ -630,7 +693,7 @@ for(i in 1:nrow(form.df)){
 }
 form.df$age.range <- as.numeric(form.df$age.range)
 
-df.diff <- merge(diff_between_Gmax_P, form.df,
+df.diff <- merge(diff_between_Gmax_z, form.df,
                  by.x = "formation",
                  by.y = "formationCode")
 df.diff <- merge(df.diff, mean_by_formation,
@@ -642,13 +705,13 @@ df.diff$formation <- factor(df.diff$formation,
                                        "SHCSBSB", "modern"))
 
 ggplot(data = df.diff) +
-    geom_point(aes(x = age.range, y = angle_diff_Gmax_to_P),
+    geom_point(aes(x = age.range, y = angle_diff_Gmax_to_z),
                shape = 15) + 
     plot.theme +
     scale_x_continuous(name = "Age Range (Ma)") +
     scale_y_continuous(name = "Angle away from Gmax")
 
-df.diff$corr.diff_Gmax_to_P <- as.numeric(df.diff$corr.diff_Gmax_to_P)
+df.diff$corr.diff_Gmax_to_z <- as.numeric(df.diff$corr.diff_Gmax_to_z)
 
 p.dot.prod_gmax <- ggplot(data = df.diff) +
     geom_point(aes(x = formation, y = corr.diff_Gmax_to_P),
@@ -769,8 +832,8 @@ ggplot(P_G_dir) +
 
 #### LOOK AT TRENDS AS A FUNCTION OF TEMPERATURE ----
 
-df.form.pc <- merge(x = PC1_P_G , form.meta,
-                    by.x = "formation",
+df.form.pc <- merge(x = P_G_dir , form.meta,
+                    by.x = "form.name",
                     by.y = "formationCode",
                     all.x = TRUE,
                     all.y = FALSE)
@@ -789,9 +852,9 @@ for (i in 1:nrow(df.form.pc)){
 
 p.pc1.temp <- ggplot(df.form.pc[-1,]) +
     geom_point(aes(x = med.O18,
-                   y = as.numeric(PC1_P))) +
+                   y = as.numeric(P_dir))) +
     geom_smooth(aes(x = med.O18,
-                    y = as.numeric(PC1_P)),
+                    y = as.numeric(P_dir)),
                 method = "lm") +
     plot.theme +
     scale_x_continuous(name = expression(Median~delta^18~O)) +
@@ -802,7 +865,7 @@ ggsave(p.pc1.temp,
        file = "./Results/temp.pc.without.modern.png", 
        width = 20, height = 20, units = "cm")
 
-summary(lm(as.numeric(df.form.pc$PC1_P[-1]) ~ df.form.pc$med.O18[-1]))
+summary(lm(as.numeric(df.form.pc$P_dir[-1]) ~ df.form.pc$med.O18[-1]))
 #slope = 0.04, p-value = 0.53, r2 = 0
 
 #### CALCULATE BETA ----
@@ -825,10 +888,63 @@ beta_t4_norm <- f.normalize_vector(beta_t4)
 beta_t5_norm <- f.normalize_vector(beta_t5)
 beta_t6_norm <- f.normalize_vector(beta_t6)
 
-##### DOT PRODUCT BETA TO GMAX T2 -----
-#this will be compared to dot product of Gmax t1 and Gmax t2
+##### DOT PRODUCT BETA T1 TO GMAX T1 -----
 # Calculate the dot product of the unit vectors; tells number 0 to 1
-dot_product.beta_t1_Gmax_t2 <- sum(beta_t1_norm * Gmax_NKBS_norm) #0.02259102
+dot_product.beta_t1_Gmax_t1 <- sum(beta_t1_norm * Gmax_NKLS_norm) #0.01789376
+dot_product.beta_t2_Gmax_t2 <- sum(beta_t2_norm * Gmax_NKBS_norm) #0.07253551
+dot_product.beta_t3_Gmax_t3 <- sum(beta_t3_norm * Gmax_tewk_norm) #-0.3120421
+dot_product.beta_t4_Gmax_t4 <- sum(beta_t4_norm * Gmax_uki_norm) #-0.1596679
+dot_product.beta_t5_Gmax_t5 <- sum(beta_t5_norm * Gmax_tai_norm) #0.2441302
+dot_product.beta_t6_Gmax_t6 <- sum(beta_t6_norm * Gmax_SHCSBSB_norm) #0.002212775
+
+#convert to angle
+angle_radians.beta_t1_Gmax_t1 <- acos(dot_product.beta_t1_Gmax_t1)
+# Convert the angle to degrees
+angle_degrees.beta_t1_Gmax_t1 <- angle_radians.beta_t1_Gmax_t1 * (180 / pi) #88.97471
+
+angle_radians.beta_t2_Gmax_t2 <- acos(dot_product.beta_t2_Gmax_t2)
+angle_degrees.beta_t2_Gmax_t2 <- angle_radians.beta_t2_Gmax_t2 * (180 / pi) #85.84037
+
+angle_radians.beta_t3_Gmax_t3 <- acos(dot_product.beta_t3_Gmax_t3)
+angle_degrees.beta_t3_Gmax_t3 <- angle_radians.beta_t3_Gmax_t3 * (180 / pi) #108.1823; 71.82
+
+angle_radians.beta_t4_Gmax_t4 <- acos(dot_product.beta_t4_Gmax_t4)
+angle_degrees.beta_t4_Gmax_t4 <- angle_radians.beta_t4_Gmax_t4 * (180 / pi) #99.18762; 80.81238
+
+angle_radians.beta_t5_Gmax_t5 <- acos(dot_product.beta_t5_Gmax_t5)
+angle_degrees.beta_t5_Gmax_t5 <- angle_radians.beta_t5_Gmax_t5 * (180 / pi) #75.86956
+
+angle_radians.beta_t6_Gmax_t6 <- acos(dot_product.beta_t6_Gmax_t6)
+angle_degrees.beta_t6_Gmax_t6 <- angle_radians.beta_t6_Gmax_t6 * (180 / pi) #89.87322
+
+##### DOT PRODUCT BETA T1 TO BETA T2 -----
+# Calculate the dot product of the unit vectors; tells number 0 to 1
+dot_product.beta_t1_beta_t2 <- sum(beta_t1_norm * beta_t2_norm) #-0.01951121
+dot_product.beta_t2_beta_t3 <- sum(beta_t2_norm * beta_t3_norm) #-0.3839645
+dot_product.beta_t3_beta_t4 <- sum(beta_t3_norm * beta_t4_norm) #0.0227557
+dot_product.beta_t4_beta_t5 <- sum(beta_t4_norm * beta_t5_norm) #-0.8258874
+dot_product.beta_t5_beta_t6 <- sum(beta_t5_norm * beta_t6_norm) #-0.5532403
+
+#convert to angle
+angle_radians.beta_t1_beta_t2 <- acos(dot_product.beta_t1_beta_t2)
+# Convert the angle to degrees
+angle_degrees.beta_t1_beta_t2 <- angle_radians.beta_t1_beta_t2 * (180 / pi) #91.11798; 88.88202
+
+angle_radians.beta_t2_beta_t3 <- acos(dot_product.beta_t2_beta_t3)
+angle_degrees.beta_t2_beta_t3 <- angle_radians.beta_t2_beta_t3 * (180 / pi) #112.5795; 67.4205
+
+angle_radians.beta_t3_beta_t4 <- acos(dot_product.beta_t3_beta_t4)
+angle_degrees.beta_t3_beta_t4 <- angle_radians.beta_t3_beta_t4 * (180 / pi) #88.69608
+
+angle_radians.beta_t4_beta_t5 <- acos(dot_product.beta_t4_beta_t5)
+angle_degrees.beta_t4_beta_t5 <- angle_radians.beta_t4_beta_t5 * (180 / pi) #145.6786; 34.3214
+
+angle_radians.beta_t5_beta_t6 <- acos(dot_product.beta_t5_beta_t6)
+angle_degrees.beta_t5_beta_t6 <- angle_radians.beta_t5_beta_t6 * (180 / pi) #123.5896; 56.4104
+
+##### DOT PRODUCT BETA T1 TO GMAX T2 -----
+# Calculate the dot product of the unit vectors; tells number 0 to 1
+dot_product.beta_t1_Gmax_t2 <- sum(beta_t1_norm * Gmax_NKBS_norm) #-0.02259102
 dot_product.beta_t2_Gmax_t3 <- sum(beta_t2_norm * Gmax_tewk_norm) #0.1196895
 dot_product.beta_t3_Gmax_t4 <- sum(beta_t3_norm * Gmax_uki_norm) #-0.1624826
 dot_product.beta_t4_Gmax_t5 <- sum(beta_t4_norm * Gmax_tai_norm) #-0.1096417
@@ -838,7 +954,7 @@ dot_product.beta_t6_Gmax_t7 <- sum(beta_t6_norm * Gmax_mod_norm) #-0.199752
 #convert to angle
 angle_radians.beta_t1_Gmax_t2 <- acos(dot_product.beta_t1_Gmax_t2)
 # Convert the angle to degrees
-angle_degrees..beta_t1_Gmax_t2 <- angle_radians.beta_t1_Gmax_t2 * (180 / pi) #88.70552
+angle_degrees.beta_t1_Gmax_t2 <- angle_radians.beta_t1_Gmax_t2 * (180 / pi) #91.29448
 
 angle_radians.beta_t2_Gmax_t3 <- acos(dot_product.beta_t2_Gmax_t3)
 # Convert the angle to degrees
@@ -901,22 +1017,15 @@ ang.diff.gmax.b <- c(ang.diff.gmax.b.nkls.nkbs, ang.diff.gmax.b.nkbs.tewk,
                      ang.diff.gmax.b.tai.shcsbsb, ang.diff.gmax.b.shcsbsb.mod)
 
 ## make df
-diffs <- c("NKLS to NKBS", 
-           "NKBS to Tewkesbury",
-           "Tewkesbury to Upper Kai-Iwi",
-           "Upper Kai-Iwi to Tainui", 
-           "Tainui to SHCSBSB",
-           "SHCSBSB to modern")
 
-diff.beta.gmax.df <- as.data.frame(cbind(mag.beta, diff.gmax.b, diffs, ang.diff.gmax.b))
-
-diff.beta.gmax.df$diffs <- factor(diff.beta.gmax.df$diffs,
-                                      levels = c("NKLS to NKBS", 
-                                                 "NKBS to Tewkesbury",
-                                                 "Tewkesbury to Upper Kai-Iwi",
-                                                 "Upper Kai-Iwi to Tainui", 
-                                                 "Tainui to SHCSBSB",
-                                                 "SHCSBSB to modern"))
+diff.beta.gmax.df <- as.data.frame(cbind(mag.beta, diff.gmax.b, formation_transition, ang.diff.gmax.b))
+diff.beta.gmax.df$formation_transition <- factor(diff.beta.gmax.df$formation_transition,
+                                                 levels = c("NKLS to NKBS", 
+                                                            "NKBS to Tewkesbury",
+                                                            "Tewkesbury to Upper Kai-Iwi",
+                                                            "Upper Kai-Iwi to Tainui", 
+                                                            "Tainui to SHCSBSB",
+                                                            "SHCSBSB to modern"))
 
 
 ## plot
@@ -944,7 +1053,7 @@ p.ang.diff.b.gmax <- ggplot(diff.beta.gmax.df,
     geom_smooth(method = "lm") +
     plot.theme +
     scale_x_continuous(expression(Magnitude~beta)) +
-    scale_y_continuous(expression(reduction~of~correlation~of~G[max]~and~beta))
+    scale_y_continuous(expression(reduction~of~angle~between~G[max]~and~beta))
 
 ggsave(p.ang.diff.b.gmax, 
        file = "./Results/reduction.ang.gmax.beta.to.mag.beta.png", 
@@ -986,6 +1095,34 @@ summary(lm(as.numeric(dist.gmat) ~ as.numeric(mag.beta),
            data = diff.beta.gmax.df)) #nonsig; no relationship
 
 #### SUBSTITUTE P FOR G ----
+P_ext_NKLS = round(as.matrix(P_ext[[1]]), 6) # The G matrix estimated for sample/formation 1
+P_ext_NKBS = round(as.matrix(P_ext[[2]]), 6) # The G matrix estimated for sample/formation 2
+P_ext_tewk = round(as.matrix(P_ext[[3]]), 6) # The G matrix estimated for sample/formation 3
+P_ext_uki = round(as.matrix(P_ext[[4]]), 6) # The G matrix estimated for sample/formation 5
+P_ext_tai = round(as.matrix(P_ext[[5]]), 6) # The G matrix estimated for sample/formation 6
+P_ext_SHCSBSB = round(as.matrix(P_ext[[6]]), 6) # The G matrix estimated for sample/formation 7
+P_ext_mod = round(as.matrix(P_ext[[7]]), 6) # The G matrix estimated for sample/formation 7
+
+is.symmetric.matrix(P_ext_NKLS)
+is.positive.definite(P_ext_NKLS)
+
+is.symmetric.matrix(P_ext_NKBS)
+is.positive.definite(P_ext_NKBS)
+
+is.symmetric.matrix(P_ext_tewk)
+is.positive.definite(P_ext_tewk)
+
+is.symmetric.matrix(P_ext_uki)
+is.positive.definite(P_ext_uki)
+
+is.symmetric.matrix(P_ext_tai)
+is.positive.definite(P_ext_tai)
+
+is.symmetric.matrix(P_ext_SHCSBSB)
+is.positive.definite(P_ext_SHCSBSB)
+
+is.symmetric.matrix(P_ext_mod)
+is.positive.definite(P_ext_mod)
 
 #trait means by time
 mean_by_formation
@@ -1121,20 +1258,15 @@ p_X_sum$formation <- factor(p_X_sum$formation, levels = c("NKLS", "NKBS",
                                                           "Tewkesbury", "Upper Kai-Iwi", 
                                                           "Tainui", "SHCSBSB", "modern"))
 
-p_X_sum$form.trans <- c("NKLS to NKBS", 
-                        "NKBS to Tewkesbury",
-                        "Tewkesbury to Upper Kai-Iwi",
-                        "Upper Kai-Iwi to Tainui", 
-                        "Tainui to SHCSBSB",
-                        "SHCSBSB to modern",
-                        "")
-p_X_sum$form.trans <- factor(p_X_sum$form.trans, levels = c("NKLS to NKBS",
-                                                            "NKBS to Tewkesbury",
-                                                            "Tewkesbury to Upper Kai-Iwi",
-                                                            "Upper Kai-Iwi to Tainui", 
-                                                            "Tainui to SHCSBSB",
-                                                            "SHCSBSB to modern",
-                                                            ""))
+p_X_sum$form.trans <- formation_transition
+p_X_sum$form.trans <- factor(p_X_sum$form.trans,
+                             levels = c("NKLS to NKBS", 
+                                        "NKBS to Tewkesbury",
+                                        "Tewkesbury to Upper Kai-Iwi",
+                                        "Upper Kai-Iwi to Tainui", 
+                                        "Tainui to SHCSBSB",
+                                        "SHCSBSB to modern"))
+
 
 p_X_sum.trim <- p_X_sum[1:6,]
 p.p_evol <- ggplot(p_X_sum.trim, aes(x = form.trans)) +
@@ -1190,42 +1322,42 @@ Pmax_SHCSBSB_norm <- f.normalize_vector(Pmax_SHCSBSB)
 Pmax_mod_norm <- f.normalize_vector(Pmax_mod)
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_NKLS_NKBS <- sum(Pmax_NKLS_norm * Pmax_NKBS_norm)
+dot_product.Pmax_NKLS_NKBS <- sum(Pmax_NKLS_norm * Pmax_NKBS_norm) #0.9924478
 # Calculate the angle in radians
 angle_radians.Pmax_NKLS_NKBS <- acos(dot_product.Pmax_NKLS_NKBS)
 # Convert the angle to degrees
 angle_degrees.Pmax_NKLS_NKBS <- angle_radians.Pmax_NKLS_NKBS * (180 / pi)
-#7.074267; G: 7.792976
+#7.046069; G: 7.792976
 
-dot_product.Pmax_NKBS_tewk <- sum(Pmax_NKBS_norm * Pmax_tewk_norm)
+dot_product.Pmax_NKBS_tewk <- sum(Pmax_NKBS_norm * Pmax_tewk_norm) #0.9979371
 # Calculate the angle in radians
 angle_radians.Pmax_NKBS_tewk <- acos(dot_product.Pmax_NKBS_tewk)
 # Convert the angle to degrees
 angle_degrees.Pmax_NKBS_tewk <- angle_radians.Pmax_NKBS_tewk * (180 / pi)
-#3.812412; G: 6.538487
+#3.680879; G: 6.538487
 
-dot_product.Pmax_tewk_uki <- sum(Pmax_tewk_norm * Pmax_uki_norm)
+dot_product.Pmax_tewk_uki <- sum(Pmax_tewk_norm * Pmax_uki_norm) #0.9136565
 # Calculate the angle in radians
 angle_radians.Pmax_tewk_uki <- acos(dot_product.Pmax_tewk_uki)
 # Convert the angle to degrees
 angle_degrees.Pmax_tewk_uki <- angle_radians.Pmax_tewk_uki * (180 / pi)
-#28.94257; G: 97.61231
+#23.98436; G: 97.61231
 
-dot_product.Pmax_uki_tai <- sum(Pmax_uki_norm * Pmax_tai_norm)
+dot_product.Pmax_uki_tai <- sum(Pmax_uki_norm * Pmax_tai_norm) #0.8899413
 # Calculate the angle in radians
 angle_radians.Pmax_uki_tai <- acos(dot_product.Pmax_uki_tai)
 # Convert the angle to degrees
 angle_degrees.Pmax_uki_tai <- angle_radians.Pmax_uki_tai * (180 / pi)
 #27.13413; G: 31.89257
 
-dot_product.Pmax_tai_SHCSBSB <- sum(Pmax_tai_norm * Pmax_SHCSBSB_norm)
+dot_product.Pmax_tai_SHCSBSB <- sum(Pmax_tai_norm * Pmax_SHCSBSB_norm) #0.9944918
 # Calculate the angle in radians
 angle_radians.Pmax_tai_SHCSBSB <- acos(dot_product.Pmax_tai_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Pmax_tai_SHCSBSB <- angle_radians.Pmax_tai_SHCSBSB * (180 / pi)
 #6.016497; G: 28.97957
 
-dot_product.Pmax_SHCSBSB_mod <- sum(Pmax_SHCSBSB_norm * Pmax_mod_norm)
+dot_product.Pmax_SHCSBSB_mod <- sum(Pmax_SHCSBSB_norm * Pmax_mod_norm) #0.9175009
 # Calculate the angle in radians
 angle_radians.Pmax_SHCSBSB_mod <- acos(dot_product.Pmax_SHCSBSB_mod)
 # Convert the angle to degrees
@@ -1241,10 +1373,14 @@ angle_diff_Ps <- c(angle_degrees.Pmax_NKLS_NKBS, angle_degrees.Pmax_NKBS_tewk,
                    angle_degrees.Pmax_uki_tai, angle_degrees.Pmax_tai_SHCSBSB,
                    angle_degrees.Pmax_SHCSBSB_mod)
 
-angle.diff_Ps.time <- c("NKLS to NKBS", "NKBS to Tewkesbury",
-                        "Tewkesbury to Upper Kai-Iwi",
-                        "Upper Kai-Iwi to Tainui", "Tainui to SHCSBSB",
-                        "SHCSBSB to modern")
+angle.diff_Ps.time <- formation_transition
+angle.diff_Ps.time <- factor(angle.diff_Ps.time,
+                             levels = c("NKLS to NKBS", 
+                                        "NKBS to Tewkesbury",
+                                        "Tewkesbury to Upper Kai-Iwi",
+                                        "Upper Kai-Iwi to Tainui", 
+                                        "Tainui to SHCSBSB",
+                                        "SHCSBSB to modern"))
 
 diff_between_Ps <- as.data.frame(cbind(angle.diff_Ps.time, corr.diff_Ps, angle_diff_Ps))
 diff_between_Ps$angle_diff_Ps <- as.numeric(diff_between_Ps$angle_diff_Ps)
@@ -1300,83 +1436,81 @@ ggsave(p.ang_p,
 ### See if change is in direction of P max
 ## use Pmax of t1 and compare to ∆z
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_NKLS_max <- sum(Pmax_NKLS_norm * evolved_difference_unit_length_t1)
+dot_product.Pmax_NKLS <- sum(Pmax_NKLS_norm * evolved_difference_unit_length_t1)
 # Calculate the angle in radians
-angle_radians.Pmax_NKLS_max <- acos(dot_product.Pmax_NKLS_max)
+angle_radians.Pmax_NKLS <- acos(dot_product.Pmax_NKLS)
 # Convert the angle to degrees
-angle_degrees.Pmax_NKLS_max <- angle_radians.Pmax_NKLS_max * (180 / pi)
+angle_degrees.Pmax_NKLS <- angle_radians.Pmax_NKLS * (180 / pi)
 #103.5047; G: 80.90905
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_NKBS_max <- sum(Pmax_NKBS_norm * evolved_difference_unit_length_t2)
+dot_product.Pmax_NKBS <- sum(Pmax_NKBS_norm * evolved_difference_unit_length_t2)
 # Calculate the angle in radians
-angle_radians.Pmax_NKBS_max <- acos(dot_product.Pmax_NKBS_max)
+angle_radians.Pmax_NKBS <- acos(dot_product.Pmax_NKBS)
 # Convert the angle to degrees
-angle_degrees.Pmax_NKBS_max <- angle_radians.Pmax_NKBS_max * (180 / pi)
+angle_degrees.Pmax_NKBS <- angle_radians.Pmax_NKBS * (180 / pi)
 #39.4028; G: 43.14475
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_tewk_max <- sum(Pmax_tewk_norm * evolved_difference_unit_length_t3)
+dot_product.Pmax_tewk <- sum(Pmax_tewk_norm * evolved_difference_unit_length_t3)
 # Calculate the angle in radians
-angle_radians.Pmax_tewk_max <- acos(dot_product.Pmax_tewk_max)
+angle_radians.Pmax_tewk <- acos(dot_product.Pmax_tewk)
 # Convert the angle to degrees
-angle_degrees.Pmax_tewk_max <- angle_radians.Pmax_tewk_max * (180 / pi)
+angle_degrees.Pmax_tewk <- angle_radians.Pmax_tewk * (180 / pi)
 #118.6094; G: 122.1798
 
-
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_uki_max <- sum(Pmax_uki_norm * evolved_difference_unit_length_t4)
+dot_product.Pmax_uki <- sum(Pmax_uki_norm * evolved_difference_unit_length_t4)
 # Calculate the angle in radians
-angle_radians.Pmax_uki_max <- acos(dot_product.Pmax_uki_max)
+angle_radians.Pmax_uki <- acos(dot_product.Pmax_uki)
 # Convert the angle to degrees
-angle_degrees.Pmax_uki_max <- angle_radians.Pmax_uki_max * (180 / pi)
+angle_degrees.Pmax_uki <- angle_radians.Pmax_uki * (180 / pi)
 #134.3997; G: 145.7685
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_tai_max <- sum(Pmax_tai_norm * evolved_difference_unit_length_t5)
+dot_product.Pmax_tai <- sum(Pmax_tai_norm * evolved_difference_unit_length_t5)
 # Calculate the angle in radians
-angle_radians.Pmax_tai_max <- acos(dot_product.Pmax_tai_max)
+angle_radians.Pmax_tai <- acos(dot_product.Pmax_tai)
 # Convert the angle to degrees
-angle_degrees.Pmax_tai_max <- angle_radians.Pmax_tai_max * (180 / pi)
+angle_degrees.Pmax_tai <- angle_radians.Pmax_tai * (180 / pi)
 #54.31503; G: 40.81748
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_SHCSBSB_max <- sum(Pmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+dot_product.Pmax_SHCSBSB <- sum(Pmax_SHCSBSB_norm * evolved_difference_unit_length_t6)
 # Calculate the angle in radians
-angle_radians.Pmax_SHCSBSB_max <- acos(dot_product.Pmax_SHCSBSB_max)
+angle_radians.Pmax_SHCSBSB <- acos(dot_product.Pmax_SHCSBSB)
 # Convert the angle to degrees
-angle_degrees.Pmax_SHCSBSB_max <- angle_radians.Pmax_SHCSBSB_max * (180 / pi)
+angle_degrees.Pmax_SHCSBSB <- angle_radians.Pmax_SHCSBSB * (180 / pi)
 #99.50977; G: 88.28694
 
-corr.diff_Pmax_to_P <- c(dot_product.Pmax_NKLS_max, dot_product.Pmax_NKBS_max,
-                         dot_product.Pmax_tewk_max, dot_product.Pmax_uki_max,
-                         dot_product.Pmax_tai_max, dot_product.Pmax_SHCSBSB_max, "")
+corr.diff_Pmax_to_z <- c(dot_product.Pmax_NKLS, dot_product.Pmax_NKBS,
+                         dot_product.Pmax_tewk, dot_product.Pmax_uki,
+                         dot_product.Pmax_tai, dot_product.Pmax_SHCSBSB, "")
 
-angle_diff_Pmax_to_P <- c(angle_degrees.Pmax_NKLS_max, angle_degrees.Pmax_NKBS_max,
-                          angle_degrees.Pmax_tewk_max,
-                          angle_degrees.Pmax_uki_max, angle_degrees.Pmax_tai_max,
-                          angle_degrees.Pmax_SHCSBSB_max, "")
-diff_between_Pmax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Pmax_to_P, corr.diff_Pmax_to_P))
-colnames(diff_between_Pmax_P) <- c("formation", "angle_diff_Pmax_to_P", "corr.diff_Pmax_to_P")
-diff_between_Pmax_P$angle_diff_Pmax_to_P <- as.numeric(diff_between_Pmax_P$angle_diff_Pmax_to_P)
-diff_between_Pmax_P$corr.diff_Pmax_to_P <- as.numeric(diff_between_Pmax_P$corr.diff_Pmax_to_P)
+angle_diff_Pmax_to_z <- c(angle_degrees.Pmax_NKLS, angle_degrees.Pmax_NKBS,
+                          angle_degrees.Pmax_tewk, angle_degrees.Pmax_uki, 
+                          angle_degrees.Pmax_tai, angle_degrees.Pmax_SHCSBSB, "")
+diff_between_Pmax_z <- as.data.frame(cbind(levels(formation_list), angle_diff_Pmax_to_z, corr.diff_Pmax_to_z))
+colnames(diff_between_Pmax_z) <- c("formation", "angle_diff_Pmax_to_P", "corr.diff_Pmax_to_P")
+diff_between_Pmax_z$angle_diff_Pmax_to_z <- as.numeric(diff_between_Pmax_z$angle_diff_Pmax_to_z)
+diff_between_Pmax_z$corr.diff_Pmax_to_z <- as.numeric(diff_between_Pmax_z$corr.diff_Pmax_tozP)
 
-for(i in 1:nrow(diff_between_Pmax_P)){
-    if(isTRUE(diff_between_Pmax_P$angle_diff_Pmax_to_P[i] > 90)){
-        diff_between_Pmax_P$angle_diff_Pmax_to_P[i] <- 180 - as.numeric(diff_between_Pmax_P$angle_diff_Pmax_to_P[i])
+for(i in 1:nrow(diff_between_Pmax_z)){
+    if(isTRUE(diff_between_Pmax_z$angle_diff_Pmax_to_z[i] > 90)){
+        diff_between_Pmax_z$angle_diff_Pmax_to_z[i] <- 180 - as.numeric(diff_between_Pmax_z$angle_diff_Pmax_to_z[i])
     }
     else{
         next
     }
 }
 
-write.csv(diff_between_Pmax_P,
+write.csv(diff_between_Pmax_z,
           "./Results/differences.between.Pmax.P.w.modern.no.wai.csv",
           row.names = FALSE)
 
 #### LOOK AT TRENDS AS A FUNCTION OF TIME -----
 
-df.diff.p <- merge(diff_between_Pmax_P, form.df,
+df.diff.p <- merge(diff_between_Pmax_z, form.df,
                  by.x = "formation",
                  by.y = "formationCode")
 df.diff.p <- merge(df.diff.p, mean_by_formation,
@@ -1388,13 +1522,13 @@ df.diff.p$formation <- factor(df.diff.p$formation,
                                        "Tainui", "SHCSBSB", "modern"))
 
 ggplot(data = df.diff.p) +
-    geom_point(aes(x = age.range, y = angle_diff_Pmax_to_P)) + 
+    geom_point(aes(x = age.range, y = angle_diff_Pmax_to_z)) + 
     plot.theme +
     scale_x_continuous(name = "Age Range (Ma)") +
     scale_y_continuous(name = "Angle away from Gmax")
 
 p.ang_pmax <- ggplot(df.diff.p) +
-    geom_point(aes(x = formation, y = angle_diff_Pmax_to_P),
+    geom_point(aes(x = formation, y = angle_diff_Pmax_to_z),
                size = 5, shape = 17) + 
     plot.theme +
     #scale_x_reverse(name = "Age (Ma)", limits = c(2.5, 0)) +
@@ -1429,9 +1563,71 @@ p.dot.prod_p <- ggplot(diff_between_Ps) +
     scale_y_continuous(name = "Angle difference between P matrices") + 
     plot.theme
 
-#### USE GLOBAL G ----
-#no differences in G matrices based on size
-#if not due to sample size, then expect results to be similar to using individual Gs
+#### GLOBAL G ----
+##### CORR OF GLOBAL G TO P -----
+#NKLS
+NKLS_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[1]])) #need at least
+NKLS_corr_mat.glob = NKLS_comp_mat.glob$correlations + t(NKLS_comp_mat.glob$correlations) 
+diag(NKLS_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKLS_corr_mat.glob, upper = "number", lower = "pie")
+
+#NKBS
+NKBS_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[2]])) #need at least
+NKBS_corr_mat.glob = NKBS_comp_mat.glob$correlations + t(NKBS_comp_mat.glob$correlations) 
+diag(NKBS_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(NKBS_corr_mat.glob, upper = "number", lower = "pie")
+
+#Tewkesbury
+Tewkesbury_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[3]])) #need at least
+Tewkesbury_corr_mat.glob = Tewkesbury_comp_mat.glob$correlations + t(Tewkesbury_comp_mat.glob$correlations) 
+diag(Tewkesbury_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tewkesbury_corr_mat.glob, upper = "number", lower = "pie")
+
+#Upper Kai-Iwi
+UKai_Iwi_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[4]])) #need at least
+UKai_Iwi_corr_mat.glob = UKai_Iwi_comp_mat.glob$correlations + t(UKai_Iwi_comp_mat.glob$correlations) 
+diag(UKai_Iwi_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(UKai_Iwi_corr_mat.glob, upper = "number", lower = "pie")
+
+#Tainui
+Tainui_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[5]])) #need at least
+Tainui_corr_mat.glob = Tainui_comp_mat.glob$correlations + t(Tainui_comp_mat.glob$correlations) 
+diag(Tainui_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(Tainui_corr_mat.glob, upper = "number", lower = "pie")
+
+#SHCSBSB
+SHCSBSB_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[6]])) #need at least
+SHCSBSB_corr_mat.glob = SHCSBSB_comp_mat.glob$correlations + t(SHCSBSB_comp_mat.glob$correlations) 
+diag(SHCSBSB_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(SHCSBSB_corr_mat.glob, upper = "number", lower = "pie")
+
+#modern
+modern_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[7]])) #need at least
+modern_corr_mat.glob = modern_comp_mat.glob$correlations + t(modern_comp_mat.glob$correlations) 
+diag(modern_corr_mat.glob) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(modern_corr_mat.glob, upper = "number", lower = "pie")
+
+corr.p.glob <- c(NKLS_corr_mat.glob[1,2], NKBS_corr_mat.glob[1,2],
+                 Tewkesbury_corr_mat.glob[1,2], UKai_Iwi_corr_mat.glob[1,2], 
+                 Tainui_corr_mat.glob[1,2], SHCSBSB_corr_mat.glob[1,2],
+                 modern_corr_mat.glob[1,2])
+
+corr.p.glob.form <- cbind(levels(formation_list), corr.p.glob)
+colnames(corr.p.glob.form) <- c("formation", "correlation")
+corr.p.glob.form
+
+write.csv(corr.p.glob.form,
+          "Results/correlation.p.glob.w.modern.no.wai.csv",
+          row.names = FALSE)
+
+##### EVOLVABILITY -----
 
 ###### OBSERVED EVOLVABILITY ------
 ### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
@@ -1509,21 +1705,14 @@ X_sum_glob$formation <- factor(X_sum_glob$formation,
                                           "Upper Kai-Iwi", "Tainui",
                                           "SHCSBSB", "modern"))
 
-X_sum_glob$form.trans <- c("NKLS to NKBS",
-                           "NKBS to Tewkesbury",
-                           "Tewkesbury to Upper Kai-Iwi",
-                           "Upper Kai-Iwi to Tainui", 
-                           "Tainui to SHCSBSB",
-                           "SHCSBSB to modern",
-                           "")
-X_sum_glob$form.trans <- factor(X_sum_glob$form.trans, 
+X_sum_glob$form.trans <- formation_transition
+X_sum_glob$form.trans <- factor(X_sum_glob$form.trans,
                                 levels = c("NKLS to NKBS", 
                                            "NKBS to Tewkesbury",
                                            "Tewkesbury to Upper Kai-Iwi",
                                            "Upper Kai-Iwi to Tainui", 
                                            "Tainui to SHCSBSB",
-                                           "SHCSBSB to modern",
-                                           ""))
+                                           "SHCSBSB to modern"))
 
 X_sum_glob.trim <- X_sum_glob[1:6,]
 p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
@@ -1543,77 +1732,83 @@ ggsave(p.evol_glob,
        file = "./Results/globalG.evolvability.w.modern.no.wai.png", 
        width = 14, height = 10, units = "cm")
 
-##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
+##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GLOBAL GMAX -----
+Glob_ext_pos = round(as.matrix(Glob_ext), 6)
+is.symmetric.matrix(Glob_ext_pos)
+is.positive.definite(Glob_ext_pos)
+
+#no differences in G matrices based on size
+#if not due to sample size, then expect results to be similar to using individual Gs
+
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
 Gmax_glob <- eigen(Glob_ext)$vectors[,1]
 
 # Put Gmax to norm length
 Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
 
-### See if change is in direction of G max
 # Calculate the dot product of the unit vectors
-dot_product.Glob_max_NKLS <- sum(Gmax_glob_norm * evolved_difference_unit_length_t1)
+dot_product.glob_Gmax_t1 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t1) #0.12008
 # Calculate the angle in radians
-angle_radians.Glob_max_NKLS <- acos(dot_product.Glob_max_NKLS)
+angle_radians.glob_Gmax_t1 <- acos(dot_product.glob_Gmax_t1)
 # Convert the angle to degrees
-angle_degrees.Glob_max_NKLS <- angle_radians.Glob_max_NKLS * (180 / pi)
-#155.9968; was 80.90905
+angle_degrees.glob_Gmax_t1 <- angle_radians.glob_Gmax_t1 * (180 / pi)
+#83.10328
 
 # Calculate the dot product of the unit vectors
-dot_product.Glob_max_NKBS <- sum(Gmax_glob_norm * evolved_difference_unit_length_t2)
+dot_product.glob_Gmax_t2 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t2) #0.5914551
 # Calculate the angle in radians
-angle_radians.Glob_max_NKBS <- acos(dot_product.Glob_max_NKBS)
+angle_radians.glob_Gmax_t2 <- acos(dot_product.glob_Gmax_t2)
 # Convert the angle to degrees
-angle_degrees.Glob_max_NKBS <- angle_radians.Glob_max_NKBS * (180 / pi)
-#43.31873; was 43.14475
+angle_degrees.glob_Gmax_t2 <- angle_radians.glob_Gmax_t2 * (180 / pi)
+#53.73966
 
 # Calculate the dot product of the unit vectors
-dot_product.Glob_max_tewk <- sum(Gmax_glob_norm * evolved_difference_unit_length_t3)
+dot_product.glob_Gmax_t3 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t3) #-0.9511204
 # Calculate the angle in radians
-angle_radians.Glob_max_tewk <- acos(dot_product.Glob_max_tewk)
+angle_radians.glob_Gmax_t3 <- acos(dot_product.glob_Gmax_t3)
 # Convert the angle to degrees
-angle_degrees.Glob_max_tewk <- angle_radians.Glob_max_tewk * (180 / pi)
-#126.4306; was 122.1798
+angle_degrees.glob_Gmax_t3 <- angle_radians.glob_Gmax_t3 * (180 / pi)
+#162.0118; 17.9882
 
 # Calculate the dot product of the unit vectors
-dot_product.Glob_max_uki <- sum(Gmax_glob_norm * evolved_difference_unit_length_t4)
+dot_product.glob_Gmax_t4 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t4) #-0.8357084
 # Calculate the angle in radians
-angle_radians.Glob_max_uki <- acos(dot_product.Glob_max_uki)
+angle_radians.glob_Gmax_t4 <- acos(dot_product.glob_Gmax_t4)
 # Convert the angle to degrees
-angle_degrees.Glob_max_uki <- angle_radians.Glob_max_uki * (180 / pi)
-#128.7347; was 145.7685
+angle_degrees.glob_Gmax_t4 <- angle_radians.glob_Gmax_t4 * (180 / pi)
+#146.6897; 33.3103
 
 # Calculate the dot product of the unit vectors
-dot_product.Glob_max_tai <- sum(Gmax_glob_norm * evolved_difference_unit_length_t5)
+dot_product.glob_Gmax_t5 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t5) #0.7010653
 # Calculate the angle in radians
-angle_radians.Glob_max_tai <- acos(dot_product.Glob_max_tai)
+angle_radians.glob_Gmax_t5 <- acos(dot_product.glob_Gmax_t5)
 # Convert the angle to degrees
-angle_degrees.Glob_max_tai <- angle_radians.Glob_max_tai * (180 / pi)
-#49.55738; was 40.81748
+angle_degrees.glob_Gmax_t5 <- angle_radians.glob_Gmax_t5 * (180 / pi)
+#45.48746
 
 # Calculate the dot product of the unit vectors
-dot_product.Glob_max_SHCSBSB <- sum(Gmax_glob_norm * evolved_difference_unit_length_t6)
+dot_product.glob_Gmax_t6 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t6) #0.01431066
 # Calculate the angle in radians
-angle_radians.Glob_max_SHCSBSB <- acos(dot_product.Glob_max_SHCSBSB)
+angle_radians.glob_Gmax_t6 <- acos(dot_product.glob_Gmax_t6)
 # Convert the angle to degrees
-angle_degrees.Glob_max_SHCSBSB <- angle_radians.Glob_max_SHCSBSB * (180 / pi)
-#95.32893; was 88.28694
+angle_degrees.glob_Gmax_t6 <- angle_radians.glob_Gmax_t6 * (180 / pi)
+#89.18003
 
-corr.diff_Glob_max_to_P <- c(dot_product.Glob_max_NKLS, dot_product.Glob_max_NKBS,
+corr.diff_Glob_max_to_z <- c(dot_product.Glob_max_NKLS, dot_product.Glob_max_NKBS,
                              dot_product.Glob_max_tewk, dot_product.Glob_max_uki,
                              dot_product.Glob_max_tai, dot_product.Glob_max_SHCSBSB, "")
 
-angle_diff_Glob_max_to_P <- c(angle_degrees.Glob_max_NKLS, angle_degrees.Glob_max_NKBS,
+angle_diff_Glob_max_to_z <- c(angle_degrees.Glob_max_NKLS, angle_degrees.Glob_max_NKBS,
                               angle_degrees.Glob_max_tewk,
                               angle_degrees.Glob_max_uki, angle_degrees.Glob_max_tai,
                               angle_degrees.Glob_max_SHCSBSB, "")
-diff_between_Glob_max_P <- as.data.frame(cbind(levels(formation_list), corr.diff_Glob_max_to_P, angle_diff_Glob_max_to_P))
-colnames(diff_between_Glob_max_P) <- c("formation", "corr.diff_Glob_max_to_P", "angle_diff_Glob_max_to_P")
-diff_between_Glob_max_P$angle_diff_Glob_max_to_P <- as.numeric(diff_between_Glob_max_P$angle_diff_Glob_max_to_P)
+diff_between_Glob_max_z <- as.data.frame(cbind(levels(formation_list), corr.diff_Glob_max_to_z, angle_diff_Glob_max_to_z))
+colnames(diff_between_Glob_max_z) <- c("formation", "corr.diff_Glob_max_to_P", "angle_diff_Glob_max_to_P")
+diff_between_Glob_max_P$angle_diff_Glob_max_to_z <- as.numeric(diff_between_Glob_max_z$angle_diff_Glob_max_to_z)
 
-for(i in 1:nrow(diff_between_Glob_max_P)){
-    if(isTRUE(diff_between_Glob_max_P$angle_diff_Glob_max_to_P[i] > 90)){
-        diff_between_Glob_max_P$angle_diff_Glob_max_to_P[i] <- 180 - as.numeric(diff_between_Glob_max_P$angle_diff_Glob_max_to_P[i])
+for(i in 1:nrow(diff_between_Glob_max_z)){
+    if(isTRUE(diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i] > 90)){
+        diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i] <- 180 - as.numeric(diff_between_Glob_max_P$angle_diff_Glob_max_to_z[i])
     }
     else{
         next
@@ -1824,70 +2019,70 @@ ggsave(p.pe.size,
 ### See if change is in direction of G max
 ## use Gmax of t1 and compare to ∆z
 # Calculate the dot product of the unit vectors
-dot_product.Emax_NKLS_max <- sum(Emax_NKLS_norm * evolved_difference_unit_length_t1)
+dot_product.Emax_NKLS <- sum(Emax_NKLS_norm * evolved_difference_unit_length_t1)
 # Calculate the angle in radians
-angle_radians.Emax_NKLS_max <- acos(dot_product.Emax_NKLS_max)
+angle_radians.Emax_NKLS <- acos(dot_product.Emax_NKLS)
 # Convert the angle to degrees
-angle_degrees.Emax_NKLS_max <- angle_radians.Emax_NKLS_max * (180 / pi)
+angle_degrees.Emax_NKLS <- angle_radians.Emax_NKLS * (180 / pi)
 #153.7483; Gmax is 80.90905
 
 # Calculate the dot product of the unit vectors
-dot_product.Emax_NKBS_max <- sum(Emax_NKBS_norm * evolved_difference_unit_length_t2)
+dot_product.Emax_NKBS <- sum(Emax_NKBS_norm * evolved_difference_unit_length_t2)
 # Calculate the angle in radians
-angle_radians.Emax_NKBS_max <- acos(dot_product.Emax_NKBS_max)
+angle_radians.Emax_NKBS <- acos(dot_product.Emax_NKBS)
 # Convert the angle to degrees
-angle_degrees.Emax_NKBS_max <- angle_radians.Emax_NKBS_max * (180 / pi)
+angle_degrees.Emax_NKBS <- angle_radians.Emax_NKBS * (180 / pi)
 #40.60758; Gmax is 43.14475
 
 # Calculate the dot product of the unit vectors
-dot_product.Emax_tewk_max <- sum(Emax_tewk_norm * evolved_difference_unit_length_t3)
+dot_product.Emax_tewk <- sum(Emax_tewk_norm * evolved_difference_unit_length_t3)
 # Calculate the angle in radians
-angle_radians.Emax_tewk_max <- acos(dot_product.Emax_tewk_max)
+angle_radians.Emax_tewk <- acos(dot_product.Emax_tewk)
 # Convert the angle to degrees
-angle_degrees.Emax_tewk_max <- angle_radians.Emax_tewk_max * (180 / pi)
+angle_degrees.Emax_tewk <- angle_radians.Emax_tewk * (180 / pi)
 #116.5479; Gmax is 122.1798
 
 # Calculate the dot product of the unit vectors
-dot_product.Emax_uki_max <- sum(Emax_uki_norm * evolved_difference_unit_length_t4)
+dot_product.Emax_uki <- sum(Emax_uki_norm * evolved_difference_unit_length_t4)
 # Calculate the angle in radians
-angle_radians.Emax_uki_max <- acos(dot_product.Emax_uki_max)
+angle_radians.Emax_uki <- acos(dot_product.Emax_uki)
 # Convert the angle to degrees
-angle_degrees.Emax_uki_max <- angle_radians.Emax_uki_max * (180 / pi)
+angle_degrees.Emax_uki <- angle_radians.Emax_uki * (180 / pi)
 #120.9149; Gmax is 145.7685
 
 # Calculate the dot product of the unit vectors
-dot_product.Emax_tai_max <- sum(Emax_tai_norm * evolved_difference_unit_length_t5)
+dot_product.Emax_tai <- sum(Emax_tai_norm * evolved_difference_unit_length_t5)
 # Calculate the angle in radians
-angle_radians.Emax_tai_max <- acos(dot_product.Emax_tai_max)
+angle_radians.Emax_tai <- acos(dot_product.Emax_tai)
 # Convert the angle to degrees
-angle_degrees.Emax_tai_max <- angle_radians.Emax_tai_max * (180 / pi)
+angle_degrees.Emax_tai <- angle_radians.Emax_tai * (180 / pi)
 #61.79681; Gmax is 40.81748
 
 # Calculate the dot product of the unit vectors
-dot_product.Emax_SHCSBSB_max <- sum(Emax_SHCSBSB_norm * evolved_difference_unit_length_t6)
+dot_product.Emax_SHCSBSB <- sum(Emax_SHCSBSB_norm * evolved_difference_unit_length_t6)
 # Calculate the angle in radians
-angle_radians.Emax_SHCSBSB_max <- acos(dot_product.Emax_SHCSBSB_max)
+angle_radians.Emax_SHCSBSB <- acos(dot_product.Emax_SHCSBSB)
 # Convert the angle to degrees
-angle_degrees.Emax_SHCSBSB_max <- angle_radians.Emax_SHCSBSB_max * (180 / pi)
+angle_degrees.Emax_SHCSBSB <- angle_radians.Emax_SHCSBSB * (180 / pi)
 #100.5322; Gmax is 88.28694
 
-angle_diff_Emax_to_P <- c(angle_degrees.Emax_NKLS_max, angle_degrees.Emax_NKBS_max,
-                          angle_degrees.Emax_tewk_max, 
-                          angle_degrees.Emax_uki_max, angle_degrees.Emax_tai_max,
-                          angle_degrees.Emax_SHCSBSB_max, "")
-angle_diff_between_Emax_P <- as.data.frame(cbind(levels(formation_list), angle_diff_Emax_to_P))
-colnames(angle_diff_between_Emax_P) <- c("formation", "angle_diff_Emax_to_P")
-angle_diff_between_Emax_P$angle_diff_Emax_to_P <- as.numeric(angle_diff_between_Emax_P$angle_diff_Emax_to_P)
+angle_diff_Emax_to_z <- c(angle_degrees.Emax_NKLS, angle_degrees.Emax_NKBS,
+                          angle_degrees.Emax_tewk, 
+                          angle_degrees.Emax_uki, angle_degrees.Emax_tai,
+                          angle_degrees.Emax_SHCSBSB, "")
+angle_diff_between_Emax_z <- as.data.frame(cbind(levels(formation_list), angle_diff_Emax_to_z))
+colnames(angle_diff_between_Emax_z) <- c("formation", "angle_diff_Emax_to_P")
+angle_diff_between_Emax_P$angle_diff_Emax_to_z <- as.numeric(angle_diff_between_Emax_P$angle_diff_Emax_to_z)
 
-for(i in 1:nrow(angle_diff_between_Emax_P)){
-    if(isTRUE(angle_diff_between_Emax_P$angle_diff_Emax_to_P[i] > 90)){
-        angle_diff_between_Emax_P$angle_diff_Emax_to_P[i] <- 180 - as.numeric(angle_diff_between_Emax_P$angle_diff_Emax_to_P[i])
+for(i in 1:nrow(angle_diff_between_Emax_z)){
+    if(isTRUE(angle_diff_between_Emax_z$angle_diff_Emax_to_z[i] > 90)){
+        angle_diff_between_Emax_z$angle_diff_Emax_to_z[i] <- 180 - as.numeric(angle_diff_between_Emax_z$angle_diff_Emax_to_z[i])
     }
     else{
         next
     }
 }
 
-write.csv(angle_diff_between_Emax_P,
-          "./Results/angle.differences.between.Emax.P.w.modern.csv",
+write.csv(angle_diff_between_Emax_z,
+          "./Results/angle.differences.between.Emax.z.w.modern.csv",
           row.names = FALSE)
