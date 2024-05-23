@@ -35,6 +35,12 @@ nrow(output.modern) #510
 colnames(output.modern)
 head(output.modern$id) #path to image
 
+wabo.iv <- read.csv("Data/output_16May2024.csv",
+                    header = TRUE)
+
+mod.lit <- read.csv("",
+                    header = TRUE)
+
 #info about magnification for fossil specimens
 bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
@@ -62,6 +68,15 @@ output.modern$image <- gsub(".jpg",
                             "",
                             output.modern$image)
 length(unique(output.modern$image)) #76
+
+wabo.iv$image <- gsub("bryozoa_lab_images/WABO_IV/",
+                       "",
+                      wabo.iv$id)
+
+wabo.iv$image <- gsub(".jpg",
+                      "",
+                      wabo.iv$image)
+length(unique(wabo.iv$image)) ##114
 
 meta.path.tif <- str_split(bryo.meta$path.tif, "/")
 images <- c()
@@ -115,6 +130,18 @@ yy <- output.fossil[,c("image", "specimenNR")]
 View(yy)
 length(unique(output.fossil$specimenNR)) #732 colonies
 
+wabo.sp.nr <- wabo.iv$image
+wabo.sp.nr.sp <- str_split(wabo.sp.nr, "_")
+wabo.sp.nr.new <- c()
+for(i in 1:length(wabo.sp.nr.sp)){
+    wabo.sp.nr.new[i] <- paste0(wabo.sp.nr.sp[[i]][1], wabo.sp.nr.sp[[i]][2])
+}
+wabo.iv$specimenNR <- wabo.sp.nr.new
+#check that they match
+zz <- wabo.iv[,c("image", "specimenNR")]
+View(zz)
+length(unique(wabo.iv$specimenNR)) #35 colonies
+
 ## add in formation info
 output.modern$form.no <- as.numeric(str_extract(output.modern$specimenNR,
                                                 "[0-9]+"))
@@ -157,6 +184,85 @@ zz
 output.fossil$new.id <- paste0(output.fossil$box_id, "_", output.fossil$image)
 xx <- output.fossil[duplicated(output.fossil$new.id),]
 nrow(xx) #0! yay!
+
+wabo.iv$form.no <- as.numeric(str_extract(wabo.iv$specimenNR,
+                                          "[0-9]+"))
+wabo.iv$formation <- ""
+
+wabo.iv$formation[wabo.iv$form.no <= 399] <- "NKBS"
+wabo.iv$formation[wabo.iv$form.no >= 400 & 
+                      wabo.iv$form.no <= 599] <- "NKLS"
+wabo.iv$formation[wabo.iv$form.no >= 600 & 
+                      wabo.iv$form.no <= 699] <- "Tewkesbury"
+wabo.iv$formation[wabo.iv$form.no >= 700 & 
+                      wabo.iv$form.no <= 799] <- "SHCSBSB"
+wabo.iv$formation[wabo.iv$form.no >= 800 & 
+                      wabo.iv$form.no <= 899] <- "Tainui"
+wabo.iv$formation[wabo.iv$form.no >= 1000 & 
+                      wabo.iv$form.no <= 1099] <- "Upper Kai-Iwi"
+wabo.iv$formation[wabo.iv$form.no >= 1100 & 
+                      wabo.iv$form.no <= 1199] <- "Tewkesbury" #formerly Waipuru
+unique(wabo.iv$formation)
+wabo.iv[wabo.iv$formation == "",]
+
+## check for dupes
+#fossils
+wabo.iv$id[1]
+
+zz <- wabo.iv[duplicated(wabo.iv$box_id),]
+nrow(zz) #0
+
+wabo.iv$new.id <- paste0(wabo.iv$box_id, "_", wabo.iv$image)
+xx <- wabo.iv[duplicated(wabo.iv$new.id),]
+nrow(xx) #0! yay!
+
+#check if 5 of each colony
+path.trim <- gsub(wabo.iv$id,
+                  pattern = "bryozoa_lab_images/WABO_IV/",
+                  replacement = "")
+path.split <- str_split(path.trim,
+                        pattern = "_")
+
+mag <- c()
+col.id <- c()
+col <- c()
+side <- c()
+for(i in 1:length(path.split)){
+    mag[i] <- path.split[[i]][5]
+    col[i] <- path.split[[i]][1]
+    side[i] <- path.split[[i]][2]
+    col.id[i] <- paste0(path.split[[i]][1], path.split[[i]][2])
+}
+mag == "x30" #all true
+
+colonies <- as.data.frame(cbind(col, side, col.id))
+sort(table(colonies$col.id))
+few <- c("076iCV", "074iCV", "1028CV", "1029CV", "843F",
+         "065iCC", "073iaCV", "073ibCV")
+
+colonies$form.no <- as.numeric(str_extract(colonies$col,
+                                          "[0-9]+"))
+colonies$formation <- ""
+
+colonies$formation[colonies$form.no <= 399] <- "NKBS"
+colonies$formation[colonies$form.no >= 400 & 
+                       colonies$form.no <= 599] <- "NKLS"
+colonies$formation[colonies$form.no >= 600 & 
+                       colonies$form.no <= 699] <- "Tewkesbury"
+colonies$formation[colonies$form.no >= 700 & 
+                       colonies$form.no <= 799] <- "SHCSBSB"
+colonies$formation[colonies$form.no >= 800 & 
+                       colonies$form.no <= 899] <- "Tainui"
+colonies$formation[colonies$form.no >= 1000 & 
+                       colonies$form.no <= 1099] <- "Upper Kai-Iwi"
+colonies$formation[colonies$form.no >= 1100 & 
+                       colonies$form.no <= 1199] <- "Tewkesbury" #formerly Waipuru
+unique(colonies$formation)
+colonies[colonies$formation == "",]
+
+colonies[!(colonies$col.id %in% few),] %>%
+    group_by(formation) %>%
+    summarise(n = length(unique(col.id)))
 
 #modern
 output.modern$id[1]
