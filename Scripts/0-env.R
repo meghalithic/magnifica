@@ -27,6 +27,7 @@ require(tidyverse)
 #### FUNCTIONS ----
 source("./Scripts/norm.vector.funct.R")
 source("./Scripts/magnitudeFunction.R")
+source("./Scripts/linearMeasurement.function.R")
 
 
 #### PLOT THEME ----
@@ -86,7 +87,7 @@ formation_transition <- factor(formation_transition,
 
 formation_list <- c("NKLS", "NKBS", "Tewkesbury", 
                     "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern")
-formation_list <- factor(formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
+formation_list <- factor(formation_list, levels = c("NKLS", "NKBS", "Tewkesbury", 
                                                "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern"))
 
 #### TEMPERATURE ----

@@ -13,7 +13,7 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("Results/traits_26Feb2024.csv", #30Nov2023,29Sept2023.csv",
+df <- read.csv("Results/traits_27May2024.csv", #30Nov2023,29Sept2023.csv",
                header = TRUE)
 #output from traits.R
 
@@ -49,7 +49,7 @@ traits.melt <- melt(data = df,
                                 "colony.id", "formation"),
                     variable.name = "measurementType",
                     value.name = "measurementValue")
-length(unique(traits.melt$colony.id)) #589 unique colonies [previously 742]
+length(unique(traits.melt$colony.id)) #630 unique colonies
 
 traits.stats <- traits.melt %>%
     dplyr::group_by(measurementType) %>%
