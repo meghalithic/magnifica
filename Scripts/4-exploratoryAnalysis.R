@@ -13,7 +13,7 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("Results/traits_27May2024.csv", #30Nov2023,29Sept2023.csv",
+df <- read.csv("Data/traits_27May2024.csv", #30Nov2023,29Sept2023.csv",
                header = TRUE)
 #output from traits.R
 
@@ -118,7 +118,7 @@ length(unique(reg.colonies$colony.id)) #557
 
 ##### WRITE OUT DATASET ----
 write.csv(reg.colonies,
-          "./Results/colonies.traits_26Feb2024.csv",
+          "./Results/colonies.traits_27May2024.csv",
           row.names = FALSE)
 
 
@@ -240,7 +240,7 @@ means = df %>%
 
 sum.data.list = list(mean_by_formation, mean_by_formation_colony, means)
 save(sum.data.list,
-     file = "./Results/sum.data.list.w.modern.RData")
+     file = "./Results/sum.data.list.RData")
 
 #### CORRELATIONS & ALLOMETRIES ----
 ## are these coming from the same individuals??
@@ -304,7 +304,7 @@ for(i in 1:length(plot.df)){
 }
 
 write.csv(traitCorr,
-          "./Results/trait.correlations.w.modern.csv",
+          "./Results/trait.correlations.csv",
           row.names = FALSE)
 
 #### LOOK AT CHANGES OVER TIME AND BETWEEN FORMATIONS ------
@@ -327,9 +327,9 @@ mean_by_formation.meta <- merge(mean_by_formation, form.df,
 
 ## overall difference in zooid height
 mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]
-#-0.09371967 (decrease in length)
+#exp(-0.09371967) = 0.910538 change in length
 mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]
-#-0.1627765 (decrease in width)
+#exp(-0.1627765) = 0.8497811 change in width
 
 diff.ln.zh <- c()
 diff.ln.mpw.b <- c()
@@ -424,7 +424,7 @@ diff.stats <- as.data.frame(cbind(diff.form, diff.ln.zh, diff.ln.mpw.b,
                                   diff.oh.per, diff.o.side.per, diff.c.side.per))
 
 write.csv(diff.stats,
-          "./Results/diff.in.traits.no.wai.csv",
+          "./Results/diff.in.traits.csv",
           row.names = FALSE)
 
 ## how is sd a function of sample size (number of zooids and number of colonies)?
@@ -536,7 +536,7 @@ box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",],
   plot.theme
 
 ggsave(box.ln.zh, 
-       file = "./Results/boxplot.ln.zh.w.modern.new.y.axis.png", 
+       file = "./Results/boxplot.ln.zh.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",], 
@@ -559,7 +559,7 @@ box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",],
     plot.theme
 
 ggsave(box.ln.oh, 
-       file = "./Results/boxplot.ln.oh.w.modern.new.y.axis.png", 
+       file = "./Results/boxplot.ln.oh.png", 
        width = 14, height = 10, units = "cm")
 
 
@@ -583,7 +583,7 @@ box.ln.mpw.b <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.mpw
     plot.theme
 
 ggsave(box.ln.mpw.b, 
-       file = "./Results/boxplot.ln.mpw.b.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/boxplot.ln.mpw.b.png", 
        width = 14, height = 10, units = "cm")
 
 box.mpw.b.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.mpw.b",], 
@@ -605,7 +605,7 @@ box.mpw.b.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln
                                   400)) +
     plot.theme
 ggsave(box.mpw.b.simple, 
-       file = "./Results/simple.boxplot.ln.mpw.b.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/simple.boxplot.ln.mpw.b.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.cw.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m",], 
@@ -628,7 +628,7 @@ box.ln.cw.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m
     plot.theme
 
 ggsave(box.ln.cw.m, 
-       file = "./Results/boxplot.ln.cw.m.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/boxplot.ln.cw.m.png", 
        width = 14, height = 10, units = "cm")
 
 box.cw.m.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.m",], 
@@ -650,7 +650,7 @@ box.cw.m.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.
                                   600, 1000)) +
     plot.theme
 ggsave(box.cw.m.simple, 
-       file = "./Results/simple.boxplot.ln.cw.m.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/simple.boxplot.ln.cw.m.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.cw.d <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.d",], 
@@ -673,7 +673,7 @@ box.ln.cw.d <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.cw.d
     plot.theme
 
 ggsave(box.ln.cw.d, 
-       file = "./Results/boxplot.ln.cw.d.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/boxplot.ln.cw.d.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.ow.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m",], 
@@ -696,7 +696,7 @@ box.ln.ow.m <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m
     plot.theme
 
 ggsave(box.ln.ow.m, 
-       file = "./Results/boxplot.ln.ow.m.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/boxplot.ln.ow.m.png", 
        width = 14, height = 10, units = "cm")
 
 box.ow.m.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ow.m",], 
@@ -717,7 +717,7 @@ box.ow.m.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.
                                   400, 650)) +
     plot.theme
 ggsave(box.ow.m.simple, 
-       file = "./Results/simple.boxplot.ln.ow.m.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/simple.boxplot.ln.ow.m.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",], 
@@ -738,7 +738,7 @@ box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",],
     plot.theme
 
 ggsave(box.ln.oh, 
-       file = "./Results/boxplot.ln.oh.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/boxplot.ln.oh.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.o.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.o.side",], 
@@ -761,7 +761,7 @@ box.ln.o.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.o.
     plot.theme
 
 ggsave(box.ln.o.side, 
-       file = "./Results/boxplot.ln.o.side.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/boxplot.ln.o.side.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.c.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.side",], 
@@ -784,7 +784,7 @@ box.ln.c.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.
     plot.theme
 
 ggsave(box.ln.c.side, 
-       file = "./Results/boxplot.ln.c.side.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/boxplot.ln.c.side.png", 
        width = 14, height = 10, units = "cm")
 
 box.c.side.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.c.side",], 
@@ -806,5 +806,6 @@ box.c.side.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "l
                                   650)) +
     plot.theme
 ggsave(box.c.side.simple, 
-       file = "./Results/simple.boxplot.ln.c.side.w.modern.no.wai.new.y.axis.png", 
+       file = "./Results/simple.boxplot.ln.c.side.png", 
        width = 14, height = 10, units = "cm")
+

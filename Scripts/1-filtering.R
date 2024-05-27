@@ -37,7 +37,7 @@ nrow(output.fossil) #6443
 colnames(output.fossil)
 head(output.fossil$id) #path to image
 
-output.waboiv_1 <- read.csv("Data/output_16May2024.csv", header = TRUE)
+output.waboiv_1 <- read.csv("Data/output_waboiv.csv", header = TRUE)
 output.waboiv_2 <- read.csv("Data/output.nkls.2.csv", header = TRUE)
 
 nrow(output.waboiv_1) #370

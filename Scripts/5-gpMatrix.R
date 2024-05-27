@@ -40,14 +40,14 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("./Results/colonies.traits_26Feb2024.csv",
+df <- read.csv("./Results/colonies.traits_27May2024.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
 #already have small zooid removed and at least 5 zooids per colony
 #output from exploratoryAnalysis.R
 
-load(file = "./Results/sum.data.list.w.modern.RData") #load the g matrices calculated above 
+load(file = "./Results/sum.data.list.RData") #load the g matrices calculated above 
 mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
 means <- sum.data.list[[3]]
@@ -55,10 +55,10 @@ means <- sum.data.list[[3]]
 #### MANIPULATE DATA ----
 
 zooid_list <- unique(df$zooid.id)
-length(zooid_list) #5686
+length(zooid_list) #6264
 
 colony_list <- unique(df$colony.id)
-length(colony_list) #557
+length(colony_list) #599
 
 # arrange formations from oldest to youngest
 df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
@@ -154,7 +154,7 @@ ml
 #see a really big shift between Tewkesbury and earlier and Upper Kai-Iwi and after
 
 ggsave(ml, 
-       file = "./Results/trait.distribution.w.modern.png", 
+       file = "./Results/trait.distribution.png", 
        width = 14, height = 20, units = "cm")
 
 #### NORMALITY TESTS ----
@@ -213,7 +213,7 @@ p.vals[8] <- shapiro.test(sub.ln.o.side)$p.value
 p.vals.df <- as.data.frame(cbind(traits, p.vals))
 
 write.csv(p.vals.df,
-          "./Results/normality.test.w.modern.csv",
+          "./Results/normality.test.csv",
           row.names = FALSE)
 
 #by formation
@@ -229,7 +229,7 @@ df.norm <- df %>%
                      p.val.o.side = shapiro.test(ln.o.side)$p.value) %>%
     as.data.frame()
 write.csv(df.norm,
-          "./Results/normality.test.by.formation.w.modern.csv",
+          "./Results/normality.test.by.formation.csv",
           row.names = FALSE)
 
 #### REDUCE TO TRAITS OF INTEREST ----
@@ -268,7 +268,7 @@ zoo.samp <- c(by_form.n[[1]], by_form.n[[2]], by_form.n[[3]],
               by_form.n[[7]])
 samp <- cbind(form, col.samp, zoo.samp)
 write.csv(samp,
-          "./Results/sampling.per.formation.w.modern.csv",
+          "./Results/sampling.per.formation.csv",
           row.names = FALSE)
 
 #### P MATRIX ----
@@ -319,7 +319,7 @@ P_PC_dist = ggplot(p.eig_per,
 P_PC_dist #none negative; none above 1; dim 8 close to 0; could keep 7
 
 ggsave(P_PC_dist, 
-       file = "./Results/P.PC.dist.w.modern.no.wai.png", 
+       file = "./Results/P.PC.dist.png", 
        width = 14, height = 10, units = "cm") 
 
 ##### PC LOADINGS -----

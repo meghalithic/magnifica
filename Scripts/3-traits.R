@@ -182,10 +182,10 @@ summary(lm(images.df$oh.r ~ images.df$oh.l))
 # slope = 0.92; p-value < 2.2e-16; r2 = .89; no asymmetry
 
 ## Operculum average side length:
-images.df$o.side <- mean(c(images.df$o.side.l, images.df$o.side.r))
+images.df$o.side <- rowMeans(cbind(images.df$o.side.l, images.df$o.side.r))
 
 ## Cryptocyst average side length:
-images.df$c.side <- mean(c(images.df$c.side.l, images.df$c.side.r))
+images.df$c.side <- rowMeans(cbind(images.df$c.side.l, images.df$c.side.r))
 
 ## Operculum height
 images.df$oh <- (.5/images.df$ow.b)*sqrt(images.df$ow.b+images.df$oh.r+images.df$oh.l)
@@ -233,7 +233,7 @@ keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
 length(keep) #588 colonies
 
 df <- traits.df[traits.df$colony.id %in% keep,]
-nrow(df) #61755
+nrow(df) #6755
 
 #### WRITE OUT DATASET ----
 
