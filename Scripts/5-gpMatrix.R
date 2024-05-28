@@ -310,6 +310,7 @@ P_PC_dist = ggplot(p.eig_per,
     scale_y_continuous("Principal component rank",
                        limits = c(-.02, 0.7)) +
     plot.theme + 
+    theme_linedraw() +
     scale_x_discrete("Principal component rank",
                      labels = c("PC1", "PC2", "PC3", "PC4",
                                 "PC5", "PC6", "PC7", "PC8")) +
@@ -388,9 +389,9 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 }
 
 save(model_G,
-     file = "./Results/model_G.w.modern.no.wai.RData")
+     file = "./Results/model_G.RData")
 
-load(file = "./Results/model_G.w.modern.no.wai.RData") #load the g matrices calculated above 
+load(file = "./Results/model_G.RData") #load the g matrices calculated above 
 
 ##### CHECK MODELS -----
 formation_list #order of formations
@@ -401,7 +402,6 @@ summary(model_G[[4]])
 summary(model_G[[5]])
 summary(model_G[[6]])
 summary(model_G[[7]])
-summary(model_G[[8]])
 
 ##plots to see where sampling from:
 plot(model_G[[1]]$VCV) #catepillar!
@@ -411,9 +411,9 @@ plot(model_G[[4]]$VCV) #catepillar!; high skew
 plot(model_G[[5]]$VCV) #catepillar!
 plot(model_G[[6]]$VCV) #catepillar!; high skew
 plot(model_G[[7]]$VCV) #catepillar!
-plot(model_G[[8]]$VCV) #catepillar!
-#formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", "Waipuru", 
-#                                    "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern"
+#formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", 
+#                                    "Upper Kai-Iwi", "Tainui", 
+#                                    "SHCSBSB", "modern"
 
 ##### CHECK P IS BIGGER THAN G -----
 
@@ -423,8 +423,8 @@ plot(model_G[[8]]$VCV) #catepillar!
 # PRIORS
 # NKLS
 diag(phen.var[[1]]) #all larger
-diag(prior$NKBS$G$G1$V) < diag(phen.var[[1]]) #all larger
-diag(prior$NKBS$R$V) < diag(phen.var[[1]]) #all larger
+diag(prior$NKLS$G$G1$V) < diag(phen.var[[1]]) #all larger
+diag(prior$NKLS$R$V) < diag(phen.var[[1]]) #all larger
 
 # NKBS
 diag(phen.var[[2]]) #all larger
@@ -433,33 +433,28 @@ diag(prior$NKBS$R$V) < diag(phen.var[[2]]) #all larger
 
 # Tewkesbury
 diag(phen.var[[3]]) #all larger
-diag(prior$NKBS$G$G1$V) < diag(phen.var[[3]]) #all larger
-diag(prior$NKBS$R$V) < diag(phen.var[[3]]) #all larger
-
-# Waipuru
-diag(phen.var[[4]]) #all larger
-diag(prior$Waipuru$G$G1$V) < diag(phen.var[[4]])
-diag(prior$Waipuru$R$V) < diag(phen.var[[4]])
+diag(prior$Tewkesbury$G$G1$V) < diag(phen.var[[3]]) #all larger
+diag(prior$Tewkesbury$R$V) < diag(phen.var[[3]]) #all larger
 
 # Upper Kai-Iwi
-diag(phen.var[[5]]) #all larger
-diag(prior$`Upper Kai-Iwi`$G$G1$V) < diag(phen.var[[5]])
-diag(prior$`Upper Kai-Iwi`$R$V) < diag(phen.var[[5]])
+diag(phen.var[[4]]) #all larger
+diag(prior$`Upper Kai-Iwi`$G$G1$V) < diag(phen.var[[4]])
+diag(prior$`Upper Kai-Iwi`$R$V) < diag(phen.var[[4]])
 
 # Tainui
-diag(phen.var[[6]]) #all larger
-diag(prior$`Upper Kai-Iwi`$G$G1$V) < diag(phen.var[[6]])
-diag(prior$`Upper Kai-Iwi`$R$V) < diag(phen.var[[6]])
+diag(phen.var[[5]]) #all larger
+diag(prior$Tainui$G$G1$V) < diag(phen.var[[5]])
+diag(prior$Tainui$R$V) < diag(phen.var[[5]])
 
 # SHCSBSB
-diag(phen.var[[7]]) #all larger
-diag(prior$`Upper Kai-Iwi`$G$G1$V) < diag(phen.var[[7]])
-diag(prior$`Upper Kai-Iwi`$R$V) < diag(phen.var[[7]])
+diag(phen.var[[6]]) #all larger
+diag(prior$SHCSBSB$G$G1$V) < diag(phen.var[[6]])
+diag(prior$SHCSBSB$R$V) < diag(phen.var[[6]])
 
 # modern
-diag(phen.var[[8]]) #all larger
-diag(prior$NKBS$G$G1$V) < diag(phen.var[[8]]) #all larger
-diag(prior$NKBS$R$V) < diag(phen.var[[8]]) #all larger
+diag(phen.var[[7]]) #all larger
+diag(prior$modern$G$G1$V) < diag(phen.var[[7]])
+diag(prior$modern$R$V) < diag(phen.var[[7]])
 
 #RETRIEVE THE P MATRIX FROM THE MCMC OBJECT
 # p matrix for each formation (maybe colony?)
@@ -481,21 +476,8 @@ d.col.vcv.nkbs #is this "g" matrix smaller than the sum p matrix?
 # "g' matrix all smaller than 'p' matrix [whew]
 d.col.vcv.nkbs < diag(Pmat[[2]]) # all larger
 
-# Waipuru
-post.vcv.wp <- posterior.mode(model_G[[4]]$VCV)
-col.vcv.wp <- post.vcv.wp[1:64] #has negatives
-d.col.vcv.wp <- col.vcv.wp[c(1, 10, 19, 28, 37, 46, 55, 64)]
-unt.vcv.wp <- post.vcv.wp[65:128] #has negatives
-#p.unt.vcv.wp <- unt.vcv.wp[c(1,10,19,28,37,46, 55, 64)]
-#p.m.wp <- p.col.vcv.wp + p.unt.vcv.wp
-p.m.wp <- col.vcv.wp + unt.vcv.wp
-d.p.m.wp <- p.m.wp[c(1, 10, 19, 28, 37, 46, 55, 64)]
-d.p.m.wp
-d.col.vcv.wp #this 'g' matrix are smaller
-d.col.vcv.wp < diag(Pmat[[4]]) # cw.m; ow.m; oh; c.side; o.side are smaller than P matrix; all larger than G matrix 
-
 # Upper Kai-Iwi
-post.vcv.uki <- posterior.mode(model_G[[5]]$VCV)
+post.vcv.uki <- posterior.mode(model_G[[4]]$VCV)
 col.vcv.uki <- post.vcv.uki[1:64] #has negatives
 d.col.vcv.uki <- col.vcv.uki[c(1, 10, 19, 28, 37, 46, 55, 64)]
 unt.vcv.uki <- post.vcv.uki[65:128] #has negatives
@@ -505,7 +487,7 @@ p.m.uki <- col.vcv.uki + unt.vcv.uki
 d.p.m.uki <- p.m.uki[c(1, 10, 19, 28, 37, 46, 55, 64)]
 d.p.m.uki
 d.col.vcv.uki #this 'g' matrix are smaller
-d.col.vcv.uki < diag(Pmat[[5]]) # zh, mpw.b, cw.m, cw.d, ow.m, oh, c.side, o.side are smaller; all larger than G matrix 
+d.col.vcv.uki < diag(Pmat[[4]]) # zh, mpw.b, cw.m, cw.d, ow.m, oh, c.side, o.side are smaller; all larger than G matrix 
 
 ##### POSTERIOR G MATRIX -----
 #Retrieving G from posterior
@@ -564,6 +546,7 @@ G_PC_dist = ggplot(g.eig_per,
     geom_line(aes(linetype = rownames.g.eig_per_mat.)) +
     geom_point() +
     plot.theme + 
+    theme_linedraw() +
     scale_x_discrete("Principal component rank",
                      labels = c("PC1", "PC2", "PC3", "PC4",
                                 "PC5", "PC6", "PC7", "PC8")) +
@@ -571,11 +554,10 @@ G_PC_dist = ggplot(g.eig_per,
                        limits = c(-.02, 0.7))
 G_PC_dist 
 #none above 1
-#Tainui, modern, upper kai-iwi negative at dim 6, then go back to positive
-#only to dim 5...
+#modern negative at 6...dim 5
 
 ggsave(G_PC_dist, 
-       file = "./Results/G.PC.dist.w.modern.no.wai.png", 
+       file = "./Results/G.PC.dist.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
@@ -633,9 +615,9 @@ data.list = list(Pmat, Gmat,
                  df, dat_lg_N,
                  form_data, by_form.n, col_form.n)
 save(data.list,
-     file = "./Results/data.list.w.modern.no.wai.RData")
+     file = "./Results/data.list.RData")
 
-load(file = "./Results/data.list.w.modern.RData") #load the g matrices calculated above 
+load(file = "./Results/data.list.RData") #load the g matrices calculated above 
 
 
 #### CHECK P > G ----
@@ -650,7 +632,7 @@ plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      ylim = c(0, .2))
 abline(0, 1) 
 summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]]))) 
-#slope = 2.4; r2 = 0.65; p is sig 0.009
+#slope = 2.5; r2 = 0.5; p is sig 0.009
 
 plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      pch = 19, col = col.form[2],
@@ -659,7 +641,7 @@ plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      main = "NKBS")
 abline(0, 1)
 summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]])))
-#slope = 3.4; r2 = 0.8; p is sig 0.003
+#slope = 3.7; r2 = 0.8; p is sig 0.003
 
 plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      pch = 19, col = col.form[3],
@@ -670,26 +652,37 @@ plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      ylim = c(0, 0.05))
 abline(0, 1) 
 summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]])))
-#slope = 3.5; r2=0.8; p is sig 0.002
+#slope = 3.5; r2=0.9; p is sig 0.002
 
 
-plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
-     pch = 19, col = col.form[5],
+plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
+     pch = 19, col = col.form[4],
      xlab = "G non-standardized diagonal",
      ylab = "P non-standardized diagonals",
      main = "Upper Kai-Iwi")
 abline(0, 1) 
-summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]])))
-#slope = 1.5; r2 = 0.96; p is sig <0.001
+summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]])))
+#slope = 1.2; r2 = 0.7; p is sig 0.008
+
+plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
+     pch = 19, col = col.form[5],
+     xlab = "G non-standardized diagonal",
+     ylab = "P non-standardized diagonal",
+     main = "Tainui")
+abline(0, 1) 
+summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]]))) 
+#slope = 2.6; r2 = 0.9; p is sig 0.0001
 
 plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      pch = 19, col = col.form[6],
      xlab = "G non-standardized diagonal",
      ylab = "P non-standardized diagonal",
-     main = "Tainui")
+     main = "SHCSBSB",
+     xlim = c(0, 0.01),
+     ylim = c(0,0.05))
 abline(0, 1) 
 summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]]))) 
-#slope = 1.9; r2 = 0.8; p is sig 0.001
+#slope = 2.2; r2 = 0.6; p is sig 0.02
 
 plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      pch = 19, col = col.form[7],
@@ -700,18 +693,7 @@ plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      ylim = c(0,0.05))
 abline(0, 1) 
 summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) 
-#slope = 2.4; r2 = 0.5; p = 0.026
-
-plot(diag(Gmat[[8]]), diag(Pmat[[8]]),
-     pch = 19, col = col.form[8],
-     xlab = "G non-standardized diagonal",
-     ylab = "P non-standardized diagonal",
-     main = "SHCSBSB",
-     xlim = c(0, 0.01),
-     ylim = c(0,0.05))
-abline(0, 1) 
-summary(lm(diag(Pmat[[8]]) ~ diag(Gmat[[8]]))) 
-#slope = 1.3; r2 = 0.8; p = 0.003
+#slope = 1.3; r2 = 0.7; p = 0.004
 
 #### RAREFACTION ----
 ##Rarefaction - 
@@ -786,27 +768,26 @@ plot(out_results[, 2], out_results[, 1],
 points(obs_melt$N, obs_melt$RS, 
        col = "#00BFC4", pch = 19, cex = .5)
 
+## find which ones are outside of the gray
+#low sample size, smallest similarity
+obs_melt[obs_melt$RS < .8,] #0.7883143, 0.7792872, 0.7298302, 0.6671463, 0.7688725, 0.7657978
+comp_mat$correlations #all modern comparison
+
+
 p.rare <- ggplot() +
     geom_point(aes(out_results[, 2], out_results[, 1]),
                pch = 19, col = "grey", size = 2) +
     geom_point(aes(obs_melt$N, obs_melt$RS),
                col = "#00BFC4", pch = 19, size = 2) + 
-    geom_point(aes(obs_melt$N[which.min(obs_melt$RS)], obs_melt$RS[which.min(obs_melt$RS)]), #using to check where the points are
+    geom_point(aes(obs_melt$N[obs_melt$RS < 0.8 ], obs_melt$RS[obs_melt$RS < 0.8]), #using to check where the points are
                col = "red", pch = 19, size = 2) +
     plot.theme +
     scale_x_continuous(name = "Sample size") +
     scale_y_continuous(name = "Similarity") 
 
 ggsave(p.rare, 
-       file = "./Results/rarefaction.w.modern.no.wai.png", 
+       file = "./Results/rarefaction.png", 
        width = 14, height = 10, units = "cm")
-
-## find which ones are outside of the gray
-#low sample size, smallest similarity
-obs_melt[which.min(obs_melt$RS),] #0.6558468
-comp_mat$correlations #0.6558468 is the corr between modern and Upper Kai-Iwi
-
-## COLOR MODERN
 
 #### GLOBAL G ----
 

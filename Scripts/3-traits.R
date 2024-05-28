@@ -225,9 +225,9 @@ nrow(too.few) #172 colonies to remove
 table(too.few$formation)
 #low samples for: Upper Kai-Iwi, Tainui, Modern
 #see which ones are removed and if can't redo them
-low.samp <- c("Upper Kai-Iwi", "Tainui", "modern", "NKLS")
+low.samp <- c("Upper Kai-Iwi", "Tainui", "modern", "NKLS", "SHCSBSB")
 too.few[too.few$formation %in% low.samp,]
-#would add 10 Upper Kai-Iwi; 4 modern; and 9 Tainui; 30 to NKLS
+#would add 10 Upper Kai-Iwi; 4 modern; and 9 Tainui; 30 to NKLS; 44 to SHCSBSB
 
 keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
 length(keep) #588 colonies

@@ -76,14 +76,14 @@ formation_transition <- c("NKLS to NKBS",
                           "Tewkesbury to Upper Kai-Iwi",
                           "Upper Kai-Iwi to Tainui", 
                           "Tainui to SHCSBSB",
-                          "SHCSBSB to modern")
+                          "SHCSBSB to modern", "")
 formation_transition <- factor(formation_transition,
                                levels = c("NKLS to NKBS", 
                                           "NKBS to Tewkesbury",
                                           "Tewkesbury to Upper Kai-Iwi",
                                           "Upper Kai-Iwi to Tainui", 
                                           "Tainui to SHCSBSB",
-                                          "SHCSBSB to modern"))
+                                          "SHCSBSB to modern", ""))
 
 formation_list <- c("NKLS", "NKBS", "Tewkesbury", 
                     "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern")
