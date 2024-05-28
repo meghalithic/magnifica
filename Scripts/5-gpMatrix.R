@@ -818,9 +818,9 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
                          prior = prior.glob, verbose = TRUE)
 
 save(model_Global, 
-     file = "./Results/global_matrix.w.modern.no.wai.RData")
+     file = "./Results/global_matrix.RData")
 
-load(file="./Results/global_matrix.w.modern.no.wai.RData") #load the g matrices calculated above 
+load(file="./Results/global_matrix.RData") #load the g matrices calculated above 
 model_Global
 
 ##### CHECK MODELS -----
