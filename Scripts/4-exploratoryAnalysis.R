@@ -212,6 +212,9 @@ mean_by_formation = df %>%
     as.data.frame()
 ## Grabowski & Porto claim sampling of 60 per sp...
 #NKBS has heighest variance in traits because high sample size
+write.csv(mean_by_formation,
+          "Results/mean.per.formation.csv",
+          row.names = FALSE)
 
 colony_means = df %>%
     dplyr::group_by(colony.id) %>%
@@ -387,7 +390,7 @@ for(i in 1:(nrow(mean_by_formation)-1)){
     diff.c.side.per[i] <- (abs(exp(mean_by_formation$avg.c.side[i+1]) - exp(mean_by_formation$avg.c.side[i]))/exp(mean_by_formation$avg.c.side[i]))*100
 }
 
-
+##overall change
 exp(mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"])
 exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"])
 exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"])
@@ -405,7 +408,6 @@ exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp
 (abs(exp(mean_by_formation$avg.oh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.oh[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.oh[mean_by_formation$formation == "NKLS"]))*100
 (abs(exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"]))*100
 (abs(exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"]))*100
-
 
 
 diff.form <- c("NKLS to NKBS", "NKBS to Tewkesbury",

@@ -580,95 +580,95 @@ G4_SHCSBSB_norm <- f.normalize_vector(G4_SHCSBSB)
 G4_mod_norm <- f.normalize_vector(G4_mod)
 
 ## for 2-4 as well:
-dot_product.G2_NKLS <- sum(G2_NKLS_norm * evolved_difference_unit_length_t1) #0.12008
+dot_product.G2_NKLS <- sum(G2_NKLS_norm * evolved_difference_unit_length_t1) #-0.9551744
 angle_radians.G2_NKLS <- acos(dot_product.G2_NKLS)
 angle_degrees.G2_NKLS <- angle_radians.G2_NKLS * (180 / pi)
-#159.6616; 20.3384
+#162.7799; 17.2201
 
-dot_product.G2_NKBS <- sum(G2_NKBS_norm * evolved_difference_unit_length_t2) #0.5914551
+dot_product.G2_NKBS <- sum(G2_NKBS_norm * evolved_difference_unit_length_t2) #-0.1888881
 angle_radians.G2_NKBS <- acos(dot_product.G2_NKBS)
 angle_degrees.G2_NKBS <- angle_radians.G2_NKBS * (180 / pi)
-#70.05125
+#100.8879; 79.1121
 
-dot_product.G2_tewk <- sum(G2_tewk_norm * evolved_difference_unit_length_t3) #-0.9511204
+dot_product.G2_tewk <- sum(G2_tewk_norm * evolved_difference_unit_length_t3) #-0.159511
 angle_radians.G2_tewk <- acos(dot_product.G2_tewk)
 angle_degrees.G2_tewk <- angle_radians.G2_tewk * (180 / pi)
-#94.81487; 85.18513
+#99.17851; 80.82149
 
-dot_product.G2_uki <- sum(G2_uki_norm * evolved_difference_unit_length_t4) #-0.8357084
+dot_product.G2_uki <- sum(G2_uki_norm * evolved_difference_unit_length_t4) #-0.3811011
 angle_radians.G2_uki <- acos(dot_product.G2_uki)
 angle_degrees.G2_uki <- angle_radians.G2_uki * (180 / pi)
-#68.16801
+#112.4019; 67.5981
 
-dot_product.G2_tai <- sum(G2_tai_norm * evolved_difference_unit_length_t5) #0.7010653
+dot_product.G2_tai <- sum(G2_tai_norm * evolved_difference_unit_length_t5) #0.2801589
 angle_radians.G2_tai <- acos(dot_product.G2_tai)
 angle_degrees.G2_tai <- angle_radians.G2_tai * (180 / pi)
-#63.4257
+#73.73031
 
-dot_product.G2_SHCSBSB <- sum(G2_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.01431066
+dot_product.G2_SHCSBSB <- sum(G2_SHCSBSB_norm * evolved_difference_unit_length_t6) #-0.5470812
 angle_radians.G2_SHCSBSB <- acos(dot_product.G2_SHCSBSB)
 angle_degrees.G2_SHCSBSB <- angle_radians.G2_SHCSBSB * (180 / pi)
-#123.0923; 56.9077
+#123.167; 56.833
 
-dot_product.G3_NKLS <- sum(G3_NKLS_norm * evolved_difference_unit_length_t1) #0.13008
+dot_product.G3_NKLS <- sum(G3_NKLS_norm * evolved_difference_unit_length_t1) #0.06532423
 angle_radians.G3_NKLS <- acos(dot_product.G3_NKLS)
 angle_degrees.G3_NKLS <- angle_radians.G3_NKLS * (180 / pi)
-#78.86789
+#86.25453
 
-dot_product.G3_NKBS <- sum(G3_NKBS_norm * evolved_difference_unit_length_t3) #0.5914551
+dot_product.G3_NKBS <- sum(G3_NKBS_norm * evolved_difference_unit_length_t3) #-0.1528877
 angle_radians.G3_NKBS <- acos(dot_product.G3_NKBS)
 angle_degrees.G3_NKBS <- angle_radians.G3_NKBS * (180 / pi)
-#98.27991; 81.72
+#98.79431; 81.20569
 
-dot_product.G3_tewk <- sum(G3_tewk_norm * evolved_difference_unit_length_t3) #-0.9511304
+dot_product.G3_tewk <- sum(G3_tewk_norm * evolved_difference_unit_length_t3) #-0.2831824
 angle_radians.G3_tewk <- acos(dot_product.G3_tewk)
 angle_degrees.G3_tewk <- angle_radians.G3_tewk * (180 / pi)
-#104.0133; 75.9867
+#106.4502; 73.5498
 
-dot_product.G3_uki <- sum(G3_uki_norm * evolved_difference_unit_length_t4) #-0.8357084
+dot_product.G3_uki <- sum(G3_uki_norm * evolved_difference_unit_length_t4) #-0.3356188
 angle_radians.G3_uki <- acos(dot_product.G3_uki)
 angle_degrees.G3_uki <- angle_radians.G3_uki * (180 / pi)
-#98.4503; 81.5497
+#109.6102; 70.3898
 
-dot_product.G3_tai <- sum(G3_tai_norm * evolved_difference_unit_length_t5) #0.7010653
+dot_product.G3_tai <- sum(G3_tai_norm * evolved_difference_unit_length_t5) #0.4712344
 angle_radians.G3_tai <- acos(dot_product.G3_tai)
 angle_degrees.G3_tai <- angle_radians.G3_tai * (180 / pi)
-#116.1808; 63.8192
+#61.88555
 
-dot_product.G3_SHCSBSB <- sum(G3_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.01431066
+dot_product.G3_SHCSBSB <- sum(G3_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.7098425
 angle_radians.G3_SHCSBSB <- acos(dot_product.G3_SHCSBSB)
 angle_degrees.G3_SHCSBSB <- angle_radians.G3_SHCSBSB * (180 / pi)
-#127.6396; 52.3604
+#44.7779
 
-dot_product.G4_NKLS <- sum(G4_NKLS_norm * evolved_difference_unit_length_t1) #0.14008
+dot_product.G4_NKLS <- sum(G4_NKLS_norm * evolved_difference_unit_length_t1) #0.1822874
 angle_radians.G4_NKLS <- acos(dot_product.G4_NKLS)
 angle_degrees.G4_NKLS <- angle_radians.G4_NKLS * (180 / pi)
-#78.63193
+#79.49698
 
-dot_product.G4_NKBS <- sum(G4_NKBS_norm * evolved_difference_unit_length_t4) #0.5914551
+dot_product.G4_NKBS <- sum(G4_NKBS_norm * evolved_difference_unit_length_t4) #-0.2379446
 angle_radians.G4_NKBS <- acos(dot_product.G4_NKBS)
 angle_degrees.G4_NKBS <- angle_radians.G4_NKBS * (180 / pi)
-#117.8647; 62.1353
+#103.7653; 76.2347
 
-dot_product.G4_tewk <- sum(G4_tewk_norm * evolved_difference_unit_length_t3) #-0.9511404
+dot_product.G4_tewk <- sum(G4_tewk_norm * evolved_difference_unit_length_t3) #0.06053595
 angle_radians.G4_tewk <- acos(dot_product.G4_tewk)
 angle_degrees.G4_tewk <- angle_radians.G4_tewk * (180 / pi)
-#84.39312
+#86.52942
 
-dot_product.G4_uki <- sum(G4_uki_norm * evolved_difference_unit_length_t4) #-0.8357084
+dot_product.G4_uki <- sum(G4_uki_norm * evolved_difference_unit_length_t4) #-0.2529781
 angle_radians.G4_uki <- acos(dot_product.G4_uki)
 angle_degrees.G4_uki <- angle_radians.G4_uki * (180 / pi)
-#110.6643; 69.3357
+#104.6538; 75.3462
 
-dot_product.G4_tai <- sum(G4_tai_norm * evolved_difference_unit_length_t5) #0.7010653
+dot_product.G4_tai <- sum(G4_tai_norm * evolved_difference_unit_length_t5) #-0.2860278
 angle_radians.G4_tai <- acos(dot_product.G4_tai)
 angle_degrees.G4_tai <- angle_radians.G4_tai * (180 / pi)
-#108.2659; 71.7341
+#106.6203; 73.3797
 
-dot_product.G4_SHCSBSB <- sum(G4_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.01431066
+dot_product.G4_SHCSBSB <- sum(G4_SHCSBSB_norm * evolved_difference_unit_length_t6) #-0.01766609
 angle_radians.G4_SHCSBSB <- acos(dot_product.G4_SHCSBSB)
 angle_degrees.G4_SHCSBSB <- angle_radians.G4_SHCSBSB * (180 / pi)
-#64.79187
+#91.01225; 88.98775
 
 #### LOOK AT TRENDS AS A FUNCTION OF TIME -----
 form.df <- form.meta[c(1:3, 5:8),] #in same order as mean_by_formation

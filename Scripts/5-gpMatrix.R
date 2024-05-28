@@ -242,6 +242,12 @@ head(dat_lg_N) #traits in same order as df and traits
 range(mean_by_formation_colony$n.zooid)
 #5 24
 
+#average number of zooids:
+mean_by_formation
+mean(mean_by_formation$avg.zooid)
+sum(mean_by_formation$num.zooid)
+sum(mean_by_formation$num.col)
+
 #check number of zooids NOT colonies:
 # by colonies use mean_by_formation_colony
 # by zooid us dat_lg_N

@@ -230,10 +230,15 @@ too.few[too.few$formation %in% low.samp,]
 #would add 10 Upper Kai-Iwi; 4 modern; and 9 Tainui; 30 to NKLS; 44 to SHCSBSB
 
 keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
-length(keep) #588 colonies
+length(keep) #630 colonies
 
 df <- traits.df[traits.df$colony.id %in% keep,]
 nrow(df) #6755
+
+df %>%
+    group_by(formation) %>%
+    summarise(n.image = length(unique(image)))
+length(unique(df$image))
 
 #### WRITE OUT DATASET ----
 
