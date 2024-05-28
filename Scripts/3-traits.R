@@ -228,6 +228,14 @@ table(too.few$formation)
 low.samp <- c("Upper Kai-Iwi", "Tainui", "modern", "NKLS", "SHCSBSB")
 too.few[too.few$formation %in% low.samp,]
 #would add 10 Upper Kai-Iwi; 4 modern; and 9 Tainui; 30 to NKLS; 44 to SHCSBSB
+too.few %>%
+  dplyr::group_by(formation) %>%
+  dplyr::summarise(n.col = length(unique(colony.id)))
+
+three <- samp.zoo[samp.zoo$n.zooid < 3,]
+three %>% 
+  dplyr::group_by(formation) %>% 
+  dplyr::summarise(n.col = length(unique(colony.id)))
 
 keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
 length(keep) #630 colonies

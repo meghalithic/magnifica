@@ -116,6 +116,12 @@ reg.colonies <- df[!(df$colony.id %in% rm.col),]
 nrow(reg.colonies) #5687
 length(unique(reg.colonies$colony.id)) #557
 
+chk <- reg.colonies %>%
+  dplyr::group_by(colony.id) %>%
+  dplyr::summarise(n.zoo = length(zooid.id)) %>%
+  as.data.frame()
+min(chk$n.zoo) #5, do not need to redo
+
 ##### WRITE OUT DATASET ----
 write.csv(reg.colonies,
           "./Results/colonies.traits_27May2024.csv",
