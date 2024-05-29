@@ -1618,7 +1618,7 @@ colnames(corr.p.glob.form) <- c("formation", "correlation")
 corr.p.glob.form
 
 write.csv(corr.p.glob.form,
-          "Results/correlation.p.glob.w.modern.no.wai.csv",
+          "Results/correlation.p.glob.csv",
           row.names = FALSE)
 
 ##### EVOLVABILITY -----
@@ -1689,7 +1689,7 @@ X_sum_glob <- data.frame(c.mean = c(sumX_glob$Averages[[3]], rep("", 6)),
 #NO NEGATIVE VALUES!
 
 write.csv(X_sum_glob,
-          "./Results/evolvability.global.summary.no.wai.csv")
+          "./Results/evolvability.global.summarycsv")
 
 ## PLOT
 X_sum_glob$formation <- rownames(X_sum_glob)
@@ -1723,7 +1723,7 @@ p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     plot.theme
 
 ggsave(p.evol_glob, 
-       file = "./Results/globalG.evolvability.w.modern.no.wai.png", 
+       file = "./Results/globalG.evolvability.png", 
        width = 14, height = 10, units = "cm")
 
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GLOBAL GMAX -----
@@ -1741,76 +1741,75 @@ Gmax_glob <- eigen(Glob_ext)$vectors[,1]
 Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t1 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t1) #0.12008
+dot_product.glob_Gmax_t1 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t1) #0.04496316
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t1 <- acos(dot_product.glob_Gmax_t1)
 # Convert the angle to degrees
 angle_degrees.glob_Gmax_t1 <- angle_radians.glob_Gmax_t1 * (180 / pi)
-#83.10328
+#87.42293
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t2 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t2) #0.5914551
+dot_product.glob_Gmax_t2 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t2) #0.6801539
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t2 <- acos(dot_product.glob_Gmax_t2)
 # Convert the angle to degrees
 angle_degrees.glob_Gmax_t2 <- angle_radians.glob_Gmax_t2 * (180 / pi)
-#53.73966
+#47.14433
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t3 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t3) #-0.9511204
+dot_product.glob_Gmax_t3 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t3) #-0.9257524
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t3 <- acos(dot_product.glob_Gmax_t3)
 # Convert the angle to degrees
 angle_degrees.glob_Gmax_t3 <- angle_radians.glob_Gmax_t3 * (180 / pi)
-#162.0118; 17.9882
+#157.7821; 22.2179
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t4 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t4) #-0.8357084
+dot_product.glob_Gmax_t4 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t4) #-0.6336965
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t4 <- acos(dot_product.glob_Gmax_t4)
 # Convert the angle to degrees
 angle_degrees.glob_Gmax_t4 <- angle_radians.glob_Gmax_t4 * (180 / pi)
-#146.6897; 33.3103
+#129.3234; 50.6766
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t5 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t5) #0.7010653
+dot_product.glob_Gmax_t5 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t5) #0.6262436
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t5 <- acos(dot_product.glob_Gmax_t5)
 # Convert the angle to degrees
 angle_degrees.glob_Gmax_t5 <- angle_radians.glob_Gmax_t5 * (180 / pi)
-#45.48746
+#51.22648
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t6 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t6) #0.01431066
+dot_product.glob_Gmax_t6 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t6) #-0.1895484
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t6 <- acos(dot_product.glob_Gmax_t6)
 # Convert the angle to degrees
 angle_degrees.glob_Gmax_t6 <- angle_radians.glob_Gmax_t6 * (180 / pi)
-#89.18003
+#100.9264; 79.0736
 
-corr.diff_Glob_max_to_z <- c(dot_product.Glob_max_NKLS, dot_product.Glob_max_NKBS,
-                             dot_product.Glob_max_tewk, dot_product.Glob_max_uki,
-                             dot_product.Glob_max_tai, dot_product.Glob_max_SHCSBSB, "")
+corr.diff_Glob_max_to_z <- c(dot_product.glob_Gmax_t1, dot_product.glob_Gmax_t2,
+                             dot_product.glob_Gmax_t3, dot_product.glob_Gmax_t4,
+                             dot_product.glob_Gmax_t5, dot_product.glob_Gmax_t6, "")
 
-angle_diff_Glob_max_to_z <- c(angle_degrees.Glob_max_NKLS, angle_degrees.Glob_max_NKBS,
-                              angle_degrees.Glob_max_tewk,
-                              angle_degrees.Glob_max_uki, angle_degrees.Glob_max_tai,
-                              angle_degrees.Glob_max_SHCSBSB, "")
+angle_diff_Glob_max_to_z <- c(angle_degrees.glob_Gmax_t1, angle_degrees.glob_Gmax_t2,
+                              angle_degrees.glob_Gmax_t3, angle_degrees.glob_Gmax_t4, 
+                              angle_degrees.glob_Gmax_t5, angle_degrees.glob_Gmax_t6, "")
 diff_between_Glob_max_z <- as.data.frame(cbind(levels(formation_list), corr.diff_Glob_max_to_z, angle_diff_Glob_max_to_z))
 colnames(diff_between_Glob_max_z) <- c("formation", "corr.diff_Glob_max_to_P", "angle_diff_Glob_max_to_P")
-diff_between_Glob_max_P$angle_diff_Glob_max_to_z <- as.numeric(diff_between_Glob_max_z$angle_diff_Glob_max_to_z)
+diff_between_Glob_max_z$angle_diff_Glob_max_to_z <- as.numeric(diff_between_Glob_max_z$angle_diff_Glob_max_to_z)
 
 for(i in 1:nrow(diff_between_Glob_max_z)){
     if(isTRUE(diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i] > 90)){
-        diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i] <- 180 - as.numeric(diff_between_Glob_max_P$angle_diff_Glob_max_to_z[i])
+        diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i] <- 180 - as.numeric(diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i])
     }
     else{
         next
     }
 }
 
-write.csv(diff_between_Glob_max_P,
-          "./Results/differences.between.Glob_max.P.w.modern.csv",
+write.csv(diff_between_Glob_max_z,
+          "./Results/differences.between.Glob_max.z.csv",
           row.names = FALSE)
 
 #### CALCULATE E ----

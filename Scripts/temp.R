@@ -2,14 +2,14 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("./Results/colonies.traits_26Feb2024.csv",
+df <- read.csv("./Results/colonies.traits_27May2024.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
 #already have small zooid removed and at least 5 zooids per colony
 #output from exploratoryAnalysis.R
 
-load(file = "./Results/sum.data.list.w.modern.RData") #load the g matrices calculated above 
+load(file = "./Results/sum.data.list.RData") #load the g matrices calculated above 
 mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
 means <- sum.data.list[[3]]
@@ -46,7 +46,7 @@ p.temp.form <- ggplot(form.meta.trim) +
     plot.theme
 
 ggsave(p.temp.form, 
-       file = "./Results/temp.form.w.modern.png", 
+       file = "./Results/temp.form.png", 
        width = 14, height = 10, units = "cm")
 
 form.meta.trim$mean.age <- (form.meta.trim$End_age + form.meta.trim$Start_age)/2
@@ -58,7 +58,7 @@ p.temp.age <- ggplot(form.meta.trim) +
     plot.theme
 
 ggsave(p.temp.age, 
-       file = "./Results/temp.age.w.modern.png", 
+       file = "./Results/temp.age.png", 
        width = 14, height = 10, units = "cm")
 
 ##### TEMPERATURE AND TRAIT CHANGES OVER TIME -----
@@ -77,10 +77,11 @@ ggplot(mean_by_formation.meta) +
 
 #ln zh
 summary(lm(mean_by_formation.meta$avg.zh ~ mean_by_formation.meta$temp))
-#nonsig; slope = 0.004
+#nonsig p = 0.9514; slope = 0.001625; r2 = 0
+
 #raw zh
 summary(lm(exp(mean_by_formation.meta$avg.zh) ~ mean_by_formation.meta$temp))
-#nonsig; slope = 2.892
+#nonsig p = 0.9711; slope = 0.8223; r2 = 0
 
 summary(lm(mean_by_formation.meta$avg.mpw.b ~ mean_by_formation.meta$temp))
 #nonsig
@@ -244,18 +245,45 @@ plot(pf.wid ~ pf.mart)
 plot(pf.len ~ pf.mat)
 plot(pf.wid ~ pf.mat)
 
-
-#### OLD ----
-#difference in small zooids to large zooids is ~400µm:
+#### HOW MUCH TEMP CHANGE ----
+#difference in small zooids to large zooids is 78.73 µm:
 #y = mx + b
 #y = zh
 #figuring out x
+#modern: 876.13 (log: 6.775514)
+#NKLS: 797.4 (log: 6.681356)
 #based on ep:
-(400/704.738)+6.429 #6.996587 ˚C of temp change
+#starting temp
+(797.4-704.74)/-6.43 #-14.41058
+#ending temp
+(876.13-704.74)/-6.43 #-26.65474
+#diff
+-26.65474--14.41058 #-12.24416
+
 #based on cr:
-(400/627.7900)+5.8925 #6.529656 ˚C of temp change
+(797.4-627.79)/-5.89 #-28.79626
+#ending temp
+(876.13-627.79)/-5.89 #-42.16299
+#diff
+-42.16299--28.79626 #-13.36673
+
 #based on hs:
-(400/663.109)+12.990 #13.59322 ˚C of temp change
-#based on pf:
-(400/16.824420)+0.002522 #23.77749 ˚C of temp change
+(797.4-663.11)/-12.99 #-10.33795
+#ending temp
+(876.13-663.11)/-12.99 #-16.39877
+#diff
+-16.39877--10.33795 #-6.06082
+
+#based on pf: NONSENSICAL
+(797.4-16.82)/-0.003
+#ending temp
+(876.13-16.82)/-0.003
+
+#based on stegino
+(797.4-856.63)/0.82 #-72.23171
+#ending temp
+(876.13-856.63)/0.82 #23.78049
+#diff
+23.78049--72.23171 #96.0122
+
 

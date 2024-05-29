@@ -830,19 +830,19 @@ summary(model_Global)
 ##plots to see where sampling from:
 plot(model_Global$VCV) #catepillar!
 
-###### POSTERIOR G MATRIX ------
-#Retrieving G from posterior
+###### POSTERIOR GLOBAL G MATRIX ------
+#Retrieving GLOBAL G from posterior
 glob.model = model_Global
 ntraits = 8
 glob.Gmat = matrix(posterior.mode(glob.model$VCV)[1:ntraits^2], ntraits, ntraits)
 
-##### G VARIANCES -----
+##### GLOBAL G VARIANCES -----
 isSymmetric(glob.Gmat)  #is.symmetric.matrix
 glob.variances = diag(glob.Gmat)
 paste("Trait variances")
 head(glob.variances)
 
-###### G EIGEN ------
+###### GLOBAL G EIGEN ------
 glob.eig_variances = eigen(glob.Gmat)$values
 paste("Eigenvalue variances")
 head(glob.eig_variances)
@@ -851,24 +851,31 @@ glob.eig_percent = glob.eig_variances/sum(glob.eig_variances)
 glob.eig_per_mat = data.frame(glob.eig_percent)
 #glob.eig_per = melt(glob.eig_per_mat)
 glob.eig_per_mat$PC <- 1:nrow(glob.eig_per_mat)
-#dev.off()
+#Sdev.off()
+#glob.eig_per_mat$PC <- as.factor(glob.eig_per_mat$PC)
 Glob_PC_dist = ggplot(glob.eig_per_mat,
                    aes(x = PC, y = glob.eig_percent)) +
-  geom_line() +
-  geom_point() +
-  xlab("Principal component rank") +
-  ylab("%Variation in the PC")
+  geom_point()  +
+    geom_line() +
+    plot.theme + 
+    theme_linedraw() +
+    scale_x_continuous("Principal component rank",
+                       breaks = c(1, 2, 3, 4, 5, 6, 7, 8),
+                     labels = c("PC1", "PC2", "PC3", "PC4",
+                                "PC5", "PC6", "PC7", "PC8")) +
+    scale_y_continuous("%Variation in the PC",
+                       limits = c(-.02, 0.7))
 Glob_PC_dist #one negative; none above 1!
 
 ggsave(Glob_PC_dist, 
-       file = "./Results/GlobalG.PC.dist.reg.no.wai.png", 
+       file = "./Results/GlobalG.PC.dist.png", 
        width = 14, height = 10, units = "cm")
 
 #Note that some matrices have negative eigenvalues. 
 #This can cause a lot of trouble in analyses involving inverted matrices.
 #Solution from evolqg Marroig et al. 2012
 
-###### G NOISE ------
+###### GLOBAL G NOISE ------
 ##Controlling for noise
 #Extend G
 Glob_ext = ExtendMatrix(glob.Gmat, ret.dim = 5)$ExtMat #not 8 because last eigen value (#8) was negative
@@ -888,8 +895,8 @@ paste("Random Skewers similarity matrix")
 corrplot.mixed(glob.corr_mat,upper = "number", lower = "pie")
 
 save(Glob_ext, 
-     file = "./Results/global_ext.w.modern.no.wai.RData")
+     file = "./Results/global_ext.RData")
 
-load(file="./Results/global_ext.w.modern.no.wai.RData") #load the g matrices calculated above 
+load(file="./Results/global_ext.RData") #load the g matrices calculated above 
 Glob_ext
 
