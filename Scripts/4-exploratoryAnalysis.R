@@ -17,6 +17,9 @@ df <- read.csv("Data/traits_27May2024.csv", #30Nov2023,29Sept2023.csv",
                header = TRUE)
 #output from traits.R
 
+df.3 <- read.csv("./Results/traits.3zoo_27May2024.csv",
+                 header = TRUE)
+
 #### MANIPULATE DATA ----
 traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
                       "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
@@ -25,6 +28,10 @@ df$formation <- factor(df$formation,
                        levels = c("NKLS", "NKBS", "Tewkesbury",
                                   "Upper Kai-Iwi", "Tainui",
                                   "SHCSBSB", "modern"))
+df.3$formation <- factor(df.3$formation, 
+                         levels = c("NKLS", "NKBS", "Tewkesbury",
+                                    "Upper Kai-Iwi", "Tainui",
+                                    "SHCSBSB", "modern"))
 
 ##### DISTRIBUTION -----
 p.ln.zh <- ggplot(df) +
@@ -70,6 +77,34 @@ p.dist <- ggplot(traits.melt.trim) +
     scale_y_continuous(name = "Density") +
     scale_x_continuous(expression(ln~trait~(mu*m)))
 
+## with 3 zoo per colony
+traits.melt.3 <- melt(data = df.3,
+                    id.vars = c("boxID", "zooid.id","image",
+                                "colony.id", "formation"),
+                    variable.name = "measurementType",
+                    value.name = "measurementValue")
+length(unique(traits.melt.3$colony.id)) #744 unique colonies
+
+traits.stats.3 <- traits.melt.3 %>%
+    dplyr::group_by(measurementType) %>%
+    dplyr::summarise(avg = mean(measurementValue))
+
+traits.stats.form.3 <- traits.melt.3 %>%
+    dplyr::group_by(measurementType, formation) %>%
+    dplyr::summarise(avg = mean(measurementValue))
+
+traits.melt.trim.3 <- traits.melt.3[traits.melt.3$measurementType %in% traits,]
+
+p.dist.3 <- ggplot(traits.melt.trim.3) +
+    geom_density(aes(x = measurementValue,
+                     group = measurementType,
+                     col = measurementType)) + #lots are bimodal
+    ggtitle(paste0("Distribution of traits, N zooids = ", length(unique(traits.melt$zooid.id)), ", N colony = ", length(unique(traits.melt$colony.id)))) +
+    plot.theme +
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~trait~(mu*m)))
+
+
 ##### REMOVE PUTATIVE CRYPTIC SPECIES -----
 ## bimodality in traits, driven by colonies with unusually small zooids
 
@@ -110,7 +145,7 @@ View(prop.sm)
 
 #goes from 100% to 20%; perhaps make 20% the cut off
 rm.col <- prop.sm$colony.id[prop.sm$prop.sm == 1]
-length(rm.col) #31 colonies
+length(rm.col) #31 colonies (rm 33 colonies for 3 zooids per colony)
 
 reg.colonies <- df[!(df$colony.id %in% rm.col),]
 nrow(reg.colonies) #5687
@@ -127,6 +162,9 @@ write.csv(reg.colonies,
           "./Results/colonies.traits_27May2024.csv",
           row.names = FALSE)
 
+write.csv(reg.colonies.3,
+          "./Results/colonies.traits.3zoo_27May2024.csv",
+          row.names = FALSE)
 
 ##### ABOUT TRAITS -----
 df <- reg.colonies
@@ -222,6 +260,10 @@ write.csv(mean_by_formation,
           "Results/mean.per.formation.csv",
           row.names = FALSE)
 
+write.csv(mean_by_formation.3,
+          "Results/mean.per.formation.3zoo.csv",
+          row.names = FALSE)
+
 colony_means = df %>%
     dplyr::group_by(colony.id) %>%
     dplyr::summarize(formation = formation[1],
@@ -250,6 +292,9 @@ means = df %>%
 sum.data.list = list(mean_by_formation, mean_by_formation_colony, means)
 save(sum.data.list,
      file = "./Results/sum.data.list.RData")
+
+save(sum.data.list.3,
+     file = "./Results/sum.data.list.3.RData")
 
 #### CORRELATIONS & ALLOMETRIES ----
 ## are these coming from the same individuals??
@@ -314,6 +359,10 @@ for(i in 1:length(plot.df)){
 
 write.csv(traitCorr,
           "./Results/trait.correlations.csv",
+          row.names = FALSE)
+
+write.csv(traitCorr.3,
+          "./Results/trait.correlations.3zoo.csv",
           row.names = FALSE)
 
 #### LOOK AT CHANGES OVER TIME AND BETWEEN FORMATIONS ------
@@ -433,6 +482,10 @@ diff.stats <- as.data.frame(cbind(diff.form, diff.ln.zh, diff.ln.mpw.b,
 
 write.csv(diff.stats,
           "./Results/diff.in.traits.csv",
+          row.names = FALSE)
+
+write.csv(diff.stats.3,
+          "./Results/diff.in.traits.3zoo.csv",
           row.names = FALSE)
 
 ## how is sd a function of sample size (number of zooids and number of colonies)?
@@ -816,4 +869,28 @@ box.c.side.simple <- ggplot(data = traits.melt[traits.melt$measurementType == "l
 ggsave(box.c.side.simple, 
        file = "./Results/simple.boxplot.ln.c.side.png", 
        width = 14, height = 10, units = "cm")
+
+#### LOOK AT CHANGES IN VARIANCE OVER TIME ----
+#akin to Hunt 2004
+
+per.var.zh <- c()
+per.var.mpw.b <- c()
+per.var.cw.m <- c()
+per.var.cw.d <- c()
+per.var.ow.m <- c()
+per.var.oh <- c()
+per.var.o.side <- c()
+per.var.c.side <- c()
+
+for(i in 1:6){
+    per.var.zh[i] <- exp(mean_by_formation$var.zh[i])/exp(mean_by_formation$var.zh[mean_by_formation$formation == "modern"])
+    per.var.mpw.b[i] <- exp(mean_by_formation$var.mpw.b[i])/exp(mean_by_formation$var.mpw.b[mean_by_formation$formation == "modern"])
+    per.var.cw.m[i] <- exp(mean_by_formation$var.cw.m[i])/exp(mean_by_formation$var.cw.m[mean_by_formation$formation == "modern"])
+    per.var.cw.d[i] <- exp(mean_by_formation$var.cw.d[i])/exp(mean_by_formation$var.cw.d[mean_by_formation$formation == "modern"])
+    per.var.ow.m[i] <- exp(mean_by_formation$var.ow.m[i])/exp(mean_by_formation$var.ow.m[mean_by_formation$formation == "modern"])
+    per.var.oh[i] <- exp(mean_by_formation$var.oh[i])/exp(mean_by_formation$var.oh[mean_by_formation$formation == "modern"])
+    per.var.o.side[i] <- exp(mean_by_formation$var.o.side[i])/exp(mean_by_formation$var.o.side[mean_by_formation$formation == "modern"])
+    per.var.c.side[i] <- exp(mean_by_formation$var.c.side[i])/exp(mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])
+}
+
 

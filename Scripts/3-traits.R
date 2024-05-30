@@ -232,11 +232,6 @@ too.few %>%
   dplyr::group_by(formation) %>%
   dplyr::summarise(n.col = length(unique(colony.id)))
 
-three <- samp.zoo[samp.zoo$n.zooid < 3,]
-three %>% 
-  dplyr::group_by(formation) %>% 
-  dplyr::summarise(n.col = length(unique(colony.id)))
-
 keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
 length(keep) #630 colonies
 
@@ -248,12 +243,34 @@ df %>%
     summarise(n.image = length(unique(image)))
 length(unique(df$image))
 
+three <- samp.zoo[samp.zoo$n.zooid < 3,]
+three %>% 
+    dplyr::group_by(formation) %>% 
+    dplyr::summarise(n.col = length(unique(colony.id)))
+
+keep.3 <- samp.zoo$colony.id[samp.zoo$n.zooid >= 3]
+df.3 <- traits.df[traits.df$colony.id %in% keep.3,]
+nrow(df.3) #7157
+
+df.3 %>%
+    group_by(formation) %>%
+    summarise(n.image = length(unique(image)))
+length(unique(df.3$image))
+
 #### WRITE OUT DATASET ----
 
 write.csv(df,
           "./Results/traits_27May2024.csv",
           row.names = FALSE)
 
+write.csv(df.3,
+          "./Results/traits.3zoo_27May2024.csv",
+          row.names = FALSE)
+
+#### MODERN ----
+#why is modern so different??
+
+#### OLD ----
 ####compare
 traits.old <- read.csv("./Results/traits_29Sept2023.csv")
 traits.new <- read.csv("./Results/traits_8Dec2023.csv")

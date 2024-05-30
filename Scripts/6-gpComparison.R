@@ -120,6 +120,10 @@ write.csv(corr.p.g.form,
           "Results/correlation.p.g.csv",
           row.names = FALSE)
 
+write.csv(corr.p.g.form.3,
+          "Results/correlation.p.g.3zoo.csv",
+          row.names = FALSE)
+
 #### POSITIVE DEFINITE ----
 ## check positive definite
 # round to 10 decimals to make it symmetric
@@ -283,6 +287,9 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
 write.csv(X_sum,
           "./Results/evolvability.summary.csv")
 
+write.csv(X_sum.3,
+          "./Results/evolvability.summary.3zoo.csv") #now SHCSBSB to modern not in above avg evol
+
 ## PLOT
 X_sum$formation <- rownames(X_sum)
 X_sum$formation <- factor(X_sum$formation, levels = c("NKLS", "NKBS",
@@ -399,9 +406,8 @@ corr.diff_Gs <- c(dot_product.Gmax_NKLS_NKBS, dot_product.Gmax_NKBS_tewk,
                   dot_product.Gmax_tai_SHCSBSB, dot_product.Gmax_SHCSBSB_mod)
 
 angle_diff_Gs <- c(angle_degrees.Gmax_NKLS_NKBS, angle_degrees.Gmax_NKBS_tewk,
-                   angle_degrees.Gmax_tewk_uki,
-                   angle_degrees.Gmax_uki_tai, angle_degrees.Gmax_tai_SHCSBSB,
-                   angle_degrees.Gmax_SHCSBSB_mod)
+                   angle_degrees.Gmax_tewk_uki, angle_degrees.Gmax_uki_tai, 
+                   angle_degrees.Gmax_tai_SHCSBSB, angle_degrees.Gmax_SHCSBSB_mod)
 
 diff_between_Gs <- as.data.frame(cbind(angle_diff_Gs, corr.diff_Gs))
 diff_between_Gs$angle_diff_Gs <- as.numeric(diff_between_Gs$angle_diff_Gs)
@@ -425,6 +431,10 @@ for(i in 1:nrow(diff_between_Gs)){
 
 write.csv(diff_between_Gs,
           "./Results/differences.between.Gs.csv",
+          row.names = FALSE)
+
+write.csv(diff_between_Gs.3,
+          "./Results/differences.between.Gs.3zoo.csv",
           row.names = FALSE)
 
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
@@ -484,9 +494,8 @@ corr.diff_Gmax_to_z <- c(dot_product.Gmax_NKLS, dot_product.Gmax_NKBS,
                     dot_product.Gmax_tai, dot_product.Gmax_SHCSBSB)
 
 angle_diff_Gmax_to_z <- c(angle_degrees.Gmax_NKLS, angle_degrees.Gmax_NKBS,
-                          angle_degrees.Gmax_tewk,
-                          angle_degrees.Gmax_uki, angle_degrees.Gmax_tai,
-                          angle_degrees.Gmax_SHCSBSB)
+                          angle_degrees.Gmax_tewk, angle_degrees.Gmax_uki, 
+                          angle_degrees.Gmax_tai, angle_degrees.Gmax_SHCSBSB)
 
 diff_between_Gmax_z <- as.data.frame(cbind(angle_diff_Gmax_to_z, corr.diff_Gmax_to_z))
 diff_between_Gmax_z$angle.diff.time <- formation_transition[-7]
@@ -504,7 +513,7 @@ diff_between_Gmax_z$angle_diff_Gmax_to_z <- as.numeric(diff_between_Gmax_z$angle
 
 for(i in 1:nrow(diff_between_Gmax_z)){
     if(isTRUE(diff_between_Gmax_z$angle_diff_Gmax_to_z[i] > 90)){
-        diff_between_Gmax_z$angle_diff_Gmax_to_z[i] <- 180 - as.numeric(diff_between_Gmax_P$angle_diff_Gmax_to_z[i])
+        diff_between_Gmax_z$angle_diff_Gmax_to_z[i] <- 180 - as.numeric(diff_between_Gmax_z$angle_diff_Gmax_to_z[i])
     }
     else{
         next
@@ -513,6 +522,10 @@ for(i in 1:nrow(diff_between_Gmax_z)){
 
 write.csv(diff_between_Gmax_z,
           "./Results/differences.between.Gmax.z.csv",
+          row.names = FALSE)
+
+write.csv(diff_between_Gmax_z.3,
+          "./Results/differences.between.Gmax.z.3zoo.csv",
           row.names = FALSE)
 
 p.g.pheno <- ggplot(diff_between_Gmax_z) +
@@ -795,6 +808,23 @@ angle_degrees.beta_t5_Gmax_t5 <- angle_radians.beta_t5_Gmax_t5 * (180 / pi) #79.
 angle_radians.beta_t6_Gmax_t6 <- acos(dot_product.beta_t6_Gmax_t6)
 angle_degrees.beta_t6_Gmax_t6 <- angle_radians.beta_t6_Gmax_t6 * (180 / pi) #89.92267
 
+corr_b.t1_gmax.t1 <- c(dot_product.beta_t1_Gmax_t1, dot_product.beta_t2_Gmax_t2,
+                       dot_product.beta_t3_Gmax_t3, dot_product.beta_t4_Gmax_t4,
+                       dot_product.beta_t5_Gmax_t5, dot_product.beta_t6_Gmax_t6)
+ang_b.t1_gmax.t1 <- c(angle_degrees.beta_t1_Gmax_t1, angle_degrees.beta_t2_Gmax_t2, 
+                      angle_degrees.beta_t3_Gmax_t3, angle_degrees.beta_t4_Gmax_t4, 
+                      angle_degrees.beta_t5_Gmax_t5, angle_degrees.beta_t6_Gmax_t6)
+b.t1_gmax.t1 <- as.data.frame(cbind(corr_b.t1_gmax.t1, ang_b.t1_gmax.t1))
+b.t1_gmax.t1$form <- formation_list
+
+write.csv(b.t1_gmax.t1,
+          "Results/b.t1_gmax.t1.csv",
+          row.names = FALSE)
+
+write.csv(b.t1_gmax.t1.3,
+          "Results/b.t1_gmax.t1.3zoo.csv",
+          row.names = FALSE)
+
 ##### DOT PRODUCT BETA T1 TO BETA T2 -----
 # Calculate the dot product of the unit vectors; tells number 0 to 1
 dot_product.beta_t1_beta_t2 <- sum(beta_t1_norm * beta_t2_norm) #0.2412896
@@ -819,6 +849,23 @@ angle_degrees.beta_t4_beta_t5 <- angle_radians.beta_t4_beta_t5 * (180 / pi) #155
 
 angle_radians.beta_t5_beta_t6 <- acos(dot_product.beta_t5_beta_t6)
 angle_degrees.beta_t5_beta_t6 <- angle_radians.beta_t5_beta_t6 * (180 / pi) #151.2722; 28.7278
+
+corr_b.t1_b.t2 <- c(dot_product.beta_t1_beta_t2, dot_product.beta_t2_beta_t3,
+                    dot_product.beta_t3_beta_t4, dot_product.beta_t4_beta_t5,
+                    dot_product.beta_t5_beta_t6)
+ang_b.t1_b.t2 <- c(angle_degrees.beta_t1_beta_t2, angle_degrees.beta_t2_beta_t3, 
+                   angle_degrees.beta_t3_beta_t4, angle_degrees.beta_t4_beta_t5, 
+                   angle_degrees.beta_t5_beta_t6)
+b.t1_b.t2 <- as.data.frame(cbind(corr_b.t1_b.t2, ang_b.t1_b.t2))
+b.t1_b.t2$form_trans <- formation_transition[c(-6, -7)]
+
+write.csv(b.t1_b.t2,
+          "Results/b.t1_b.t2.csv",
+          row.names = FALSE)
+
+write.csv(b.t1_b.t2.3,
+          "Results/b.t1_b.t2.3zoo.csv",
+          row.names = FALSE)
 
 ##### DOT PRODUCT BETA T1 TO GMAX T2 -----
 # Calculate the dot product of the unit vectors; tells number 0 to 1
@@ -853,6 +900,23 @@ angle_degrees.beta_t5_Gmax_t6 <- angle_radians.beta_t5_Gmax_t6 * (180 / pi) #84.
 angle_radians.beta_t6_Gmax_t7 <- acos(dot_product.beta_t6_Gmax_t7)
 # Convert the angle to degrees
 angle_degrees.beta_t6_Gmax_t7 <- angle_radians.beta_t6_Gmax_t7 * (180 / pi) #93.8104; 86.1896
+
+corr_b.t1_gmax.t2 <- c(dot_product.beta_t1_Gmax_t2, dot_product.beta_t2_Gmax_t3,
+                       dot_product.beta_t3_Gmax_t4, dot_product.beta_t4_Gmax_t5,
+                       dot_product.beta_t5_Gmax_t6, dot_product.beta_t6_Gmax_t7)
+ang_b.t1_gmax.t2 <- c(angle_degrees.beta_t1_Gmax_t2, angle_degrees.beta_t2_Gmax_t3, 
+                      angle_degrees.beta_t3_Gmax_t4, angle_degrees.beta_t4_Gmax_t5, 
+                      angle_degrees.beta_t5_Gmax_t6, angle_degrees.beta_t6_Gmax_t7)
+b.t1_gmax.t2 <- as.data.frame(cbind(corr_b.t1_gmax.t2, ang_b.t1_gmax.t2))
+b.t1_gmax.t2$form_trans <- formation_transition[-7]
+
+write.csv(b.t1_gmax.t2,
+          "Results/b.t1_gmax.t2.csv",
+          row.names = FALSE)
+
+write.csv(b.t1_gmax.t2.3,
+          "Results/b.t1_gmax.t2.3zoo.csv",
+          row.names = FALSE)
 
 ##### MAGNITUDE BETA TO DIFF IN DOT PROD -----
 ## calculate magnitude ß
@@ -925,6 +989,9 @@ ggsave(p.diff.b.gmax,
 summary(lm(as.numeric(diff.gmax.b) ~ as.numeric(mag.beta),
            data = diff.beta.gmax.df)) #barely sig at 0.04184; slope at 0, r2 at 0.61
 
+summary(lm(as.numeric(diff.gmax.b.3) ~ as.numeric(mag.beta.3),
+           data = diff.beta.gmax.df.3)) #barely sig at 0.04645; slope at 0, r2 at 0.5873
+
 p.ang.diff.b.gmax <- ggplot(diff.beta.gmax.df,
                         aes(x = as.numeric(mag.beta), y = as.numeric(ang.diff.gmax.b))) + 
     geom_point() +
@@ -939,6 +1006,9 @@ ggsave(p.ang.diff.b.gmax,
 
 summary(lm(as.numeric(ang.diff.gmax.b) ~ as.numeric(mag.beta),
            data = diff.beta.gmax.df)) #nonsig at 0.1064; slope barely over 0, r2 0.3985
+
+summary(lm(as.numeric(ang.diff.gmax.b.3) ~ as.numeric(mag.beta.3),
+           data = diff.beta.gmax.df.3)) #barely sig at 0.02942; slope barely over 0, r2 0.6669
 
 ##### REIMANN DISTANCE -----
 # look at magnitude of beta (x axis) as a function of reimann distance
@@ -971,6 +1041,9 @@ ggsave(p.dist.gmat.b,
 
 summary(lm(as.numeric(dist.gmat) ~ as.numeric(mag.beta),
            data = diff.beta.gmax.df)) #nonsig at p = 0.4008; no relationship
+
+summary(lm(as.numeric(dist.gmat.3) ~ as.numeric(mag.beta.3),
+           data = diff.beta.gmax.df.3)) #nonsig at p = 0.1653; r2 = 0.2726
 
 #### SUBSTITUTE P FOR G ----
 P_ext_NKLS = round(as.matrix(P_ext[[1]]), 6) # The G matrix estimated for sample/formation 1

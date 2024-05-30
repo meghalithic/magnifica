@@ -55,10 +55,10 @@ means <- sum.data.list[[3]]
 #### MANIPULATE DATA ----
 
 zooid_list <- unique(df$zooid.id)
-length(zooid_list) #6264
+length(zooid_list) #6264 (6658 for 3 zoo)
 
 colony_list <- unique(df$colony.id)
-length(colony_list) #599
+length(colony_list) #599 (711 for 3 zoo)
 
 # arrange formations from oldest to youngest
 df$formation <- factor(df$formation, levels = c("NKLS", "NKBS", "Tewkesbury", 
@@ -157,6 +157,10 @@ ggsave(ml,
        file = "./Results/trait.distribution.png", 
        width = 14, height = 20, units = "cm")
 
+ggsave(ml.3, 
+       file = "./Results/trait.distribution.3zoo.png", 
+       width = 14, height = 20, units = "cm")
+
 #### NORMALITY TESTS ----
 ## shapiro test; but need to subsample to be within 5000
 ## if significant, then significantly different from normal (i.e., non-normal)
@@ -240,7 +244,7 @@ head(dat_lg_N) #traits in same order as df and traits
 #### CHECK SAMPLE SIZES ----
 ## number of zooids per colony
 range(mean_by_formation_colony$n.zooid)
-#5 24
+#5 24 (max 35 for 3 zoo)
 
 #average number of zooids:
 mean_by_formation
@@ -275,6 +279,10 @@ zoo.samp <- c(by_form.n[[1]], by_form.n[[2]], by_form.n[[3]],
 samp <- cbind(form, col.samp, zoo.samp)
 write.csv(samp,
           "./Results/sampling.per.formation.csv",
+          row.names = FALSE)
+
+write.csv(samp.3,
+          "./Results/sampling.per.formation.3zoo.csv",
           row.names = FALSE)
 
 #### P MATRIX ----
@@ -327,6 +335,10 @@ P_PC_dist #none negative; none above 1; dim 8 close to 0; could keep 7
 
 ggsave(P_PC_dist, 
        file = "./Results/P.PC.dist.png", 
+       width = 14, height = 10, units = "cm") 
+
+ggsave(P_PC_dist.3, 
+       file = "./Results/P.PC.dist.3zoo.png", 
        width = 14, height = 10, units = "cm") 
 
 ##### PC LOADINGS -----
@@ -396,6 +408,9 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 
 save(model_G,
      file = "./Results/model_G.RData")
+
+save(model_G.3,
+     file = "./Results/model_G.3zoo.RData")
 
 load(file = "./Results/model_G.RData") #load the g matrices calculated above 
 
@@ -565,6 +580,10 @@ G_PC_dist
 ggsave(G_PC_dist, 
        file = "./Results/G.PC.dist.png", 
        width = 14, height = 10, units = "cm")
+
+ggsave(G_PC_dist.3, 
+       file = "./Results/G.PC.dist.3zoo.png", 
+       width = 14, height = 10, units = "cm") #modern still wonky
 
 #Note that some matrices have negative eigenvalues. 
 #This can cause a lot of trouble in analyses involving inverted matrices.
@@ -779,6 +798,8 @@ points(obs_melt$N, obs_melt$RS,
 obs_melt[obs_melt$RS < .8,] #0.7883143, 0.7792872, 0.7298302, 0.6671463, 0.7688725, 0.7657978
 comp_mat$correlations #all modern comparison
 
+obs_melt.3[obs_melt.3$RS < .8,]
+comp_mat.3$correlations #modern and NKLS, modern and Tewks, modern and uki, modern and tai, modern and shcsbsb
 
 p.rare <- ggplot() +
     geom_point(aes(out_results[, 2], out_results[, 1]),
@@ -793,6 +814,10 @@ p.rare <- ggplot() +
 
 ggsave(p.rare, 
        file = "./Results/rarefaction.png", 
+       width = 14, height = 10, units = "cm")
+
+ggsave(p.rare.3, 
+       file = "./Results/rarefaction.3zoo.png", 
        width = 14, height = 10, units = "cm")
 
 #### GLOBAL G ----
@@ -819,6 +844,9 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
 
 save(model_Global, 
      file = "./Results/global_matrix.RData")
+
+save(model_Global.3, 
+     file = "./Results/global_matrix.3zoo.RData")
 
 load(file="./Results/global_matrix.RData") #load the g matrices calculated above 
 model_Global
@@ -871,6 +899,10 @@ ggsave(Glob_PC_dist,
        file = "./Results/GlobalG.PC.dist.png", 
        width = 14, height = 10, units = "cm")
 
+ggsave(Glob_PC_dist.3, 
+       file = "./Results/GlobalG.PC.dist.3zoo.png", 
+       width = 14, height = 10, units = "cm")
+
 #Note that some matrices have negative eigenvalues. 
 #This can cause a lot of trouble in analyses involving inverted matrices.
 #Solution from evolqg Marroig et al. 2012
@@ -896,6 +928,9 @@ corrplot.mixed(glob.corr_mat,upper = "number", lower = "pie")
 
 save(Glob_ext, 
      file = "./Results/global_ext.RData")
+
+save(Glob_ext.3, 
+     file = "./Results/global_ext.3zoo.RData")
 
 load(file="./Results/global_ext.RData") #load the g matrices calculated above 
 Glob_ext
