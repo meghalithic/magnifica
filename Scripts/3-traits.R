@@ -267,9 +267,6 @@ write.csv(df.3,
           "./Results/traits.3zoo_27May2024.csv",
           row.names = FALSE)
 
-#### MODERN ----
-#why is modern so different??
-
 #### OLD ----
 ####compare
 traits.old <- read.csv("./Results/traits_29Sept2023.csv")

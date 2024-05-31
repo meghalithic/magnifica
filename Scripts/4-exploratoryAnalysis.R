@@ -893,4 +893,44 @@ for(i in 1:6){
     per.var.c.side[i] <- exp(mean_by_formation$var.c.side[i])/exp(mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])
 }
 
+mean((per.var.zh-1)*100) #.15%
+mean((per.var.mpw.b-1)*100) #-0.4%
+mean((per.var.cw.m-1)*100) #0.2%
+mean((per.var.cw.d-1)*100) #0.25%
+mean((per.var.ow.m-1)*100) #0.2%
+mean((per.var.oh-1)*100) #0.09%
+mean((per.var.o.side-1)*100) #-0.15%
+mean((per.var.c.side-1)*100) #0.7%
+#just like gene, less than 1 % difference either direction of modern variance
+#don't take sample size into account though, but the variance eq does
 
+#### MODERN ----
+#why is modern so different??
+reg.colonies$formation <- factor(reg.colonies$formation, 
+                       levels = c("NKLS", "NKBS", "Tewkesbury",
+                                  "Upper Kai-Iwi", "Tainui",
+                                  "SHCSBSB", "modern"))
+reg.colonies %>% 
+    dplyr::group_by(formation) %>%
+    dplyr::summarize(n.col = length(unique(colony.id)),
+                     n.zooid = length(zooid.id),
+                     avg.zh = mean(exp(ln.zh), na.rm = T),
+                     avg.mpw.b = mean(exp(ln.mpw.b), na.rm = T),
+                     avg.cw.m = mean(exp(ln.cw.m), na.rm = T),
+                     avg.cw.d = mean(exp(ln.cw.d), na.rm = T),
+                     avg.ow.m = mean(exp(ln.ow.m), na.rm = T),
+                     avg.oh = mean(exp(ln.oh), na.rm = T),
+                     avg.o.side = mean(exp(ln.o.side), na.rm = T),
+                     avg.c.side = mean(exp(ln.c.side), na.rm = T)) %>%
+    as.data.frame()
+
+#modern doesn't have the fewest zooids (UKI & Tainui do)
+#modern does have the fewest colonies, only slightly less than UKI & Tainui
+#modern zh: in the middle
+#modern mpw.b: biggest, but Tainui close to that size
+#modern cw.m: in the middle
+#modern cw.d: in the middle
+#modern ow.m: towards big, but not the biggest
+#modern oh: in the middle
+#modern o.side: towards big, but not the biggest
+#modern c.side: in the middle

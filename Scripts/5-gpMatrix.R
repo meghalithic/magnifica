@@ -559,6 +559,11 @@ g.eig_percent = lapply(g.eig_variances, function (x) {x/sum(x)})
 g.eig_per_mat = do.call(rbind, g.eig_percent)
 g.eig_per_mat = data.frame(g.eig_per_mat, rownames(g.eig_per_mat))
 g.eig_per = melt(g.eig_per_mat)
+g.eig_per$rownames.g.eig_per_mat. <- factor(g.eig_per$rownames.g.eig_per_mat., 
+                                            levels = c("NKLS", "NKBS", "Tewkesbury",
+                                                       "Upper Kai-Iwi", "Tainui",
+                                                       "SHCSBSB", "modern"))
+
 #dev.off()
 G_PC_dist = ggplot(g.eig_per,
                    aes(x = variable, y = value,
@@ -572,10 +577,13 @@ G_PC_dist = ggplot(g.eig_per,
                      labels = c("PC1", "PC2", "PC3", "PC4",
                                 "PC5", "PC6", "PC7", "PC8")) +
     scale_y_continuous("%Variation in the PC",
-                       limits = c(-.02, 0.7))
+                       limits = c(-.02, 0.7)) +
+    scale_color_manual(values = col.form)
 G_PC_dist 
 #none above 1
 #modern negative at 6...dim 5
+#have negative values because have negative variances,
+#meaning that the PC value does not do a good job explaining the variance
 
 ggsave(G_PC_dist, 
        file = "./Results/G.PC.dist.png", 
@@ -595,7 +603,6 @@ ggsave(G_PC_dist.3,
 
 #https://www.statology.org/principal-components-analysis-in-r/
 G_pc <- lapply(Gmat, function (x) {prcomp(x, scale = TRUE)})
-
 G_pc_NKLS <- G_pc$NKLS
 G_pc_NKBS <- G_pc$NKBS
 G_pc_tewk <- G_pc$Tewkesbury
