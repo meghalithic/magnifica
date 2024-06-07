@@ -4,9 +4,9 @@ This repository is for the analysis of _Steginoporella magnifica_ images and tra
 
 The images are SEM images of _Steginoporella magnifica_ collected from New Zealand. These specimens are both modern and paleo (~2.3 Mya).
 
-The images were collected by K. Voje, L.H. Liow, E. DiMartino, A. Piwoni-Piórewicz and others. The specimens were imaged by M. Ramsfjell.
+The images were collected by K. Voje, L.H. Liow, E. Di Martino, A. Piwoni-Piórewicz and others. The specimens were imaged by M. Ramsfjell.
 
-Images are stored...
+Images are stored on a shared lab computer and will be made available with the publication of this project.
 
 # Metadata
 
