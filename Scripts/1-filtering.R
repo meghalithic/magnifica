@@ -7,6 +7,11 @@
 # 2) filters images
 # 3) makes sure that all datasets have formation and specimenNR
 
+##Notes
+# use all magnification
+# for BLEED images, use lower magnification as higher magnification are zoomed-
+# in for the same part of the colony (see column "use" and select "Y")
+
 ## The output of this code is images.filtered_8Dec2023.csv
 
 #### ENVIRONMENT ----
