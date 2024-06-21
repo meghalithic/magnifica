@@ -91,7 +91,11 @@ formation_list <- factor(formation_list, levels = c("NKLS", "NKBS", "Tewkesbury"
                                                "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern"))
 
 #### TEMPERATURE ----
-form.meta <- read.csv("~/Documents/GitHub/bryozoa/stegino_metadata/newMetadata/formations.csv", header = TRUE)
+form.meta <- read.csv("~/Documents/GitHub/bryozoa/bryo_metadata/metadata/formations.csv", 
+                      header = TRUE)
+form.meta <- form.meta[1:7,]
+modern <- c("mod", "modern", "modern", "modern", NA, NA, "New Zealand", "Whanganui basin", NA, 0, 0, NA, 0, 0, NA, "")
+form.meta <- rbind(form.meta, modern)
 
 #this is downloaded from: http://www.lorraine-lisiecki.com/LR04_MISboundaries.txt
 oxy.18 <- read.csv("Data/∂18O.csv",
