@@ -5,7 +5,7 @@
 ## This code:
 # 1) adds in formation info
 # 2) filters images
-# 3) makes sure that all datasets have formation and specimenNR
+# 3) makes sure that all datasets have formation, specimenNR, and magnification
 
 ##Notes
 # use all magnification
@@ -35,6 +35,17 @@ fossil.filter <- read.csv("Data/filteredImages.csv", sep = ";", header = TRUE)
 bleed.filter <- read.csv("Data/BLEED.image.filter.csv", header = TRUE)
 #keeping all wabo iv, so no filter file needed
 #manually filtering modern, so no filter file needed
+
+### METADATA
+#info about magnification for output.fossil specimen; other specimens checked in metadata_check scripts
+bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
+                      header = TRUE,
+                      sep = ";")
+nrow(bryo.meta)
+colnames(bryo.meta)
+head(bryo.meta)
+
+
 
 ### FOSSIL
 output.fossil <- read.csv("./Data/output_4Aug2023_done.csv", header = TRUE)
@@ -76,15 +87,6 @@ colnames(output.modern)
 head(output.modern$id) #path to image
 
 #keep bleed separate because magnification is different
-
-
-#info about magnification for output.fossil specimen; other specimens checked in metadata_check scripts
-bryo.meta <- read.csv("./Data/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
-                      header = TRUE,
-                      sep = ";")
-nrow(bryo.meta)
-colnames(bryo.meta)
-head(bryo.meta)
 
 #### MANIPULATE DATA ----
 
