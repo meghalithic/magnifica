@@ -11,7 +11,7 @@
 
 source("./Scripts/0-env.R")
 
-images.df <- read.csv("./Data/images.filtered_27May2024.csv", #images.merged_30Nov2023.csv,
+images.df <- read.csv("./Data/images.filtered_21Jun2024.csv", #images.merged_30Nov2023.csv,
                       header = TRUE, 
                       sep = ",")
 
