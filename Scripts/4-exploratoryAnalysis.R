@@ -122,6 +122,20 @@ chk <- reg.colonies %>%
   as.data.frame()
 min(chk$n.zoo) #3, do not need to redo
 
+#overall stats
+reg.colonies %>%
+    group_by(formation) %>%
+    summarise(n.img = length(unique(image)))
+length(unique(reg.colonies$image))
+nrow(reg.colonies)
+length(unique(reg.colonies$colony.id))
+#average number of zooids per colony
+n.zoo.col <- reg.colonies %>% 
+    group_by(colony.id) %>%
+    summarize(n.zoo = length(zooid.id)) %>%
+    as.data.frame()
+mean(n.zoo.col$n.zoo)
+
 ##### WRITE OUT DATASET ----
 write.csv(reg.colonies,
           "./Results/colonies.traits_1Jul2024.csv",

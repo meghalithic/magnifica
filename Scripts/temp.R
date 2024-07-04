@@ -2,7 +2,7 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("./Results/colonies.traits_27May2024.csv",
+df <- read.csv("./Results/colonies.traits_1Jul2024.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
@@ -49,7 +49,7 @@ ggsave(p.temp.form,
        file = "./Results/temp.form.png", 
        width = 14, height = 10, units = "cm")
 
-form.meta.trim$mean.age <- (form.meta.trim$End_age + form.meta.trim$Start_age)/2
+form.meta.trim$mean.age <- (as.numeric(form.meta.trim$End_age) + as.numeric(form.meta.trim$Start_age))/2
 p.temp.age <- ggplot(form.meta.trim) +
     geom_point(aes(mean.age, temp),
                shape = 16, size = 5) +
@@ -250,40 +250,40 @@ plot(pf.wid ~ pf.mat)
 #y = mx + b
 #y = zh
 #figuring out x
-#modern: 876.13 (log: 6.775514)
-#NKLS: 797.4 (log: 6.681356)
+#modern: 892.25 (log: 6.775514)
+#NKLS: 795.29 (log: 6.681356)
 #based on ep:
 #starting temp
-(797.4-704.74)/-6.43 #-14.41058
+(795.2878-704.74)/-6.43 #-14.08208
 #ending temp
-(876.13-704.74)/-6.43 #-26.65474
+(892.25-704.74)/-6.43 #-29.16174
 #diff
--26.65474--14.41058 #-12.24416
+-29.16174--14.08208 #-15.07966
 
 #based on cr:
-(797.4-627.79)/-5.89 #-28.79626
+(795.29-627.79)/-5.89 #-28.43803
 #ending temp
-(876.13-627.79)/-5.89 #-42.16299
+(892.25-627.79)/-5.89 #-44.89983
 #diff
--42.16299--28.79626 #-13.36673
+-44.89983--28.43803 #-16.4618
 
 #based on hs:
-(797.4-663.11)/-12.99 #-10.33795
+(795.29-663.11)/-12.99 #-10.17552
 #ending temp
-(876.13-663.11)/-12.99 #-16.39877
+(892.25-663.11)/-12.99 #-17.63972
 #diff
--16.39877--10.33795 #-6.06082
+-17.63972--10.17552 #-7.4642
 
 #based on pf: NONSENSICAL
-(797.4-16.82)/-0.003
+(795.29-16.82)/-0.003
 #ending temp
-(876.13-16.82)/-0.003
+(892.25-16.82)/-0.003
 
 #based on stegino
-(797.4-856.63)/0.82 #-72.23171
+(795.29-856.63)/0.82 #-74.80488
 #ending temp
-(876.13-856.63)/0.82 #23.78049
+(892.25-856.63)/0.82 #43.43902
 #diff
-23.78049--72.23171 #96.0122
+43.43902--74.80488 #118.2439
 
 

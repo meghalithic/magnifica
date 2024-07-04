@@ -432,52 +432,46 @@ write.csv(diff_between_Gs,
 ### See if change is in direction of G max
 ## use Gmax of t1 and compare to ∆z
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_NKLS <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1) #0.1673605
+dot_product.Gmax_NKLS <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1) 
 # Calculate the angle in radians
 angle_radians.Gmax_NKLS <- acos(dot_product.Gmax_NKLS)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKLS <- angle_radians.Gmax_NKLS * (180 / pi)
-#80.36561
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_NKBS <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2) #0.6870414
+dot_product.Gmax_NKBS <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2)
 # Calculate the angle in radians
 angle_radians.Gmax_NKBS <- acos(dot_product.Gmax_NKBS)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKBS <- angle_radians.Gmax_NKBS * (180 / pi)
-#46.60364
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_tewk <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3) #-0.9251647
+dot_product.Gmax_tewk <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3) 
 # Calculate the angle in radians
 angle_radians.Gmax_tewk <- acos(dot_product.Gmax_tewk)
 # Convert the angle to degrees
 angle_degrees.Gmax_tewk <- angle_radians.Gmax_tewk * (180 / pi)
-#157.6932; 22.3068
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_uki <- sum(Gmax_uki_norm * evolved_difference_unit_length_t4) #-0.7776185
+dot_product.Gmax_uki <- sum(Gmax_uki_norm * evolved_difference_unit_length_t4)
 # Calculate the angle in radians
 angle_radians.Gmax_uki <- acos(dot_product.Gmax_uki)
 # Convert the angle to degrees
 angle_degrees.Gmax_uki <- angle_radians.Gmax_uki * (180 / pi)
-#141.043; 38.957
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_tai <- sum(Gmax_tai_norm * evolved_difference_unit_length_t5) #0.7512872
+dot_product.Gmax_tai <- sum(Gmax_tai_norm * evolved_difference_unit_length_t5)
 # Calculate the angle in radians
 angle_radians.Gmax_tai <- acos(dot_product.Gmax_tai)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai <- angle_radians.Gmax_tai * (180 / pi)
-#41.298
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_SHCSBSB <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.01569083
+dot_product.Gmax_SHCSBSB <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6) 
 # Calculate the angle in radians
 angle_radians.Gmax_SHCSBSB <- acos(dot_product.Gmax_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Gmax_SHCSBSB <- angle_radians.Gmax_SHCSBSB * (180 / pi)
-#89.10094
 
 corr.diff_Gmax_to_z <- c(dot_product.Gmax_NKLS, dot_product.Gmax_NKBS,
                     dot_product.Gmax_tewk, dot_product.Gmax_uki,
@@ -579,95 +573,77 @@ G4_SHCSBSB_norm <- f.normalize_vector(G4_SHCSBSB)
 G4_mod_norm <- f.normalize_vector(G4_mod)
 
 ## for 2-4 as well:
-dot_product.G2_NKLS <- sum(G2_NKLS_norm * evolved_difference_unit_length_t1) #-0.9551744
+dot_product.G2_NKLS <- sum(G2_NKLS_norm * evolved_difference_unit_length_t1) 
 angle_radians.G2_NKLS <- acos(dot_product.G2_NKLS)
 angle_degrees.G2_NKLS <- angle_radians.G2_NKLS * (180 / pi)
-#162.7799; 17.2201
 
-dot_product.G2_NKBS <- sum(G2_NKBS_norm * evolved_difference_unit_length_t2) #-0.1888881
+dot_product.G2_NKBS <- sum(G2_NKBS_norm * evolved_difference_unit_length_t2)
 angle_radians.G2_NKBS <- acos(dot_product.G2_NKBS)
 angle_degrees.G2_NKBS <- angle_radians.G2_NKBS * (180 / pi)
-#100.8879; 79.1121
 
-dot_product.G2_tewk <- sum(G2_tewk_norm * evolved_difference_unit_length_t3) #-0.159511
+dot_product.G2_tewk <- sum(G2_tewk_norm * evolved_difference_unit_length_t3) 
 angle_radians.G2_tewk <- acos(dot_product.G2_tewk)
 angle_degrees.G2_tewk <- angle_radians.G2_tewk * (180 / pi)
-#99.17851; 80.82149
 
-dot_product.G2_uki <- sum(G2_uki_norm * evolved_difference_unit_length_t4) #-0.3811011
+dot_product.G2_uki <- sum(G2_uki_norm * evolved_difference_unit_length_t4)
 angle_radians.G2_uki <- acos(dot_product.G2_uki)
 angle_degrees.G2_uki <- angle_radians.G2_uki * (180 / pi)
-#112.4019; 67.5981
 
-dot_product.G2_tai <- sum(G2_tai_norm * evolved_difference_unit_length_t5) #0.2801589
+dot_product.G2_tai <- sum(G2_tai_norm * evolved_difference_unit_length_t5) 
 angle_radians.G2_tai <- acos(dot_product.G2_tai)
 angle_degrees.G2_tai <- angle_radians.G2_tai * (180 / pi)
-#73.73031
 
-dot_product.G2_SHCSBSB <- sum(G2_SHCSBSB_norm * evolved_difference_unit_length_t6) #-0.5470812
+dot_product.G2_SHCSBSB <- sum(G2_SHCSBSB_norm * evolved_difference_unit_length_t6) 
 angle_radians.G2_SHCSBSB <- acos(dot_product.G2_SHCSBSB)
 angle_degrees.G2_SHCSBSB <- angle_radians.G2_SHCSBSB * (180 / pi)
-#123.167; 56.833
 
-dot_product.G3_NKLS <- sum(G3_NKLS_norm * evolved_difference_unit_length_t1) #0.06532423
+dot_product.G3_NKLS <- sum(G3_NKLS_norm * evolved_difference_unit_length_t1) 
 angle_radians.G3_NKLS <- acos(dot_product.G3_NKLS)
 angle_degrees.G3_NKLS <- angle_radians.G3_NKLS * (180 / pi)
-#86.25453
 
-dot_product.G3_NKBS <- sum(G3_NKBS_norm * evolved_difference_unit_length_t3) #-0.1528877
+dot_product.G3_NKBS <- sum(G3_NKBS_norm * evolved_difference_unit_length_t3) 
 angle_radians.G3_NKBS <- acos(dot_product.G3_NKBS)
 angle_degrees.G3_NKBS <- angle_radians.G3_NKBS * (180 / pi)
-#98.79431; 81.20569
 
-dot_product.G3_tewk <- sum(G3_tewk_norm * evolved_difference_unit_length_t3) #-0.2831824
+dot_product.G3_tewk <- sum(G3_tewk_norm * evolved_difference_unit_length_t3) 
 angle_radians.G3_tewk <- acos(dot_product.G3_tewk)
 angle_degrees.G3_tewk <- angle_radians.G3_tewk * (180 / pi)
-#106.4502; 73.5498
 
-dot_product.G3_uki <- sum(G3_uki_norm * evolved_difference_unit_length_t4) #-0.3356188
+dot_product.G3_uki <- sum(G3_uki_norm * evolved_difference_unit_length_t4) 
 angle_radians.G3_uki <- acos(dot_product.G3_uki)
 angle_degrees.G3_uki <- angle_radians.G3_uki * (180 / pi)
-#109.6102; 70.3898
 
-dot_product.G3_tai <- sum(G3_tai_norm * evolved_difference_unit_length_t5) #0.4712344
+dot_product.G3_tai <- sum(G3_tai_norm * evolved_difference_unit_length_t5) 
 angle_radians.G3_tai <- acos(dot_product.G3_tai)
 angle_degrees.G3_tai <- angle_radians.G3_tai * (180 / pi)
-#61.88555
 
-dot_product.G3_SHCSBSB <- sum(G3_SHCSBSB_norm * evolved_difference_unit_length_t6) #0.7098425
+dot_product.G3_SHCSBSB <- sum(G3_SHCSBSB_norm * evolved_difference_unit_length_t6) 
 angle_radians.G3_SHCSBSB <- acos(dot_product.G3_SHCSBSB)
 angle_degrees.G3_SHCSBSB <- angle_radians.G3_SHCSBSB * (180 / pi)
-#44.7779
 
-dot_product.G4_NKLS <- sum(G4_NKLS_norm * evolved_difference_unit_length_t1) #0.1822874
+dot_product.G4_NKLS <- sum(G4_NKLS_norm * evolved_difference_unit_length_t1) 
 angle_radians.G4_NKLS <- acos(dot_product.G4_NKLS)
 angle_degrees.G4_NKLS <- angle_radians.G4_NKLS * (180 / pi)
-#79.49698
 
-dot_product.G4_NKBS <- sum(G4_NKBS_norm * evolved_difference_unit_length_t4) #-0.2379446
+dot_product.G4_NKBS <- sum(G4_NKBS_norm * evolved_difference_unit_length_t4) 
 angle_radians.G4_NKBS <- acos(dot_product.G4_NKBS)
 angle_degrees.G4_NKBS <- angle_radians.G4_NKBS * (180 / pi)
-#103.7653; 76.2347
 
-dot_product.G4_tewk <- sum(G4_tewk_norm * evolved_difference_unit_length_t3) #0.06053595
+dot_product.G4_tewk <- sum(G4_tewk_norm * evolved_difference_unit_length_t3) 
 angle_radians.G4_tewk <- acos(dot_product.G4_tewk)
 angle_degrees.G4_tewk <- angle_radians.G4_tewk * (180 / pi)
-#86.52942
 
-dot_product.G4_uki <- sum(G4_uki_norm * evolved_difference_unit_length_t4) #-0.2529781
+dot_product.G4_uki <- sum(G4_uki_norm * evolved_difference_unit_length_t4) 
 angle_radians.G4_uki <- acos(dot_product.G4_uki)
 angle_degrees.G4_uki <- angle_radians.G4_uki * (180 / pi)
-#104.6538; 75.3462
 
-dot_product.G4_tai <- sum(G4_tai_norm * evolved_difference_unit_length_t5) #-0.2860278
+dot_product.G4_tai <- sum(G4_tai_norm * evolved_difference_unit_length_t5) 
 angle_radians.G4_tai <- acos(dot_product.G4_tai)
 angle_degrees.G4_tai <- angle_radians.G4_tai * (180 / pi)
-#106.6203; 73.3797
 
-dot_product.G4_SHCSBSB <- sum(G4_SHCSBSB_norm * evolved_difference_unit_length_t6) #-0.01766609
+dot_product.G4_SHCSBSB <- sum(G4_SHCSBSB_norm * evolved_difference_unit_length_t6) 
 angle_radians.G4_SHCSBSB <- acos(dot_product.G4_SHCSBSB)
 angle_degrees.G4_SHCSBSB <- angle_radians.G4_SHCSBSB * (180 / pi)
-#91.01225; 88.98775
 
 #### LOOK AT TRENDS AS A FUNCTION OF TIME -----
 form.df <- form.meta[c(1:3, 5:8),] #in same order as mean_by_formation; remove Waipuru
@@ -1735,7 +1711,7 @@ X_sum_glob <- data.frame(c.mean = c(sumX_glob$Averages[[3]], rep("", 6)),
 #qualitatively similar
 
 write.csv(X_sum_glob,
-          "./Results/evolvability.global.summarycsv")
+          "./Results/evolvability.global.summary.csv")
 
 ## PLOT
 X_sum_glob$formation <- rownames(X_sum_glob)
@@ -1956,7 +1932,7 @@ E_size <- c(sum(diag(E_ext_NKBS)),
             sum(diag(E_ext_mod)))
 
 P_G_E_size <- as.data.frame(cbind(form.name, P_size, G_size, E_size))
-P_G_E_size$form.name <- factor(P_E_size$form.name, levels = c("NKLS", "NKBS",
+P_G_E_size$form.name <- factor(P_G_E_size$form.name, levels = c("NKLS", "NKBS",
                                                             "Tewkesbury", 
                                                             "Upper Kai-Iwi",
                                                             "Tainui",
@@ -1964,9 +1940,9 @@ P_G_E_size$form.name <- factor(P_E_size$form.name, levels = c("NKLS", "NKBS",
                                                             "modern"))
 
 #proportion G to P
-P_G_E_size$prop.e.p <- as.numeric(P_E_size$E_size)/as.numeric(P_E_size$P_size)
+P_G_E_size$prop.e.p <- as.numeric(P_G_E_size$E_size)/as.numeric(P_G_E_size$P_size)
 range(P_G_E_size$prop.e.p)
-#38 to 68 %
+#52 to 71 %
 
 P_G_E_size$prop.g.p <- as.numeric(P_G_E_size$G_size)/as.numeric(P_G_E_size$P_size)
 range(P_G_E_size$prop.g.p)
