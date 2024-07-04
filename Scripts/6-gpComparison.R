@@ -27,12 +27,12 @@
 
 source("./Scripts/0-env.R")
 
-load(file = "./Results/sum.data.list.w.modern.RData") #load the g matrices calculated above 
+load(file = "./Results/sum.data.list.RData") #load the g matrices calculated above 
 mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
 means <- sum.data.list[[3]]
 
-load(file = "./Results/data.list.w.modern.no.wai.RData") #load the g matrices calculated above 
+load(file = "./Results/data.list.RData") #load the g matrices calculated above 
 
 Pmat <- data.list[[1]]
 Gmat <- data.list[[2]]
@@ -46,11 +46,11 @@ form_data <- data.list[[9]]
 by_form.n <- data.list[[10]]
 col_form.n <- data.list[[11]]
 
-load(file="./Results/global_ext.w.modern.no.wai.RData") #load the g matrices calculated above 
+load(file="./Results/global_ext.RData") #load the g matrices calculated above 
 Glob_ext
 
-load(file = "./Results/model_G.w.modern.no.wai.RData") #load the g matrices calculated above 
-g.model <- model_G
+load(file = "./Results/model_G_all.RData") #load the g matrices calculated above 
+g.model <- model_G_all
 
 #### CORR OF G & P ----
 
@@ -118,10 +118,6 @@ corr.p.g.form
 
 write.csv(corr.p.g.form,
           "Results/correlation.p.g.csv",
-          row.names = FALSE)
-
-write.csv(corr.p.g.form.3,
-          "Results/correlation.p.g.3zoo.csv",
           row.names = FALSE)
 
 #### POSITIVE DEFINITE ----
@@ -287,9 +283,6 @@ X_sum <- data.frame(c.mean = c(sumX_t1$Averages[[3]], sumX_t2$Averages[[3]], sum
 write.csv(X_sum,
           "./Results/evolvability.summary.csv")
 
-write.csv(X_sum.3,
-          "./Results/evolvability.summary.3zoo.csv") #now SHCSBSB to modern not in above avg evol
-
 ## PLOT
 X_sum$formation <- rownames(X_sum)
 X_sum$formation <- factor(X_sum$formation, levels = c("NKLS", "NKBS",
@@ -321,6 +314,7 @@ p.evol <- ggplot(X_sum.trim, aes(x = form.trans)) +
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Evolvability") +
     plot.theme
+#transition to modern is different
         
 ggsave(p.evol, 
        file = "./Results/evolvability.png", 
@@ -433,10 +427,6 @@ write.csv(diff_between_Gs,
           "./Results/differences.between.Gs.csv",
           row.names = FALSE)
 
-write.csv(diff_between_Gs.3,
-          "./Results/differences.between.Gs.3zoo.csv",
-          row.names = FALSE)
-
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
 
 ### See if change is in direction of G max
@@ -522,10 +512,6 @@ for(i in 1:nrow(diff_between_Gmax_z)){
 
 write.csv(diff_between_Gmax_z,
           "./Results/differences.between.Gmax.z.csv",
-          row.names = FALSE)
-
-write.csv(diff_between_Gmax_z.3,
-          "./Results/differences.between.Gmax.z.3zoo.csv",
           row.names = FALSE)
 
 p.g.pheno <- ggplot(diff_between_Gmax_z) +
@@ -684,8 +670,10 @@ angle_degrees.G4_SHCSBSB <- angle_radians.G4_SHCSBSB * (180 / pi)
 #91.01225; 88.98775
 
 #### LOOK AT TRENDS AS A FUNCTION OF TIME -----
-form.df <- form.meta[c(1:3, 5:8),] #in same order as mean_by_formation
+form.df <- form.meta[c(1:3, 5:8),] #in same order as mean_by_formation; remove Waipuru
 mean_by_formation
+form.df$Start_age <- as.numeric(form.df$Start_age)
+form.df$End_age <- as.numeric(form.df$End_age)
 
 for(i in 1:nrow(form.df)){
     form.df$mean.age[i] <- mean(form.df$Start_age[i], form.df$End_age[i], na.rm = TRUE)
@@ -815,14 +803,10 @@ ang_b.t1_gmax.t1 <- c(angle_degrees.beta_t1_Gmax_t1, angle_degrees.beta_t2_Gmax_
                       angle_degrees.beta_t3_Gmax_t3, angle_degrees.beta_t4_Gmax_t4, 
                       angle_degrees.beta_t5_Gmax_t5, angle_degrees.beta_t6_Gmax_t6)
 b.t1_gmax.t1 <- as.data.frame(cbind(corr_b.t1_gmax.t1, ang_b.t1_gmax.t1))
-b.t1_gmax.t1$form <- formation_list
+b.t1_gmax.t1$form <- formation_transition[1:6]
 
 write.csv(b.t1_gmax.t1,
           "Results/b.t1_gmax.t1.csv",
-          row.names = FALSE)
-
-write.csv(b.t1_gmax.t1.3,
-          "Results/b.t1_gmax.t1.3zoo.csv",
           row.names = FALSE)
 
 ##### DOT PRODUCT BETA T1 TO BETA T2 -----
@@ -861,10 +845,6 @@ b.t1_b.t2$form_trans <- formation_transition[c(-6, -7)]
 
 write.csv(b.t1_b.t2,
           "Results/b.t1_b.t2.csv",
-          row.names = FALSE)
-
-write.csv(b.t1_b.t2.3,
-          "Results/b.t1_b.t2.3zoo.csv",
           row.names = FALSE)
 
 ##### DOT PRODUCT BETA T1 TO GMAX T2 -----
@@ -912,10 +892,6 @@ b.t1_gmax.t2$form_trans <- formation_transition[-7]
 
 write.csv(b.t1_gmax.t2,
           "Results/b.t1_gmax.t2.csv",
-          row.names = FALSE)
-
-write.csv(b.t1_gmax.t2.3,
-          "Results/b.t1_gmax.t2.3zoo.csv",
           row.names = FALSE)
 
 ##### MAGNITUDE BETA TO DIFF IN DOT PROD -----
@@ -987,10 +963,8 @@ ggsave(p.diff.b.gmax,
        width = 14, height = 10, units = "cm")
 
 summary(lm(as.numeric(diff.gmax.b) ~ as.numeric(mag.beta),
-           data = diff.beta.gmax.df)) #barely sig at 0.04184; slope at 0, r2 at 0.61
-
-summary(lm(as.numeric(diff.gmax.b.3) ~ as.numeric(mag.beta.3),
-           data = diff.beta.gmax.df.3)) #barely sig at 0.04645; slope at 0, r2 at 0.5873
+           data = diff.beta.gmax.df[1:6,])) 
+#nonsig 0.2847; slope at 0, r2 at 0.09
 
 p.ang.diff.b.gmax <- ggplot(diff.beta.gmax.df,
                         aes(x = as.numeric(mag.beta), y = as.numeric(ang.diff.gmax.b))) + 
@@ -1005,10 +979,8 @@ ggsave(p.ang.diff.b.gmax,
        width = 14, height = 10, units = "cm")
 
 summary(lm(as.numeric(ang.diff.gmax.b) ~ as.numeric(mag.beta),
-           data = diff.beta.gmax.df)) #nonsig at 0.1064; slope barely over 0, r2 0.3985
-
-summary(lm(as.numeric(ang.diff.gmax.b.3) ~ as.numeric(mag.beta.3),
-           data = diff.beta.gmax.df.3)) #barely sig at 0.02942; slope barely over 0, r2 0.6669
+           data = diff.beta.gmax.df[1:6,])) 
+#nonsig at 0.08412; slope barely over 0, r2 0.4584
 
 ##### REIMANN DISTANCE -----
 # look at magnitude of beta (x axis) as a function of reimann distance
@@ -1040,10 +1012,8 @@ ggsave(p.dist.gmat.b,
        width = 14, height = 10, units = "cm")
 
 summary(lm(as.numeric(dist.gmat) ~ as.numeric(mag.beta),
-           data = diff.beta.gmax.df)) #nonsig at p = 0.4008; no relationship
-
-summary(lm(as.numeric(dist.gmat.3) ~ as.numeric(mag.beta.3),
-           data = diff.beta.gmax.df.3)) #nonsig at p = 0.1653; r2 = 0.2726
+           data = diff.beta.gmax.df[1:6,])) 
+#nonsig at p = 0.2003; no relationship
 
 #### SUBSTITUTE P FOR G ----
 P_ext_NKLS = round(as.matrix(P_ext[[1]]), 6) # The G matrix estimated for sample/formation 1
@@ -1199,6 +1169,7 @@ p_X_sum <- data.frame(p_c.mean = c(p_sumX_t1$Averages[[3]], p_sumX_t2$Averages[[
                                        ""),
                       row.names = levels(formation_list))
 #NO NEGATIVE VALUES!
+#qualitatively the same pattern!
 
 write.csv(p_X_sum,
           "./Results/p_evolvability.summary.csv")
@@ -1368,6 +1339,7 @@ p.dot.prod_p <- ggplot(diff_between_Ps) +
 ggsave(p.dot.prod_p, 
        file = "./Results/dot.prod.p.diff.png", 
        width = 20, height = 20, units = "cm")
+#similar
 
 p.ang_p <- ggplot(diff_between_Ps) +
     geom_point(aes(x = angle.diff_Ps.time, y = angle_diff_Ps),
@@ -1628,7 +1600,7 @@ ggsave(p.pc1.temp,
        width = 20, height = 20, units = "cm")
 
 summary(lm(as.numeric(df.form.pc$P_dir[-1]) ~ df.form.pc$med.O18[-1]))
-#slope = 0.01383, p-value = 0.4897, r2 = 0
+#slope = 0.01076, p-value = 0.562, r2 = 0
 
 #### GLOBAL G ----
 ##### CORR OF GLOBAL G TO P -----
@@ -1760,6 +1732,7 @@ X_sum_glob <- data.frame(c.mean = c(sumX_glob$Averages[[3]], rep("", 6)),
                     row.names = levels(formation_list))
 
 #NO NEGATIVE VALUES!
+#qualitatively similar
 
 write.csv(X_sum_glob,
           "./Results/evolvability.global.summarycsv")
@@ -1929,10 +1902,10 @@ lapply(E_ext, isSymmetric)
 E_ext_NKLS = round(as.matrix(E_ext[[1]]), 6) # The G matrix estimated for sample/formation 1
 E_ext_NKBS = round(as.matrix(E_ext[[2]]), 6) # The G matrix estimated for sample/formation 2
 E_ext_tewk = round(as.matrix(E_ext[[3]]), 6) # The G matrix estimated for sample/formation 3
-E_ext_uki = round(as.matrix(E_ext[[5]]), 6) # The G matrix estimated for sample/formation 5
-E_ext_tai = round(as.matrix(E_ext[[6]]), 6) # The G matrix estimated for sample/formation 6
-E_ext_SHCSBSB = round(as.matrix(E_ext[[7]]), 6) # The G matrix estimated for sample/formation 7
-E_ext_mod = round(as.matrix(E_ext[[8]]), 6) # The G matrix estimated for sample/formation 7
+E_ext_uki = round(as.matrix(E_ext[[4]]), 6) # The G matrix estimated for sample/formation 5
+E_ext_tai = round(as.matrix(E_ext[[5]]), 6) # The G matrix estimated for sample/formation 6
+E_ext_SHCSBSB = round(as.matrix(E_ext[[6]]), 6) # The G matrix estimated for sample/formation 7
+E_ext_mod = round(as.matrix(E_ext[[7]]), 6) # The G matrix estimated for sample/formation 7
 
 is.symmetric.matrix(E_ext_NKLS)
 is.positive.definite(E_ext_NKLS)

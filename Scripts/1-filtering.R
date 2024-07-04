@@ -12,7 +12,9 @@
 # use all magnification
 # for BLEED images, use lower magnification as higher magnification are zoomed-
 # in for the same part of the colony (see column "use" and select "Y")
-#
+# Numbers for NKBS and Tewkesbury should not change
+# to fossils, add NKLS, SHCSBSB, Tainui, UKI
+# add more overall because will limit minimum zooid number to 3
 
 ## The output of this code is images.filtered_8Dec2023.csv
 
@@ -34,6 +36,10 @@ source("./Scripts/0-env.R")
 
 ##### FILTERING TABLES -----
 fossil.filter <- read.csv("Data/filteredImages.csv", sep = ";", header = TRUE)
+nrow(fossil.filter)
+colnames(fossil.filter)
+head(fossil.filter)
+
 #bleed.filter <- read.csv("Data/BLEED.image.filter.csv", header = TRUE)
 #keeping all wabo iv, so no filter file needed
 #manually filtering modern, so no filter file needed
@@ -43,7 +49,7 @@ fossil.filter <- read.csv("Data/filteredImages.csv", sep = ";", header = TRUE)
 bryo.meta <- read.csv("./Data/metadata/image_merge_txt_usingfileName_DONE_17Apr2023.csv",
                       header = TRUE,
                       sep = ";")
-nrow(bryo.meta)
+nrow(bryo.meta) #1890
 colnames(bryo.meta)
 head(bryo.meta)
 
@@ -76,39 +82,38 @@ head(output.waboiv_2$id) #path to image
 
 #### COMBINE WABO IV
 output.waboiv <- as.data.frame(rbind(output.waboiv_1, output.waboiv_2))
-nrow(output.waboiv) #3594
+nrow(output.waboiv) #594
 colnames(output.waboiv)
 head(output.waboiv$id) #path to image
 ## keep separate from output.fossil because id path is different
 
 ## MODERN
 
-output.bleed1 <- read.csv("Data/steginator_magnifica_outputs/output.bleed.csv", header = TRUE)
+output.bleed <- read.csv("Data/steginator_magnifica_outputs/bleed3.csv", header = TRUE)
 
-nrow(output.bleed1) #11
-colnames(output.bleed1)
-head(output.bleed1$id) #path to image
-
-output.bleed2 <- read.csv("Data/steginator_magnifica_outputs/output_bleed2.csv", header = TRUE)
-
-nrow(output.bleed2) #11
-colnames(output.bleed2)
-head(output.bleed2$id) #path to image
-
-#### COMBINE BLEED
-output.bleed <- as.data.frame(rbind(output.bleed1, output.bleed2))
-
-##remove duplicate IDs
-duplicated(output.bleed$box_id)
-output.bleed <- output.bleed[!duplicated(output.bleed$box_id),]
-
-nrow(output.bleed) #17
+nrow(output.bleed) #12
 colnames(output.bleed)
 head(output.bleed$id) #path to image
 
-output.modern <- read.csv("./Data/steginator_magnifica_outputs/output_modern_trim.csv",
+output.modern1 <- read.csv("./Data/steginator_magnifica_outputs/output_modern_trim.csv",
                           header = TRUE)
-nrow(output.modern) #510
+nrow(output.modern1) #510
+colnames(output.modern1)
+head(output.modern1$id) #path to image
+
+output.modern2 <- read.csv("./Data/steginator_magnifica_outputs/modern2.csv",
+                           header = TRUE)
+nrow(output.modern2) #510
+colnames(output.modern2)
+head(output.modern2$id) #path to image
+
+#### COMBINE MODERN STEGS
+output.modern <- as.data.frame(rbind(output.modern1, output.modern2))
+
+##check duplicate IDs
+unique(duplicated(output.modern$box_id)) #all false
+
+nrow(output.modern) #533
 colnames(output.modern)
 head(output.modern$id) #path to image
 
@@ -125,6 +130,16 @@ colnames(output.klv)
 head(output.klv$id) #path to image
 
 #keep bleed separate because magnification is different
+
+##### LOCALITY METADATA -----
+niwa.loc <- read.csv("Data/metadata/NIWA_metadata.csv",
+                     header = TRUE)
+mod.loc <- read.csv("Data/metadata/modern_metadata.csv",
+                    header = TRUE)
+klv.loc <- read.csv("Data/metadata/KLV_metadata.csv",
+                    header = TRUE)
+bleed.loc <- read.csv("Data/metadata/BLEED_metadata.csv",
+                      header = TRUE)
 
 #### MANIPULATE DATA ----
 
@@ -157,20 +172,23 @@ length(unique(output.waboiv$image)) #163
 output.modern$image <- gsub("bryozoa_lab_images/mab-modern-jpg/",
                             "",
                             output.modern$id)
+output.modern$image <- gsub("/home/voje-lab/Desktop/Modern-jpg/",
+                            "",
+                            output.modern$image)
 output.modern$image <- gsub(".jpg",
                             "",
                             output.modern$image)
 head(output.modern$image)
-length(unique(output.modern$image)) #76
+length(unique(output.modern$image)) #86
 
-output.bleed$image <- gsub("/home/voje-lab/Desktop/BLEED-jpg/",
+output.bleed$image <- gsub("/home/voje-lab/Desktop/stegs-vouchers-jpg/",
                             "",
                            output.bleed$id)
 output.bleed$image <- gsub(".jpg",
                             "",
                            output.bleed$image)
 head(output.bleed$image)
-length(unique(output.bleed$image)) #10
+length(unique(output.bleed$image)) #8 (there are two that are in the original "output.bleed.csv" file that are not in the most recent runs)
 
 output.klv$image <- gsub("/home/voje-lab/Desktop/KLV_stegs-jpg/",
                          "",
@@ -188,7 +206,7 @@ output.niwa$image <- gsub(".jpg",
                          "",
                          output.niwa$image)
 head(output.niwa$image)
-length(unique(output.niwa$image)) #3
+length(unique(output.niwa$image)) #54
 
 ###### METADATA ------
 #only an issue for bryo.meta
@@ -272,7 +290,7 @@ output.modern$specimenNR <- mod.sp.nr.new
 output.modern$image.no <- mod.image.no
 #check that they match
 View(output.modern[,c("image", "specimenNR", "image.no")])
-length(unique(output.modern$specimenNR)) #24 colonies
+length(unique(output.modern$specimenNR)) #29 colonies
 
 #bleed
 bleed.sp.nr <- output.bleed$image
@@ -287,7 +305,7 @@ output.bleed$specimenNR <- bleed.sp.nr.new
 output.bleed$image.no <- bleed.image.no
 #check that they match
 View(output.bleed[,c("image", "specimenNR", "image.no")])
-length(unique(output.bleed$specimenNR)) #7 colonies
+length(unique(output.bleed$specimenNR)) #5 colonies
 
 #niwa
 ##there are multiple colonies on a specimen, so here, specimen nr is really colony number
@@ -332,7 +350,7 @@ fossil <- merge(output.fossil,
                 bryo.meta.trim,
                 by = c("image", "specimenNR", "image.no"),
                 all.x = TRUE, all.y = FALSE)
-nrow(fossil)
+nrow(fossil) #6443
 #colnames(fossil)
 #View(fossil[, c(1, 2, 3, 57, 58)])
 
@@ -343,7 +361,8 @@ wabo$Mag <- rep("x30", nrow(wabo)) #already checked
 ###### MODERN ------
 ##modern
 mod <- output.modern 
-mod$Mag <- rep("x30", nrow(mod)) #should all have mag 30
+mod$Mag <- rep("x30", nrow(mod)) #should all have mag 30 except for 1226_CV_3
+mod$Mag[mod$image == "1226_CV_3_15v_x30_BSE"] <- "x35"
 
 ##bleed
 bleed.meta.trim <- bleed.meta %>%
@@ -356,9 +375,8 @@ bleed <- merge(output.bleed,
                by = c("image", "specimenNR", "image.no"),
                all.x = TRUE, all.y = FALSE)
 nrow(bleed)
-##need to check and fix; should be 294 not 293
-bleed$Mag[bleed$image.no == "MHR.293"] <- "x80"
-bleed$use[bleed$image.no == "MHR.293"] <- "N"
+bleed$Mag[bleed$image.no == "MHR.293"] <- "x40"
+bleed$use[bleed$image.no == "MHR.293"] <- "Y"
 
 bleed <- bleed[bleed$use == "Y",]
 bleed <- bleed[, -59]
@@ -372,7 +390,8 @@ nrow(output.niwa)
 niwa <- merge(output.niwa,
               niwa.meta.trim,
               by = c("image", "specimenNR", "image.no"),
-              all.x = TRUE, all.y = FALSE)
+         
+                   all.x = TRUE, all.y = FALSE)
 nrow(niwa)
 View(niwa[, c(1, 2, 3, 57, 58, 59)])
 
@@ -459,19 +478,13 @@ wabo$form.no <- as.numeric(str_extract(wabo$specimenNR,
                                        "[0-9]+"))
 wabo$formation <- ""
 
-wabo$formation[wabo$form.no <= 399] <- "NKBS"
-wabo$formation[wabo$form.no >= 400 & 
-                   wabo$form.no <= 599] <- "NKLS"
-wabo$formation[wabo$form.no >= 600 & 
-                   wabo$form.no <= 699] <- "Tewkesbury"
+wabo$formation[wabo$form.no <= 399] <- "NKLS"
 wabo$formation[wabo$form.no >= 700 & 
                    wabo$form.no <= 799] <- "SHCSBSB"
 wabo$formation[wabo$form.no >= 800 & 
                    wabo$form.no <= 899] <- "Tainui"
 wabo$formation[wabo$form.no >= 1000 & 
                    wabo$form.no <= 1099] <- "Upper Kai-Iwi"
-wabo$formation[wabo$form.no >= 1100 & 
-                   wabo$form.no <= 1199] <- "Tewkesbury" #formerly Waipuru
 unique(wabo$formation)
 
 ###### MODERN ------
@@ -488,6 +501,39 @@ niwa$form.no <- "NIWA"
 #again, by hand
 klv$formation <- c("Tainui", "Tainui", "modern", "modern", "modern", "modern", "modern")
 klv$form.no <- "klv"
+
+###### LOCALITY INFO -----
+fossil$locality <- fossil$formation
+wabo$locality <- wabo$formation
+
+mod.loc <- mod.loc[,1:2]
+mod <- merge(mod, mod.loc,
+              by.x = "specimenNR", by.y = "specimen_no",
+              all.x = TRUE, all.y = FALSE)
+mod$locality.code[mod$specimenNR == "1200CC"] <- "NL-23"
+colnames(mod)[colnames(mod) == 'locality.code'] <- 'locality'
+
+#using sample no because station id not filled in, seems to be ok
+bleed.loc <- bleed.loc %>%
+    select(file_name, Sample.Location.Date..Collection_no)
+bleed <- merge(bleed, bleed.loc,
+                by.x = "image", by.y = "file_name",
+                all.x = TRUE, all.y = FALSE)
+colnames(bleed)[colnames(bleed) == 'Sample.Location.Date..Collection_no'] <- 'locality'
+
+
+niwa.loc <- niwa.loc %>% 
+    select(File_name, stationID)
+niwa <- merge(niwa, niwa.loc,
+               by.x = "image", by.y = "File_name",
+               all.x = TRUE, all.y = FALSE)
+colnames(niwa)[colnames(niwa) == 'stationID'] <- 'locality'
+
+#by hand
+klv$locality <- ""
+klv$locality[klv$specimenNR == "pdt20893"] <- klv$formation[klv$specimenNR == "pdt20893"]
+klv$locality[klv$specimenNR == "pdt21191"] <- "Steward Island"
+klv$locality[klv$specimenNR == "NIWA98542"] <- "KAH0907/15"
 
 ##### CHECK FOR DUPES -----
 ###### FOSSILS ------
@@ -569,8 +615,8 @@ mod.rm.img <- c("1200CC", #this was changed to 1222
                 "1216CC",
                 "1220CC")
 mod <- mod[!(mod$specimenNR %in% mod.rm.img),]
-nrow(mod) #219
-length(unique(mod$specimenNR)) #19
+nrow(mod) #242
+length(unique(mod$specimenNR)) #24
 
 #### COMBINE DATASETS AND WRITE OUT DATASET ----
 #make columns match
@@ -595,10 +641,10 @@ images.df <- as.data.frame(rbind(fossil,
                                  bleed,
                                  niwa,
                                  klv))
-nrow(images.df) #7391
+nrow(images.df) #7412
 
 write.csv(images.df,
-          "./Data/images.filtered_21Jun2024.csv",
+          "./Data/images.filtered_1Jul2024.csv",
           row.names = FALSE)
 
 # #filter images

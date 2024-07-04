@@ -13,12 +13,9 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("Data/traits_27May2024.csv", #30Nov2023,29Sept2023.csv",
+df <- read.csv("./Results/traits_1Jul2024.csv", #30Nov2023,29Sept2023.csv",
                header = TRUE)
 #output from traits.R
-
-df.3 <- read.csv("./Results/traits.3zoo_27May2024.csv",
-                 header = TRUE)
 
 #### MANIPULATE DATA ----
 traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
@@ -28,10 +25,6 @@ df$formation <- factor(df$formation,
                        levels = c("NKLS", "NKBS", "Tewkesbury",
                                   "Upper Kai-Iwi", "Tainui",
                                   "SHCSBSB", "modern"))
-df.3$formation <- factor(df.3$formation, 
-                         levels = c("NKLS", "NKBS", "Tewkesbury",
-                                    "Upper Kai-Iwi", "Tainui",
-                                    "SHCSBSB", "modern"))
 
 ##### DISTRIBUTION -----
 p.ln.zh <- ggplot(df) +
@@ -77,34 +70,6 @@ p.dist <- ggplot(traits.melt.trim) +
     scale_y_continuous(name = "Density") +
     scale_x_continuous(expression(ln~trait~(mu*m)))
 
-## with 3 zoo per colony
-traits.melt.3 <- melt(data = df.3,
-                    id.vars = c("boxID", "zooid.id","image",
-                                "colony.id", "formation"),
-                    variable.name = "measurementType",
-                    value.name = "measurementValue")
-length(unique(traits.melt.3$colony.id)) #744 unique colonies
-
-traits.stats.3 <- traits.melt.3 %>%
-    dplyr::group_by(measurementType) %>%
-    dplyr::summarise(avg = mean(measurementValue))
-
-traits.stats.form.3 <- traits.melt.3 %>%
-    dplyr::group_by(measurementType, formation) %>%
-    dplyr::summarise(avg = mean(measurementValue))
-
-traits.melt.trim.3 <- traits.melt.3[traits.melt.3$measurementType %in% traits,]
-
-p.dist.3 <- ggplot(traits.melt.trim.3) +
-    geom_density(aes(x = measurementValue,
-                     group = measurementType,
-                     col = measurementType)) + #lots are bimodal
-    ggtitle(paste0("Distribution of traits, N zooids = ", length(unique(traits.melt$zooid.id)), ", N colony = ", length(unique(traits.melt$colony.id)))) +
-    plot.theme +
-    scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~trait~(mu*m)))
-
-
 ##### REMOVE PUTATIVE CRYPTIC SPECIES -----
 ## bimodality in traits, driven by colonies with unusually small zooids
 
@@ -145,7 +110,7 @@ View(prop.sm)
 
 #goes from 100% to 20%; perhaps make 20% the cut off
 rm.col <- prop.sm$colony.id[prop.sm$prop.sm == 1]
-length(rm.col) #31 colonies (rm 33 colonies for 3 zooids per colony)
+length(rm.col) #34 colonies
 
 reg.colonies <- df[!(df$colony.id %in% rm.col),]
 nrow(reg.colonies) #5687
@@ -155,15 +120,11 @@ chk <- reg.colonies %>%
   dplyr::group_by(colony.id) %>%
   dplyr::summarise(n.zoo = length(zooid.id)) %>%
   as.data.frame()
-min(chk$n.zoo) #5, do not need to redo
+min(chk$n.zoo) #3, do not need to redo
 
 ##### WRITE OUT DATASET ----
 write.csv(reg.colonies,
-          "./Results/colonies.traits_27May2024.csv",
-          row.names = FALSE)
-
-write.csv(reg.colonies.3,
-          "./Results/colonies.traits.3zoo_27May2024.csv",
+          "./Results/colonies.traits_1Jul2024.csv",
           row.names = FALSE)
 
 ##### ABOUT TRAITS -----
@@ -198,7 +159,7 @@ mean_by_formation_colony = df %>% #use this going forward
                      avg.c.side = mean(ln.c.side, na.rm = T),
                      sd.c.side = sd(ln.c.side, na.rm = T)) %>%
     as.data.frame()
-min(mean_by_formation_colony$n.zooid) #5
+min(mean_by_formation_colony$n.zooid) #3
 
 mean_by_formation = df %>%
     dplyr::group_by(formation) %>%
@@ -260,10 +221,6 @@ write.csv(mean_by_formation,
           "Results/mean.per.formation.csv",
           row.names = FALSE)
 
-write.csv(mean_by_formation.3,
-          "Results/mean.per.formation.3zoo.csv",
-          row.names = FALSE)
-
 colony_means = df %>%
     dplyr::group_by(colony.id) %>%
     dplyr::summarize(formation = formation[1],
@@ -292,9 +249,6 @@ means = df %>%
 sum.data.list = list(mean_by_formation, mean_by_formation_colony, means)
 save(sum.data.list,
      file = "./Results/sum.data.list.RData")
-
-save(sum.data.list.3,
-     file = "./Results/sum.data.list.3.RData")
 
 #### CORRELATIONS & ALLOMETRIES ----
 ## are these coming from the same individuals??
@@ -361,13 +315,12 @@ write.csv(traitCorr,
           "./Results/trait.correlations.csv",
           row.names = FALSE)
 
-write.csv(traitCorr.3,
-          "./Results/trait.correlations.3zoo.csv",
-          row.names = FALSE)
-
 #### LOOK AT CHANGES OVER TIME AND BETWEEN FORMATIONS ------
 ## Add meta data
-form.df <- form.meta[c(1:7,12),] #in same order as mean_by_formation
+form.df <- form.meta[c(1:3,5:8),] #in same order as mean_by_formation
+
+form.df$Start_age <- as.numeric(form.df$Start_age)
+form.df$End_age <- as.numeric(form.df$End_age)
 
 for(i in 1:nrow(form.df)){
   form.df$mean.age[i] <- mean(form.df$Start_age[i], form.df$End_age[i], na.rm = TRUE)
@@ -482,10 +435,6 @@ diff.stats <- as.data.frame(cbind(diff.form, diff.ln.zh, diff.ln.mpw.b,
 
 write.csv(diff.stats,
           "./Results/diff.in.traits.csv",
-          row.names = FALSE)
-
-write.csv(diff.stats.3,
-          "./Results/diff.in.traits.3zoo.csv",
           row.names = FALSE)
 
 ## how is sd a function of sample size (number of zooids and number of colonies)?
@@ -912,7 +861,8 @@ reg.colonies$formation <- factor(reg.colonies$formation,
                                   "SHCSBSB", "modern"))
 reg.colonies %>% 
     dplyr::group_by(formation) %>%
-    dplyr::summarize(n.col = length(unique(colony.id)),
+    dplyr::summarize(n.image = length(unique(image)),
+                     n.col = length(unique(colony.id)),
                      n.zooid = length(zooid.id),
                      avg.zh = mean(exp(ln.zh), na.rm = T),
                      avg.mpw.b = mean(exp(ln.mpw.b), na.rm = T),
@@ -934,3 +884,4 @@ reg.colonies %>%
 #modern oh: in the middle
 #modern o.side: towards big, but not the biggest
 #modern c.side: in the middle
+

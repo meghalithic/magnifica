@@ -11,12 +11,12 @@
 
 source("./Scripts/0-env.R")
 
-images.df <- read.csv("./Data/images.filtered_21Jun2024.csv", #images.merged_30Nov2023.csv,
+images.df <- read.csv("./Data/images.filtered_1Jul2024.csv", #images.merged_30Nov2023.csv,
                       header = TRUE, 
                       sep = ",")
 
 #### EXPLORE DATA ----
-nrow(images.df) #7254
+nrow(images.df) #7412
 
 #### MANIPULATE DATA ####
 
@@ -112,48 +112,39 @@ images.df$c.side.l.px <- len.py(images.df$X9, images.df$X8,
 #all bleed are at 40x, which is 0.825 pixels per um
 #the only bleed numbers included are: 686, 244, 242; form.no = BLEED
 #recalculate them manually
-images.df$zh <- images.df$zh.px/.606
-images.df$oh.l <- images.df$oh.l.px/.606
-images.df$oh.r <- images.df$oh.r.px/.606
-images.df$ow.b <- images.df$ow.b.px/.606
-images.df$ow.m <- images.df$ow.m.px/.606
-images.df$mpw.b <- images.df$mpw.b.px/.606
-images.df$cw.m <- images.df$cw.m.px/.606
-images.df$cw.d <- images.df$cw.d.px/.606
-images.df$c.side.r <- images.df$c.side.r.px/.606
-images.df$c.side.l <- images.df$c.side.l.px/.606
-images.df$o.side.r <- images.df$o.side.r.px/.606
-images.df$o.side.l <- images.df$o.side.l.px/.606
-
-images.df$zh[images.df$form.no == "BLEED"] <- images.df$zh.px[images.df$form.no == "BLEED"]/.825
-images.df$oh.l[images.df$form.no == "BLEED"] <- images.df$oh.l.px[images.df$form.no == "BLEED"]/.825
-images.df$oh.r[images.df$form.no == "BLEED"] <- images.df$oh.r.px[images.df$form.no == "BLEED"]/.825
-images.df$ow.b[images.df$form.no == "BLEED"] <- images.df$ow.b.px[images.df$form.no == "BLEED"]/.825
-images.df$ow.m[images.df$form.no == "BLEED"] <- images.df$ow.m.px[images.df$form.no == "BLEED"]/.825
-images.df$mpw.b[images.df$form.no == "BLEED"] <- images.df$mpw.b.px[images.df$form.no == "BLEED"]/.825
-images.df$cw.m[images.df$form.no == "BLEED"] <- images.df$cw.m.px[images.df$form.no == "BLEED"]/.825
-images.df$cw.d[images.df$form.no == "BLEED"] <- images.df$cw.d.px[images.df$form.no == "BLEED"]/.825
-images.df$c.side.r[images.df$form.no == "BLEED"] <- images.df$c.side.r.px[images.df$form.no == "BLEED"]/.825
-images.df$c.side.l[images.df$form.no == "BLEED"] <- images.df$c.side.l.px[images.df$form.no == "BLEED"]/.825
-images.df$o.side.r[images.df$form.no == "BLEED"] <- images.df$o.side.r.px[images.df$form.no == "BLEED"]/.825
-images.df$o.side.l[images.df$form.no == "BLEED"] <- images.df$o.side.l.px[images.df$form.no == "BLEED"]/.825
+images.df$zh <- images.df$zh.px/images.df$scale
+images.df$oh.l <- images.df$oh.l.px/images.df$scale
+images.df$oh.r <- images.df$oh.r.px/images.df$scale
+images.df$ow.b <- images.df$ow.b.px/images.df$scale
+images.df$ow.m <- images.df$ow.m.px/images.df$scale
+images.df$mpw.b <- images.df$mpw.b.px/images.df$scale
+images.df$cw.m <- images.df$cw.m.px/images.df$scale
+images.df$cw.d <- images.df$cw.d.px/images.df$scale
+images.df$c.side.r <- images.df$c.side.r.px/images.df$scale
+images.df$c.side.l <- images.df$c.side.l.px/images.df$scale
+images.df$o.side.r <- images.df$o.side.r.px/images.df$scale
+images.df$o.side.l <- images.df$o.side.l.px/images.df$scale
 
 ##### CHECK FOR ASYMMETRY -----
 p.o.side.rl <- ggplot(images.df) +
-  geom_point(aes(x = o.side.l, y = o.side.r)) +
+  geom_point(aes(x = o.side.l, y = o.side.r)) + #,
+                 #group = formation, fill = formation, col = formation)) +
   ggtitle(paste0("Operculum Side Length, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
   plot.theme +
+  theme(legend.position = "top") + 
   scale_y_continuous(name = "Operculum Length Right Side (pixels)") +
   scale_x_continuous(name = "Operculum Length Left Side (pixels)")
+#modern doesn't look that different from everything else
 
 ggsave(p.o.side.rl, 
        file = "./Results/operculum.length.png", width = 14, height = 10, units = "cm")
 
 summary(lm(images.df$o.side.r ~ images.df$o.side.l)) 
-# slope = 0.91; p-value < 2.2e-16; r2 = 0.95
+# slope = 0.92; p-value < 2.2e-16; r2 = 0.95
 
 p.c.side.rl <- ggplot(images.df) +
-  geom_point(aes(x = c.side.l, y = c.side.l)) +
+  geom_point(aes(x = c.side.l, y = c.side.l)) + #,
+    #group = formation, fill = formation, col = formation)) +
   ggtitle(paste0("Cryptocyst Side Length, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
   plot.theme +
   scale_y_continuous(name = "Cryptocyst Length Right Side (pixels)") +
@@ -168,7 +159,8 @@ summary(lm(images.df$c.side.r ~ images.df$c.side.l))
 
 ## right v left side of operculum height
 p.oh.rl <- ggplot(images.df) +
-  geom_point(aes(x = oh.l, y = oh.r)) +
+  geom_point(aes(x = oh.l, y = oh.r)) + #,
+    #group = formation, fill = formation, col = formation)) +
   ggtitle(paste0("Operculum Height, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
   plot.theme +
   scale_y_continuous(name = "Operculum Height Right Side (pixels)") +
@@ -192,12 +184,13 @@ images.df$oh <- (.5/images.df$ow.b)*sqrt(images.df$ow.b+images.df$oh.r+images.df
 
 ##### TRIM TO TRAITS ONLY ----
 traits.df <- images.df %>%
-  dplyr::select(box_id, image,
-         colony.id, zooid.id,
-         formation,
-         zh, oh, ow.m, ow.b, 
-         mpw.b, cw.m, cw.d,
-         o.side, c.side)
+  dplyr::select(box_id, image, 
+                source, Mag, 
+                colony.id, zooid.id, 
+                formation, locality,
+                zh, oh, ow.m, ow.b, 
+                mpw.b, cw.m, cw.d,
+                o.side, c.side)
 
 colnames(traits.df)[colnames(traits.df) == 'box_id'] <- 'boxID'
 
@@ -212,59 +205,251 @@ traits.df$ln.o.side <- log(traits.df$o.side)
 traits.df$ln.c.side <- log(traits.df$c.side)
 #cw.b too variable??
 
-##### MINIMUM 5 ZOOIDS PER COLONY -----
+##### MINIMUM 3 ZOOIDS PER COLONY -----
 samp.zoo <- traits.df %>%
     dplyr::group_by(colony.id) %>%
     dplyr::summarize(n.zooid = length(unique(zooid.id)),
                      formation = formation[1]) %>%
     as.data.frame()
-nrow(samp.zoo) #802 colonies total
+nrow(samp.zoo) #822 colonies total
 
-too.few <- samp.zoo[samp.zoo$n.zooid < 5,]
-nrow(too.few) #172 colonies to remove
+too.few <- samp.zoo[samp.zoo$n.zooid < 3,]
+nrow(too.few) #60 colonies to remove
 table(too.few$formation)
-#low samples for: Upper Kai-Iwi, Tainui, Modern
 #see which ones are removed and if can't redo them
-low.samp <- c("Upper Kai-Iwi", "Tainui", "modern", "NKLS", "SHCSBSB")
-too.few[too.few$formation %in% low.samp,]
-#would add 10 Upper Kai-Iwi; 4 modern; and 9 Tainui; 30 to NKLS; 44 to SHCSBSB
-too.few %>%
-  dplyr::group_by(formation) %>%
-  dplyr::summarise(n.col = length(unique(colony.id)))
 
-keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 5]
-length(keep) #630 colonies
+keep <- samp.zoo$colony.id[samp.zoo$n.zooid >= 3]
+length(keep) #760 colonies
 
 df <- traits.df[traits.df$colony.id %in% keep,]
-nrow(df) #6755
+nrow(df) #7309
+
+df %>%
+    group_by(formation) %>%
+    summarise(n.col = length(unique(colony.id)))
 
 df %>%
     group_by(formation) %>%
     summarise(n.image = length(unique(image)))
-length(unique(df$image))
+length(unique(df$image)) #1578
 
-three <- samp.zoo[samp.zoo$n.zooid < 3,]
-three %>% 
-    dplyr::group_by(formation) %>% 
-    dplyr::summarise(n.col = length(unique(colony.id)))
+#### CHECK FOR EFFECT OF MAGNIFICATION ----
+colnames(df)
 
-keep.3 <- samp.zoo$colony.id[samp.zoo$n.zooid >= 3]
-df.3 <- traits.df[traits.df$colony.id %in% keep.3,]
-nrow(df.3) #7157
+table(df$Mag, df$formation) #modern is the only one with different magnifications
+#the most are in 50
 
-df.3 %>%
+ggplot(df) +
+    geom_density(aes(x = log(zh),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#shifted larger with larger mag
+
+ggplot(df) +
+    geom_density(aes(x = log(ow.b),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#slightly shifted larger with larger mag
+
+ggplot(df) +
+    geom_density(aes(x = log(ow.m),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#shifted larger with larger mag
+
+ggplot(df) +
+    geom_density(aes(x = log(mpw.b),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#shifted larger with larger mag
+
+ggplot(df) +
+    geom_density(aes(x = log(cw.m),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#amazingly not shifted
+
+ggplot(df) +
+    geom_density(aes(x = log(cw.d),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#amazingly not shifted
+
+ggplot(df) +
+    geom_density(aes(x = log(o.side),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#only slightly shifted
+
+ggplot(df) +
+    geom_density(aes(x = log(c.side),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#amazingly not shifted
+
+ggplot(df) +
+    geom_density(aes(x = log(oh),
+                     group = Mag, col = Mag)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#mostly not shifted
+
+summary(manova(cbind(log(zh), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(oh)) ~ Mag, 
+               data = df[df$formation == "modern",]))
+#significant
+
+#trim to just 30
+df.30 <- df[df$Mag == "x30",]
+df.30 %>% 
     group_by(formation) %>%
-    summarise(n.image = length(unique(image)))
-length(unique(df.3$image))
+    summarise(n.col = length(unique(colony.id))) #still 30 in modern! woo!
+
+df <- df.30
+
+df.30.mod <- df[df$formation == "modern",]
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(zh),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#TS-3 weird, but otherwise ok
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(ow.b),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#weirdness with M797, TAN1108/233
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(ow.m),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(mpw.b),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#something weird with Z8662
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(cw.m),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#some weirdness with M797 and TS-10
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(cw.d),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#some weirdness with TAN1108/233, M797
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(o.side),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#Z8662 off
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(c.side),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#weirdness again with M797, a bit with KWB_Feb
+
+ggplot(df.30.mod) +
+    geom_density(aes(x = log(oh),
+                     group = locality, col = locality)) +
+    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    plot.theme +
+    theme(legend.position = "right") + 
+    scale_y_continuous(name = "Density") +
+    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+#weirdness with TS-3
+
+summary(manova(cbind(log(zh), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(oh)) ~ locality, 
+               data = df.30.mod))
+#significant
+
+#what if remove z8862 and M797 and TAN1108/233?
+rm.loc <- c("M797", "TAN1108/233", "Z8662")
+summary(manova(cbind(log(zh), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(oh)) ~ locality, 
+               data = df.30.mod[!(df.30.mod$locality %in% rm.loc),])) #still sig
+#what if remove all niwa?
+summary(manova(cbind(log(zh), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(oh)) ~ locality, 
+               data = df.30.mod[df.30.mod$source != "NIWA",])) #still sig
+#still sig
 
 #### WRITE OUT DATASET ----
 
 write.csv(df,
-          "./Results/traits_27May2024.csv",
-          row.names = FALSE)
-
-write.csv(df.3,
-          "./Results/traits.3zoo_27May2024.csv",
+          "./Results/traits_1Jul2024.csv",
           row.names = FALSE)
 
 #### OLD ----

@@ -40,7 +40,7 @@
 
 source("./Scripts/0-env.R")
 
-df <- read.csv("./Results/colonies.traits_27May2024.csv",
+df <- read.csv("./Results/colonies.traits_1Jul2024.csv",
                header = TRUE, 
                sep = ",",
                stringsAsFactors = FALSE)
@@ -51,6 +51,8 @@ load(file = "./Results/sum.data.list.RData") #load the g matrices calculated abo
 mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
 means <- sum.data.list[[3]]
+
+mean(mean_by_formation_colony$n.zooid)
 
 #### MANIPULATE DATA ----
 
@@ -75,7 +77,7 @@ length(traits) #8
 
 ##### TRIM DATASET ----
 df.trim <- df %>%
-  dplyr::select(zooid.id, colony.id, formation, matches(traits))
+  dplyr::select(zooid.id, colony.id, locality, formation, matches(traits))
 
 colNums <- match(c(traits, "zooid.id"), names(df.trim))
 #  4  5 6  7  8  9 10 11  1 (i.e., 4:11 are traits of interest)
@@ -157,10 +159,6 @@ ggsave(ml,
        file = "./Results/trait.distribution.png", 
        width = 14, height = 20, units = "cm")
 
-ggsave(ml.3, 
-       file = "./Results/trait.distribution.3zoo.png", 
-       width = 14, height = 20, units = "cm")
-
 #### NORMALITY TESTS ----
 ## shapiro test; but need to subsample to be within 5000
 ## if significant, then significantly different from normal (i.e., non-normal)
@@ -237,7 +235,7 @@ write.csv(df.norm,
           row.names = FALSE)
 
 #### REDUCE TO TRAITS OF INTEREST ----
-trt_lg_N = c("formation", "colony.id", "zooid.id", traits)
+trt_lg_N = c("formation", "colony.id", "zooid.id", "locality", traits)
 dat_lg_N = df[intersect(colnames(df), trt_lg_N)]
 head(dat_lg_N) #traits in same order as df and traits
 
@@ -276,13 +274,9 @@ col.samp <- c(col_form.n[[1]], col_form.n[[2]], col_form.n[[3]],
 zoo.samp <- c(by_form.n[[1]], by_form.n[[2]], by_form.n[[3]],
               by_form.n[[4]], by_form.n[[5]], by_form.n[[6]],
               by_form.n[[7]])
-samp <- cbind(form, col.samp, zoo.samp)
+samp <- as.data.frame(cbind(form, col.samp, zoo.samp))
 write.csv(samp,
           "./Results/sampling.per.formation.csv",
-          row.names = FALSE)
-
-write.csv(samp.3,
-          "./Results/sampling.per.formation.3zoo.csv",
           row.names = FALSE)
 
 #### P MATRIX ----
@@ -337,10 +331,6 @@ ggsave(P_PC_dist,
        file = "./Results/P.PC.dist.png", 
        width = 14, height = 10, units = "cm") 
 
-ggsave(P_PC_dist.3, 
-       file = "./Results/P.PC.dist.3zoo.png", 
-       width = 14, height = 10, units = "cm") 
-
 ##### PC LOADINGS -----
 #p.eig_variances values = Pmax; loadings 1-8 because of dimensions = PC1-PC8
 #what does PC1 correlate with?
@@ -386,9 +376,15 @@ corrplot.mixed(p.corr_mat, upper = "number", lower = "pie")
 
 ##### PRIORS -----
 #same as p.cov
-phen.var = lapply(form_data, function (x){ (cov(x[, 4:11]))}) #traits of ALL; correct for colony later
+phen.var = lapply(form_data, function (x){ (cov(x[, 5:12]))}) #traits of ALL; correct for colony later
 prior = lapply(phen.var, function (x){list(G = list(G1 = list(V = x/2, nu = 2)),
                                            R = list(V = x/4, nu = 2))})
+
+form.mod <- form_data$modern
+phen.var.mod = cov(form.mod[, 5:12]) #traits of ALL; correct for colony later
+prior.mod = list(G = list(G1 = list(V = phen.var.mod/2, nu = 2),
+                           G2 = list(V = phen.var.mod/4,nu = 2)),
+                  R = list(V = phen.var.mod/4, nu = 2))
 
 ##### MCMC -----
 #Running the MCMC chain
@@ -403,35 +399,51 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
                          data = form_data[[i]],
                          nitt = 1500000, thin = 1000, burnin = 500000,
                          prior = prior[[i]], verbose = TRUE)
-  
 }
+
+##need locality data for modern first
+model_G.mod <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
+                               ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1, #get rid of "trait" alone?
+                         #account for variation w/in colony:
+                         random = ~us(trait):colony.id + us(trait):locality, #the number of these determines # of Gs
+                         rcov = ~us(trait):units,
+                         family = rep("gaussian", 8), #num of traits
+                         data = form.mod, #need to have formation as factor in data matrix
+                         nitt = 1500000, thin = 1000, burnin = 500000,
+                         prior = prior.mod, verbose = TRUE)
 
 save(model_G,
      file = "./Results/model_G.RData")
 
-save(model_G.3,
-     file = "./Results/model_G.3zoo.RData")
+save(model_G.mod,
+     file = "./Results/model_G.mod.locality.RData")
 
-load(file = "./Results/model_G.RData") #load the g matrices calculated above 
+model_G_all <- model_G
+model_G_all[[7]] <- model_G.mod
+save(model_G_all,
+     file = "./Results/model_G_all.RData")
+
+load(file = "./Results/model_G_all.RData") #load the g matrices calculated above 
+
 
 ##### CHECK MODELS -----
 formation_list #order of formations
-summary(model_G[[1]])
-summary(model_G[[2]])
-summary(model_G[[3]])
-summary(model_G[[4]])
-summary(model_G[[5]])
-summary(model_G[[6]])
-summary(model_G[[7]])
+summary(model_G_all[[1]])
+summary(model_G_all[[2]])
+summary(model_G_all[[3]])
+summary(model_G_all[[4]])
+summary(model_G_all[[5]])
+summary(model_G_all[[6]])
+summary(model_G_all[[7]])
 
 ##plots to see where sampling from:
-plot(model_G[[1]]$VCV) #catepillar!
-plot(model_G[[2]]$VCV) #catepillar!
-plot(model_G[[3]]$VCV) #catepillar!
-plot(model_G[[4]]$VCV) #catepillar!; high skew
-plot(model_G[[5]]$VCV) #catepillar!
-plot(model_G[[6]]$VCV) #catepillar!; high skew
-plot(model_G[[7]]$VCV) #catepillar!
+plot(model_G_all[[1]]$VCV) #catepillar!
+plot(model_G_all[[2]]$VCV) #catepillar!
+plot(model_G_all[[3]]$VCV) #catepillar!
+plot(model_G_all[[4]]$VCV) #catepillar!; high skew
+plot(model_G_all[[5]]$VCV) #catepillar!
+plot(model_G_all[[6]]$VCV) #catepillar!; high skew
+plot(model_G_all[[7]]$VCV) #catepillar!
 #formations from oldest to youngest: "NKLS", "NKBS", "Tewkesbury", 
 #                                    "Upper Kai-Iwi", "Tainui", 
 #                                    "SHCSBSB", "modern"
@@ -473,9 +485,9 @@ diag(prior$SHCSBSB$G$G1$V) < diag(phen.var[[6]])
 diag(prior$SHCSBSB$R$V) < diag(phen.var[[6]])
 
 # modern
-diag(phen.var[[7]]) #all larger
-diag(prior$modern$G$G1$V) < diag(phen.var[[7]])
-diag(prior$modern$R$V) < diag(phen.var[[7]])
+diag(phen.var.mod) #all larger
+diag(prior.mod$G$G1$V) < diag(phen.var.mod)
+diag(prior.mod$R$V) < diag(phen.var.mod)
 
 #RETRIEVE THE P MATRIX FROM THE MCMC OBJECT
 # p matrix for each formation (maybe colony?)
@@ -512,7 +524,7 @@ d.col.vcv.uki < diag(Pmat[[4]]) # zh, mpw.b, cw.m, cw.d, ow.m, oh, c.side, o.sid
 
 ##### POSTERIOR G MATRIX -----
 #Retrieving G from posterior
-g.model = model_G
+g.model = model_G_all
 ntraits = 8
 Gmat = lapply(g.model, function (x) { 
   matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
@@ -582,16 +594,13 @@ G_PC_dist = ggplot(g.eig_per,
 G_PC_dist 
 #none above 1
 #modern negative at 6...dim 5
+#upper kai iwi still weird
 #have negative values because have negative variances,
 #meaning that the PC value does not do a good job explaining the variance
 
 ggsave(G_PC_dist, 
        file = "./Results/G.PC.dist.png", 
        width = 14, height = 10, units = "cm")
-
-ggsave(G_PC_dist.3, 
-       file = "./Results/G.PC.dist.3zoo.png", 
-       width = 14, height = 10, units = "cm") #modern still wonky
 
 #Note that some matrices have negative eigenvalues. 
 #This can cause a lot of trouble in analyses involving inverted matrices.
@@ -663,8 +672,6 @@ plot(diag(Gmat[[1]]), diag(Pmat[[1]]),
      xlim = c(0, .05),
      ylim = c(0, .2))
 abline(0, 1) 
-summary(lm(diag(Pmat[[1]]) ~ diag(Gmat[[1]]))) 
-#slope = 2.5; r2 = 0.5; p is sig 0.009
 
 plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      pch = 19, col = col.form[2],
@@ -672,8 +679,6 @@ plot(diag(Gmat[[2]]), diag(Pmat[[2]]),
      ylab = "P non-standardized diagonal",
      main = "NKBS")
 abline(0, 1)
-summary(lm(diag(Pmat[[2]]) ~ diag(Gmat[[2]])))
-#slope = 3.7; r2 = 0.8; p is sig 0.003
 
 plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      pch = 19, col = col.form[3],
@@ -683,9 +688,6 @@ plot(diag(Gmat[[3]]), diag(Pmat[[3]]),
      xlim = c(0, 0.01),
      ylim = c(0, 0.05))
 abline(0, 1) 
-summary(lm(diag(Pmat[[3]]) ~ diag(Gmat[[3]])))
-#slope = 3.5; r2=0.9; p is sig 0.002
-
 
 plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      pch = 19, col = col.form[4],
@@ -693,8 +695,6 @@ plot(diag(Gmat[[4]]), diag(Pmat[[4]]),
      ylab = "P non-standardized diagonals",
      main = "Upper Kai-Iwi")
 abline(0, 1) 
-summary(lm(diag(Pmat[[4]]) ~ diag(Gmat[[4]])))
-#slope = 1.2; r2 = 0.7; p is sig 0.008
 
 plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      pch = 19, col = col.form[5],
@@ -702,8 +702,6 @@ plot(diag(Gmat[[5]]), diag(Pmat[[5]]),
      ylab = "P non-standardized diagonal",
      main = "Tainui")
 abline(0, 1) 
-summary(lm(diag(Pmat[[5]]) ~ diag(Gmat[[5]]))) 
-#slope = 2.6; r2 = 0.9; p is sig 0.0001
 
 plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      pch = 19, col = col.form[6],
@@ -713,8 +711,6 @@ plot(diag(Gmat[[6]]), diag(Pmat[[6]]),
      xlim = c(0, 0.01),
      ylim = c(0,0.05))
 abline(0, 1) 
-summary(lm(diag(Pmat[[6]]) ~ diag(Gmat[[6]]))) 
-#slope = 2.2; r2 = 0.6; p is sig 0.02
 
 plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      pch = 19, col = col.form[7],
@@ -724,8 +720,6 @@ plot(diag(Gmat[[7]]), diag(Pmat[[7]]),
      xlim = c(0, 0.01),
      ylim = c(0,0.05))
 abline(0, 1) 
-summary(lm(diag(Pmat[[7]]) ~ diag(Gmat[[7]]))) 
-#slope = 1.3; r2 = 0.7; p = 0.004
 
 #### RAREFACTION ----
 ##Rarefaction - 
@@ -800,21 +794,15 @@ plot(out_results[, 2], out_results[, 1],
 points(obs_melt$N, obs_melt$RS, 
        col = "#00BFC4", pch = 19, cex = .5)
 
-## find which ones are outside of the gray
-#low sample size, smallest similarity
-obs_melt[obs_melt$RS < .8,] #0.7883143, 0.7792872, 0.7298302, 0.6671463, 0.7688725, 0.7657978
-comp_mat$correlations #all modern comparison
-
-obs_melt.3[obs_melt.3$RS < .8,]
-comp_mat.3$correlations #modern and NKLS, modern and Tewks, modern and uki, modern and tai, modern and shcsbsb
+## none are outside the gray
+# previously the modern sites were, but it seems that was due to locality
+# and now that has been corrected for!
 
 p.rare <- ggplot() +
     geom_point(aes(out_results[, 2], out_results[, 1]),
                pch = 19, col = "grey", size = 2) +
     geom_point(aes(obs_melt$N, obs_melt$RS),
                col = "#00BFC4", pch = 19, size = 2) + 
-    geom_point(aes(obs_melt$N[obs_melt$RS < 0.8 ], obs_melt$RS[obs_melt$RS < 0.8]), #using to check where the points are
-               col = "red", pch = 19, size = 2) +
     plot.theme +
     scale_x_continuous(name = "Sample size") +
     scale_y_continuous(name = "Similarity") 
@@ -823,16 +811,12 @@ ggsave(p.rare,
        file = "./Results/rarefaction.png", 
        width = 14, height = 10, units = "cm")
 
-ggsave(p.rare.3, 
-       file = "./Results/rarefaction.3zoo.png", 
-       width = 14, height = 10, units = "cm")
-
 #### GLOBAL G ----
 
 ##### PRIORS -----
 
 #dat_lg_N.com = dat_lg_N[complete.cases(dat_lg_N),] #didn't fix anything
-phen.var.glob = cov(dat_lg_N[, 4:11]) #traits of ALL; correct for colony and formation later
+phen.var.glob = cov(dat_lg_N[, 5:12]) #traits of ALL; correct for colony and formation later
 prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 2)), #nu = 10 #V same as individual G matrices; nu is different
                   R = list(V = phen.var.glob/4, nu = 2)) #nu = 5 #V same as individual G matrices
 
@@ -851,9 +835,6 @@ model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as
 
 save(model_Global, 
      file = "./Results/global_matrix.RData")
-
-save(model_Global.3, 
-     file = "./Results/global_matrix.3zoo.RData")
 
 load(file="./Results/global_matrix.RData") #load the g matrices calculated above 
 model_Global
@@ -906,10 +887,6 @@ ggsave(Glob_PC_dist,
        file = "./Results/GlobalG.PC.dist.png", 
        width = 14, height = 10, units = "cm")
 
-ggsave(Glob_PC_dist.3, 
-       file = "./Results/GlobalG.PC.dist.3zoo.png", 
-       width = 14, height = 10, units = "cm")
-
 #Note that some matrices have negative eigenvalues. 
 #This can cause a lot of trouble in analyses involving inverted matrices.
 #Solution from evolqg Marroig et al. 2012
@@ -935,9 +912,6 @@ corrplot.mixed(glob.corr_mat,upper = "number", lower = "pie")
 
 save(Glob_ext, 
      file = "./Results/global_ext.RData")
-
-save(Glob_ext.3, 
-     file = "./Results/global_ext.3zoo.RData")
 
 load(file="./Results/global_ext.RData") #load the g matrices calculated above 
 Glob_ext
