@@ -46,7 +46,8 @@ p.ln.zh.form <- ggplot(df) +
 
 traits.melt <- melt(data = df,
                     id.vars = c("boxID", "zooid.id","image",
-                                "colony.id", "formation"),
+                                "colony.id", "formation", 
+                                "source", "Mag", "locality"),
                     variable.name = "measurementType",
                     value.name = "measurementValue")
 length(unique(traits.melt$colony.id)) #630 unique colonies
@@ -540,6 +541,7 @@ traits.melt$formation <- factor(traits.melt$formation,
                                 levels = c("NKLS", "NKBS", "Tewkesbury", 
                                            "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern")) 
 
+traits.melt <- traits.melt[traits.melt$colony.id %in% reg.colonies$colony.id,]
 box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",], 
        aes(x = formation, 
            y = measurementValue, 
