@@ -17,6 +17,8 @@
 # - comparison of direction of ∆z compared to Emax (table and graph)
 
 #### LOAD DATA ----
+source("./Scripts/0-env.R")
+
 load(file = "./Results/sum.data.list.RData") #load the g matrices calculated above 
 mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
@@ -36,7 +38,9 @@ form_data <- data.list[[9]]
 by_form.n <- data.list[[10]]
 col_form.n <- data.list[[11]]
 
-source("./Scripts/0-env.R")
+load(file = "./Results/size.list.RData")
+P_size <- size.list[[1]]
+G_size <- size.list[[2]]
 
 load(file = "./Results/evol.diff.list.RData") #load the g matrices calculated above 
 
@@ -285,7 +289,7 @@ ggsave(e.evol,
 
 # By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
 
-##### CHANGE IN GMAX BETWEEN FORMATIONS -----
+##### CHANGE IN EMAX BETWEEN FORMATIONS -----
 
 ### Proportion of variance in n-dimensional trait space that is explained by PC1 (i.e., the first eigenvector)
 #eigen(as.matrix(G_matrix_1))$values[1]/sum(eigen(as.matrix(G_matrix_1))$values)
@@ -595,11 +599,7 @@ p.pg.size <- ggplot(P_G_E_size) +
     ggtitle("Size of P v G")
 
 summary(lm(as.numeric(P_G_E_size$P_size) ~ as.numeric(P_G_E_size$G_size)))
-#slope = -0.077, p-value = 0.93, r2 = 0
-
-ggsave(p.pg.size, 
-       file = "./Results/p.g.size.png", 
-       width = 20, height = 20, units = "cm")
+#slope = 0.24089, p-value = 0.7833, r2 = 0
 
 ## look at only those with high sample size
 keep <- c("NKLS", "NKBS", "Tewkesbury", "SHCSBSB")
@@ -633,81 +633,24 @@ p.pe.size <- ggplot(P_G_E_size) +
     ggtitle("Size of P v E")
 
 summary(lm(as.numeric(P_G_E_size$P_size) ~ as.numeric(P_G_E_size$E_size)))
-#slope = 0.70, p-value = 0.005655, r2 = 0.70
+#slope = 0.89859, p-value = 0.006109, r2 = 0.7666
+## almost sig!!
 
 ggsave(p.pe.size, 
        file = "./Results/p.e.size.png", 
        width = 20, height = 20, units = "cm")
 
-#### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO EMAX ----
+## look at only those with high sample size
+keep <- c("NKLS", "NKBS", "Tewkesbury", "SHCSBSB")
+pge.trim <- P_G_E_size[P_G_E_size$form.name %in% keep,]
+col.form.trim <- c(col.form[1], col.form[2], col.form[3], col.form[7])
 
-### See if change is in direction of G max
-## use Gmax of t1 and compare to ∆z
-# Calculate the dot product of the unit vectors
-dot_product.Emax_NKLS <- sum(Emax_NKLS_norm * evolved_difference_unit_length_t1)
-# Calculate the angle in radians
-angle_radians.Emax_NKLS <- acos(dot_product.Emax_NKLS)
-# Convert the angle to degrees
-angle_degrees.Emax_NKLS <- angle_radians.Emax_NKLS * (180 / pi)
-#153.7483; Gmax is 80.90905
-
-# Calculate the dot product of the unit vectors
-dot_product.Emax_NKBS <- sum(Emax_NKBS_norm * evolved_difference_unit_length_t2)
-# Calculate the angle in radians
-angle_radians.Emax_NKBS <- acos(dot_product.Emax_NKBS)
-# Convert the angle to degrees
-angle_degrees.Emax_NKBS <- angle_radians.Emax_NKBS * (180 / pi)
-#40.60758; Gmax is 43.14475
-
-# Calculate the dot product of the unit vectors
-dot_product.Emax_tewk <- sum(Emax_tewk_norm * evolved_difference_unit_length_t3)
-# Calculate the angle in radians
-angle_radians.Emax_tewk <- acos(dot_product.Emax_tewk)
-# Convert the angle to degrees
-angle_degrees.Emax_tewk <- angle_radians.Emax_tewk * (180 / pi)
-#116.5479; Gmax is 122.1798
-
-# Calculate the dot product of the unit vectors
-dot_product.Emax_uki <- sum(Emax_uki_norm * evolved_difference_unit_length_t4)
-# Calculate the angle in radians
-angle_radians.Emax_uki <- acos(dot_product.Emax_uki)
-# Convert the angle to degrees
-angle_degrees.Emax_uki <- angle_radians.Emax_uki * (180 / pi)
-#120.9149; Gmax is 145.7685
-
-# Calculate the dot product of the unit vectors
-dot_product.Emax_tai <- sum(Emax_tai_norm * evolved_difference_unit_length_t5)
-# Calculate the angle in radians
-angle_radians.Emax_tai <- acos(dot_product.Emax_tai)
-# Convert the angle to degrees
-angle_degrees.Emax_tai <- angle_radians.Emax_tai * (180 / pi)
-#61.79681; Gmax is 40.81748
-
-# Calculate the dot product of the unit vectors
-dot_product.Emax_SHCSBSB <- sum(Emax_SHCSBSB_norm * evolved_difference_unit_length_t6)
-# Calculate the angle in radians
-angle_radians.Emax_SHCSBSB <- acos(dot_product.Emax_SHCSBSB)
-# Convert the angle to degrees
-angle_degrees.Emax_SHCSBSB <- angle_radians.Emax_SHCSBSB * (180 / pi)
-#100.5322; Gmax is 88.28694
-
-angle_diff_Emax_to_z <- c(angle_degrees.Emax_NKLS, angle_degrees.Emax_NKBS,
-                          angle_degrees.Emax_tewk, 
-                          angle_degrees.Emax_uki, angle_degrees.Emax_tai,
-                          angle_degrees.Emax_SHCSBSB, "")
-angle_diff_between_Emax_z <- as.data.frame(cbind(levels(formation_list), angle_diff_Emax_to_z))
-colnames(angle_diff_between_Emax_z) <- c("formation", "angle_diff_Emax_to_P")
-angle_diff_between_Emax_P$angle_diff_Emax_to_z <- as.numeric(angle_diff_between_Emax_P$angle_diff_Emax_to_z)
-
-for(i in 1:nrow(angle_diff_between_Emax_z)){
-    if(isTRUE(angle_diff_between_Emax_z$angle_diff_Emax_to_z[i] > 90)){
-        angle_diff_between_Emax_z$angle_diff_Emax_to_z[i] <- 180 - as.numeric(angle_diff_between_Emax_z$angle_diff_Emax_to_z[i])
-    }
-    else{
-        next
-    }
-}
-
-write.csv(angle_diff_between_Emax_z,
-          "./Results/angle.differences.between.Emax.z.w.modern.csv",
-          row.names = FALSE)
+p.pe.size.trim <- ggplot(pge.trim) +
+    geom_point(aes(y = as.numeric(P_size), x = as.numeric(E_size),
+                   group = form.name, col = form.name),
+               size = 5) + 
+    plot.theme +
+    scale_x_continuous(name = "E matrix size") + 
+    scale_y_continuous(name = "P matrix size") +
+    scale_color_manual(values = col.form.trim) +
+    ggtitle("Size of P v E for formations with high sample sizes")

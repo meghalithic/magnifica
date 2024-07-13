@@ -1224,6 +1224,10 @@ G_size <- c(sum(diag(G_ext_NKBS)),
             sum(diag(G_ext_SHCSBSB)),
             sum(diag(G_ext_mod)))
 
+size.list <- list(P_size, G_size)
+save(size.list, 
+     file = "./Results/size.list.RData")
+
 form.name <- as.character(form.df$formationCode)
 
 P_G_size <- as.data.frame(cbind(form.name, P_size, G_size))
