@@ -160,7 +160,7 @@ mean_by_formation
 #order of formations:
 # "NKLS"  "NKBS" "Tewkesbury" "Upper Kai-Iwi" "Tainui" "SHCSBSB"
 
-### Calculate the vector that defines the observed divergence between sample/formation 1 an 2
+### Calculate the vector that defines the observed divergence between sample/formation 1
 # A vector containing trait means from sample/formation
 NKLS <- as.numeric(mean_by_formation[mean_by_formation == "NKLS", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")]) 
 NKBS <- as.numeric(mean_by_formation[mean_by_formation == "NKBS", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
