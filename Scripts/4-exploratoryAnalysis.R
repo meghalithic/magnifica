@@ -835,39 +835,95 @@ ggsave(box.c.side.simple,
        file = "./Results/simple.boxplot.ln.c.side.png", 
        width = 14, height = 10, units = "cm")
 
-#### LOOK AT CHANGES IN VARIANCE OVER TIME ----
+#### TIME AVERAGING ----
 #akin to Hunt 2004
 
-per.var.zh <- c()
-per.var.mpw.b <- c()
-per.var.cw.m <- c()
-per.var.cw.d <- c()
-per.var.ow.m <- c()
-per.var.oh <- c()
-per.var.o.side <- c()
-per.var.c.side <- c()
+#how similar is variation within a formation to the modern?
+mean_by_formation$per.var.zh <- ((1-mean_by_formation$var.zh)/mean_by_formation$var.zh[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.mpw.b <- ((1-mean_by_formation$var.mpw.b)/mean_by_formation$var.mpw.b[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.cw.m <- ((1-mean_by_formation$var.cw.m)/mean_by_formation$var.cw.m[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.cw.d <- ((1-mean_by_formation$var.cw.d)/mean_by_formation$var.cw.d[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.ow.m <- ((1-mean_by_formation$var.ow.m)/mean_by_formation$var.ow.m[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.oh <- ((1-mean_by_formation$var.oh)/mean_by_formation$var.oh[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.o.side <- ((1-mean_by_formation$var.o.side)/mean_by_formation$var.o.side[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.c.side <- ((1-mean_by_formation$var.c.side)/mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])*100
 
-for(i in 1:6){
-    per.var.zh[i] <- exp(mean_by_formation$var.zh[i])/exp(mean_by_formation$var.zh[mean_by_formation$formation == "modern"])
-    per.var.mpw.b[i] <- exp(mean_by_formation$var.mpw.b[i])/exp(mean_by_formation$var.mpw.b[mean_by_formation$formation == "modern"])
-    per.var.cw.m[i] <- exp(mean_by_formation$var.cw.m[i])/exp(mean_by_formation$var.cw.m[mean_by_formation$formation == "modern"])
-    per.var.cw.d[i] <- exp(mean_by_formation$var.cw.d[i])/exp(mean_by_formation$var.cw.d[mean_by_formation$formation == "modern"])
-    per.var.ow.m[i] <- exp(mean_by_formation$var.ow.m[i])/exp(mean_by_formation$var.ow.m[mean_by_formation$formation == "modern"])
-    per.var.oh[i] <- exp(mean_by_formation$var.oh[i])/exp(mean_by_formation$var.oh[mean_by_formation$formation == "modern"])
-    per.var.o.side[i] <- exp(mean_by_formation$var.o.side[i])/exp(mean_by_formation$var.o.side[mean_by_formation$formation == "modern"])
-    per.var.c.side[i] <- exp(mean_by_formation$var.c.side[i])/exp(mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])
-}
+mean(mean_by_formation$per.var.zh) 
+mean(mean_by_formation$per.var.mpw.b) 
+mean(mean_by_formation$per.var.cw.m) 
+mean(mean_by_formation$per.var.cw.d) 
+mean(mean_by_formation$per.var.ow.m) 
+mean(mean_by_formation$per.var.oh) 
+mean(mean_by_formation$per.var.o.side)
 
-mean((per.var.zh-1)*100) #.15%
-mean((per.var.mpw.b-1)*100) #-0.4%
-mean((per.var.cw.m-1)*100) #0.2%
-mean((per.var.cw.d-1)*100) #0.25%
-mean((per.var.ow.m-1)*100) #0.2%
-mean((per.var.oh-1)*100) #0.09%
-mean((per.var.o.side-1)*100) #-0.15%
-mean((per.var.c.side-1)*100) #0.7%
+sum(mean_by_formation.meta[mean_by_formation.meta$formation == "NKLS", 41:52])/8
+sum(mean_by_formation.meta[mean_by_formation.meta$formation == "NKBS", 41:52])/8
+sum(mean_by_formation.meta[mean_by_formation.meta$formation == "Tewkesbury", 41:52])/8
+sum(mean_by_formation.meta[mean_by_formation.meta$formation == "Upper Kai-Iwi", 41:52])/8
+sum(mean_by_formation.meta[mean_by_formation.meta$formation == "Tainui", 41:52])/8
+sum(mean_by_formation.meta[mean_by_formation.meta$formation == "SHCSBSB", 41:52])/8
+
+#by what percent did the variance increase or decrease?
+mean_by_formation$infl.var.zh <- ((mean_by_formation$var.zh-mean_by_formation$var.zh[mean_by_formation$formation == "modern"])/mean_by_formation$var.zh[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.mpw.b <- ((mean_by_formation$var.mpw.b-mean_by_formation$var.mpw.b[mean_by_formation$formation == "modern"])/mean_by_formation$var.mpw.b[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.cw.m <- ((mean_by_formation$var.cw.m-mean_by_formation$var.cw.m[mean_by_formation$formation == "modern"])/mean_by_formation$var.cw.m[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.cw.d <- ((mean_by_formation$var.cw.d-mean_by_formation$var.cw.d[mean_by_formation$formation == "modern"])/mean_by_formation$var.cw.d[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.ow.m <- ((mean_by_formation$var.ow.m-mean_by_formation$var.ow.m[mean_by_formation$formation == "modern"])/mean_by_formation$var.ow.m[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.oh <- ((mean_by_formation$var.oh-mean_by_formation$var.oh[mean_by_formation$formation == "modern"])/mean_by_formation$var.oh[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.o.side <- ((mean_by_formation$var.o.side-mean_by_formation$var.o.side[mean_by_formation$formation == "modern"])/mean_by_formation$var.o.side[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.c.side <- ((mean_by_formation$var.c.side-mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])/mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])*100
+
+mean(mean_by_formation$infl.var.zh) 
+mean(mean_by_formation$infl.var.mpw.b) 
+mean(mean_by_formation$infl.var.cw.m) 
+mean(mean_by_formation$infl.var.cw.d) 
+mean(mean_by_formation$infl.var.ow.m) 
+mean(mean_by_formation$infl.var.oh) 
+mean(mean_by_formation$infl.var.o.side)
+mean(mean_by_formation$infl.var.c.side)
+
+sum(mean_by_formation[mean_by_formation$formation == "NKLS", 53:60])/8
+sum(mean_by_formation[mean_by_formation$formation == "NKBS", 53:60])/8
+sum(mean_by_formation[mean_by_formation$formation == "Tewkesbury", 53:60])/8
+sum(mean_by_formation[mean_by_formation$formation == "Upper Kai-Iwi", 53:60])/8
+sum(mean_by_formation[mean_by_formation$formation == "Tainui", 53:60])/8
+sum(mean_by_formation[mean_by_formation$formation == "SHCSBSB", 53:60])/8
+
 #just like gene, less than 1 % difference either direction of modern variance
 #don't take sample size into account though, but the variance eq does
+
+## percent increasel
+
+summary(lm(mean_by_formation.meta$var.zh ~ mean_by_formation.meta$age.range)) #non-sig
+summary(lm(mean_by_formation.meta$var.mpw.b ~ mean_by_formation.meta$age.range)) 
+summary(lm(mean_by_formation.meta$var.cw.m ~ mean_by_formation.meta$age.range)) 
+summary(lm(mean_by_formation.meta$var.cw.d ~ mean_by_formation.meta$age.range)) 
+summary(lm(mean_by_formation.meta$var.ow.m ~ mean_by_formation.meta$age.range)) 
+summary(lm(mean_by_formation.meta$var.oh ~ mean_by_formation.meta$age.range)) 
+summary(lm(mean_by_formation.meta$var.o.side ~ mean_by_formation.meta$age.range)) 
+summary(lm(mean_by_formation.meta$var.c.side ~ mean_by_formation.meta$age.range)) 
+
+###### Variation in traits through time -------
+ggplot(mean_by_formation.meta) +
+    geom_point(aes(x = formation, y = var.zh),
+               size = 3, shape = 20, color = "#f8766dff") +
+    geom_point(aes(x = formation, y = var.mpw.b),
+               size = 3, shape = 20, color = "#cd9600ff") +
+    geom_point(aes(x = formation, y = var.cw.m),
+               size = 3, shape = 20, color = "#b79f00ff") +
+    geom_point(aes(x = formation, y = var.cw.d),
+               size = 3, shape = 20, color = "#00be67ff") +
+    geom_point(aes(x = formation, y = var.ow.m),
+               size = 3, shape = 20, color = "#00c094ff") +
+    geom_point(aes(x = formation, y = var.oh),
+               size = 3, shape = 20, color = "#619cffff") +
+    geom_point(aes(x = formation, y = var.c.side),
+               size = 3, shape = 20, color = "#00bfc4ff") +
+    geom_point(aes(x = formation, y = var.o.side),
+               size = 3, shape = 20, color = "#c77cffff") +
+    scale_x_discrete(name = "Formation") +
+    scale_y_continuous(name = "Variation in Traits") + 
+    plot.theme
 
 #### MODERN ----
 #why is modern so different??

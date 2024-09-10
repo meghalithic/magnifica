@@ -261,7 +261,8 @@ summary(lm(as.numeric(diff.gmax.b) ~ as.numeric(mag.beta),
 p.ang.diff.b.gmax <- ggplot(diff.beta.gmax.df,
                             aes(x = as.numeric(mag.beta), y = as.numeric(ang.diff.gmax.b))) + 
     geom_point() +
-    geom_smooth(method = "lm") +
+    geom_smooth(method = "lm",
+                color = "#990000") +
     plot.theme +
     scale_x_continuous(expression(Magnitude~beta)) +
     scale_y_continuous(expression(reduction~of~angle~between~G[max]~and~beta))
@@ -294,7 +295,8 @@ diff.beta.gmax.df <- cbind(diff.beta.gmax.df, dist.gmat)
 p.dist.gmat.b <- ggplot(diff.beta.gmax.df,
                         aes(x = as.numeric(mag.beta), y = as.numeric(dist.gmat))) + 
     geom_point() +
-    geom_smooth(method = "lm") +
+    geom_smooth(method = "lm",
+                color = "#990000") +
     plot.theme +
     scale_x_continuous(expression(Magnitude~beta)) +
     scale_y_continuous(expression(distance~between~G~matrices~and~beta))

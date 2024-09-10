@@ -186,20 +186,6 @@ evolved_difference_unit_length_t4 <- f.normalize_vector(tai - uki)
 evolved_difference_unit_length_t5 <- f.normalize_vector(SHCSBSB - tai)
 evolved_difference_unit_length_t6 <- f.normalize_vector(mod - SHCSBSB)
 
-evol.diff.list = list(G_ext_NKLS, G_ext_NKBS, G_ext_tewk, G_ext_uki,
-                      G_ext_tai, G_ext_SHCSBSB, G_ext_mod,
-                      Gmax_NKLS_norm, Gmax_NKBS, Gmax_tewk_norm, 
-                      Gmax_uki_norm, Gmax_tai_norm, Gmax_SHCSBSB_norm,
-                      Gmax_mod_norm,
-                      evolved_difference_unit_length_t1,
-                      evolved_difference_unit_length_t2,
-                      evolved_difference_unit_length_t3,
-                      evolved_difference_unit_length_t4,
-                      evolved_difference_unit_length_t5,
-                      evolved_difference_unit_length_t6)
-save(evol.diff.list,
-     file = "./Results/evol.diff.list.RData")
-
 ###### OBSERVED EVOLVABILITY ------
 ### The evolvability in the direction of divergence from sample/formation 1 to sample/formation 2
 #observed_evolvability_in_direction_of_change<-t(evolved_difference_unit_length)%*%as.matrix(G_matrix_1)%*%evolved_difference_unit_length
@@ -521,18 +507,34 @@ write.csv(diff_between_Gmax_z,
           "./Results/differences.between.Gmax.z.csv",
           row.names = FALSE)
 
-p.g.pheno <- ggplot(diff_between_Gmax_z) +
+p.g.pheno <- ggplot(diff_between_Gmax_z[-7,]) +
     geom_point(aes(x = angle.diff.time, y = angle_diff_Gmax_to_z),
                size = 5, shape = 17) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Angle difference between G matrices", 
-                       lim = c(0, 90)) + 
+                       lim = c(0, 90)) +
+    geom_hline(yintercept = 45, 
+               color = "lightgray", lty = 2, size = 1) +
     plot.theme
 
 ggsave(p.g.pheno, 
        file = "./Results/angle.g.pheno.png", 
        width = 14, height = 12, units = "cm")
+
+evol.diff.list = list(G_ext_NKLS, G_ext_NKBS, G_ext_tewk, G_ext_uki,
+                      G_ext_tai, G_ext_SHCSBSB, G_ext_mod,
+                      Gmax_NKLS_norm, Gmax_NKBS, Gmax_tewk_norm, 
+                      Gmax_uki_norm, Gmax_tai_norm, Gmax_SHCSBSB_norm,
+                      Gmax_mod_norm,
+                      evolved_difference_unit_length_t1,
+                      evolved_difference_unit_length_t2,
+                      evolved_difference_unit_length_t3,
+                      evolved_difference_unit_length_t4,
+                      evolved_difference_unit_length_t5,
+                      evolved_difference_unit_length_t6)
+save(evol.diff.list,
+     file = "./Results/evol.diff.list.RData")
 
 ###### PC2-4 compared to Gmax -----
 ## do for 2-4 as well
@@ -712,15 +714,56 @@ ggsave(p.dot.prod_gmax,
 
 p.ang_g <- ggplot(diff_between_Gs) +
     geom_point(aes(x = angle.diff_Gs.time, y = angle_diff_Gs),
-               size = 5, shape = 15) +
+               size = 7, shape = 19) +
     scale_x_discrete(name = "Formation Transition",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Angle difference between G matrices", 
                        lim = c(0, 90)) + 
+    geom_hline(yintercept = 45,
+               lty = 2, col = "lightgray",
+               size = 1) +
     plot.theme
 
 ggsave(p.ang_g, 
        file = "./Results/angle.g.diff.png", 
+       width = 20, height = 20, units = "cm")
+
+delta.z.df <- as.data.frame(rbind(evolved_difference_unit_length_t1,
+                    evolved_difference_unit_length_t2,
+                    evolved_difference_unit_length_t3,
+                    evolved_difference_unit_length_t4,
+                    evolved_difference_unit_length_t5, 
+                    evolved_difference_unit_length_t6))
+colnames(delta.z.df) = traits
+delta.z.df <- cbind(delta.z.df, 
+                    form.trans = levels(formation_transition)[-7])    
+
+p.delta_z <- ggplot(delta.z.df) +
+    geom_point(aes(x = form.trans, y = ln.zh),
+               size = 3, shape = 17, color = "#f8766dff") +
+    geom_point(aes(x = form.trans, y = ln.mpw.b),
+               size = 3, shape = 17, color = "#cd9600ff") +
+    geom_point(aes(x = form.trans, y = ln.cw.m),
+               size = 3, shape = 17, color = "#b79f00ff") +
+    geom_point(aes(x = form.trans, y = ln.cw.d),
+               size = 3, shape = 17, color = "#00be67ff") +
+    geom_point(aes(x = form.trans, y = ln.ow.m),
+               size = 3, shape = 17, color = "#00c094ff") +
+    geom_point(aes(x = form.trans, y = ln.oh),
+               size = 3, shape = 17, color = "#619cffff") +
+    geom_point(aes(x = form.trans, y = ln.c.side),
+               size = 3, shape = 17, color = "#00bfc4ff") +
+    geom_point(aes(x = form.trans, y = ln.o.side),
+               size = 3, shape = 17, color = "#c77cffff") +
+    scale_x_discrete(name = "Formation Transition",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = expression(Delta~z),
+                       lim = c(-2.5, 1), 
+                       position = "right") + 
+    plot.theme
+
+ggsave(p.delta_z, 
+       file = "./Results/delta_z.png", 
        width = 20, height = 20, units = "cm")
 
 diff_between_Gs$corr.diff_Gs <- as.numeric(diff_between_Gs$corr.diff_Gs)
@@ -735,6 +778,71 @@ p.dot.prod_g <- ggplot(diff_between_Gs) +
 ggsave(p.dot.prod_g, 
        file = "./Results/dot.prod.g.diff.png", 
        width = 20, height = 20, units = "cm")
+
+#### ∆z in relation to diff in G over time ----
+diff_between_Gs$angle.diff_Gs.time
+delta.z.df <- cbind(delta.z.df, 
+                    form.trans = levels(formation_transition)[-7])    
+diffs <- merge(diff_between_Gs, delta.z.df,
+               by.x = "angle.diff_Gs.time",
+               by.y = "form.trans")
+colnames(diffs)
+
+ggplot(diffs) +
+    geom_point(aes(x = angle_diff_Gs, y = ln.zh),
+               size = 3, shape = 20, color = "#f8766dff") +
+    geom_point(aes(x = angle_diff_Gs, y = ln.mpw.b),
+               size = 3, shape = 20, color = "#cd9600ff") +
+    geom_point(aes(x = angle_diff_Gs, y = ln.cw.m),
+               size = 3, shape = 20, color = "#b79f00ff") +
+    geom_point(aes(x = angle_diff_Gs, y = ln.cw.d),
+               size = 3, shape = 20, color = "#00be67ff") +
+    geom_point(aes(x = angle_diff_Gs, y = ln.ow.m),
+               size = 3, shape = 20, color = "#00c094ff") +
+    geom_point(aes(x = angle_diff_Gs, y = ln.oh),
+               size = 3, shape = 20, color = "#619cffff") +
+    geom_point(aes(x = angle_diff_Gs, y = ln.c.side),
+               size = 3, shape = 20, color = "#00bfc4ff") +
+    geom_point(aes(x = angle_diff_Gs, y = ln.o.side),
+               size = 3, shape = 20, color = "#c77cffff") +
+    scale_x_continuous(name = expression(Theta~between~Gs)) +
+    scale_y_continuous(name = expression(Delta~z)) + 
+    plot.theme
+summary(lm(diffs$ln.zh ~ diffs$angle_diff_Gs)) #no relationship
+summary(lm(diffs$ln.mpw.b ~ diffs$angle_diff_Gs)) #no relationship
+summary(lm(diffs$ln.cw.d ~ diffs$angle_diff_Gs)) #no relationship
+summary(lm(diffs$ln.cw.m ~ diffs$angle_diff_Gs)) #no relationship
+summary(lm(diffs$ln.ow.m ~ diffs$angle_diff_Gs)) #no relationship
+summary(lm(diffs$ln.oh ~ diffs$angle_diff_Gs)) #no relationship
+summary(lm(diffs$ln.o.side ~ diffs$angle_diff_Gs)) #no relationship
+summary(lm(diffs$ln.c.side ~ diffs$angle_diff_Gs)) #no relationship
+
+#### pheno var in relation to diff in G over time ----
+diff_between_Gs$time.1 <- c("NKLS", "NKBS", "Tewkesbury", "Upper Kai-Iwi",
+                            "Tainui", "SHCSBSB")
+var.pheno.df <- merge(mean_by_formation[-7,], diff_between_Gs,
+                      by.x = "formation", by.y = "time.1")    
+ggplot(var.pheno.df) +
+    geom_point(aes(x = angle_diff_Gs, y = var.zh),
+               size = 3, shape = 20, color = "#f8766dff") +
+    geom_point(aes(x = angle_diff_Gs, y = var.mpw.b),
+               size = 3, shape = 20, color = "#cd9600ff") +
+    geom_point(aes(x = angle_diff_Gs, y = var.cw.m),
+               size = 3, shape = 20, color = "#b79f00ff") +
+    geom_point(aes(x = angle_diff_Gs, y = var.cw.d),
+               size = 3, shape = 20, color = "#00be67ff") +
+    geom_point(aes(x = angle_diff_Gs, y = var.ow.m),
+               size = 3, shape = 20, color = "#00c094ff") +
+    geom_point(aes(x = angle_diff_Gs, y = var.oh),
+               size = 3, shape = 20, color = "#619cffff") +
+    geom_point(aes(x = angle_diff_Gs, y = var.c.side),
+               size = 3, shape = 20, color = "#00bfc4ff") +
+    geom_point(aes(x = angle_diff_Gs, y = var.o.side),
+               size = 3, shape = 20, color = "#c77cffff") +
+    scale_x_continuous(name = expression(Theta~between~Gs)) +
+    scale_y_continuous(name = expression(Variance~of~Traits)) + 
+    plot.theme
+#seemingly no relationship
 
 #### SUBSTITUTE P FOR G ----
 P_ext_NKLS = round(as.matrix(P_ext[[1]]), 6) # The G matrix estimated for sample/formation 1
@@ -1480,7 +1588,8 @@ X_sum_glob$form.trans <- factor(X_sum_glob$form.trans,
                                            "SHCSBSB to modern"))
 
 X_sum_glob.trim <- X_sum_glob[1:6,]
-p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
+
+ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.min[1]),
                color = "darkgray", linetype = "dashed") +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.max[1]),
@@ -1493,8 +1602,43 @@ p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     scale_y_continuous(name = "Evolvability") +
     plot.theme
 
+p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
+    #geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.min[1]),
+    #           color = "darkgray", linetype = "dashed") +
+    #geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.max[1]),
+    #           color = "darkgray", linetype = "dashed") +
+    #geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1])) +
+    geom_point(aes(y = as.numeric(observed_e_glob)),
+               size = 5, shape = 18) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Evolvability",
+                       lim = c(0.00, 0.0328)) +
+    plot.theme
+
+p.evol_glob <- ggplot(X_sum.trim, aes(x = form.trans)) +
+    geom_boxplot(aes(ymin = e.min, 
+                     lower = e.min,
+                     middle = e.mean,
+                     ymax = e.max,
+                     upper = e.max,
+                     fill = "gray"),
+                 stat = "identity", fill = "gray") +
+    geom_point(aes(y = as.numeric(observed_e),
+                   color = "black"),
+               size = 5, shape = 17, color = "black") +
+    geom_point(data = X_sum_glob.trim,
+               aes(x = form.trans, y = as.numeric(observed_e_glob)),
+               size = 5, shape = 6, color = "black") +
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1]),
+               color = "lightgray", lty = 2, size = 1) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Evolvability") +
+    plot.theme
+
 ggsave(p.evol_glob, 
-       file = "./Results/globalG.evolvability.png", 
+       file = "./Results/globalG_and_G.evolvability.png", 
        width = 14, height = 10, units = "cm")
 
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GLOBAL GMAX -----

@@ -280,7 +280,7 @@ write.csv(samp,
           row.names = FALSE)
 
 #### P MATRIX ----
-p.cov = lapply(form_data, function (x){ (cov(x[, 4:11]))}) #traits per colony (not variation within colony)
+p.cov = lapply(form_data, function (x){ (cov(x[, 5:12]))}) #traits per colony (not variation within colony)
 #p.cov is the same and the phen.var
 
 ##### P VARIANCES ----
@@ -761,7 +761,7 @@ out_results <- cbind(RS_result$correlation, pop.size)
 # Computing Random Skewers between pairs of actual G matrices in our data
 #(n = 7 for 7 formations) 
 # sub-setting so that we only analyze the traits and formation of interest
-mean.df.sub <- mean_by_formation_colony[, c(1, 4:11)] 
+mean.df.sub <- mean_by_formation_colony[, c(1, 4, 6, 8, 10, 12, 14, 16, 18)] 
 #remove rows with NA so that the sample size gets correct when we plot 
 #the sample size for the VCOV.
 mean.df_complete_cases <- mean.df.sub[complete.cases(mean.df.sub), ] #remove rows with NA so that the sample size gets correct when we plot the sample size for the VCOV.
@@ -770,7 +770,7 @@ mean.df_complete_cases <- mean.df.sub[complete.cases(mean.df.sub), ] #remove row
 colony_samples = split.data.frame(mean.df_complete_cases, mean.df_complete_cases$formation) #Sample size
 sample_sizes_G = lapply(colony_samples, function(x){dim(x)[1]})
 
-comp_sampleN = matrix(0, 7, 8) #calculating the smallest sample size in the comparison among pairs of G 
+comp_sampleN = matrix(0, 7, 7) #calculating the smallest sample size in the comparison among pairs of G for length of formation
 
 for (i in 1:length(sample_sizes_G)){
     for (j in 1:length(sample_sizes_G)){
