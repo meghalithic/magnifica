@@ -188,11 +188,23 @@ mean_by_formation = df %>%
                      sd.zh = sd(ln.zh, na.rm = T),
                      var.zh = var(ln.zh, na.rm = T),
                      
+                     min.exp.zh = min(exp(ln.zh), na.rm = T),
+                     max.exp.zh = max(exp(ln.zh), na.rm = T),
+                     avg.exp.zh = mean(exp(ln.zh), na.rm = T),
+                     sd.exp.zh = sd(exp(ln.zh), na.rm = T),
+                     var.exp.zh = var(exp(ln.zh), na.rm = T),
+                     
                      min.mpw.b = min(ln.mpw.b, na.rm = T),
                      max.mpw.b = max(ln.mpw.b, na.rm = T),
                      avg.mpw.b = mean(ln.mpw.b, na.rm = T),
                      sd.mpw.b = sd(ln.mpw.b, na.rm = T),
                      var.mpw.b = var(ln.mpw.b, na.rm = T),
+                     
+                     min.exp.mpw.b = min(exp(ln.mpw.b), na.rm = T),
+                     max.exp.mpw.b = max(exp(ln.mpw.b), na.rm = T),
+                     avg.exp.mpw.b = mean(exp(ln.mpw.b), na.rm = T),
+                     sd.exp.mpw.b = sd(exp(ln.mpw.b), na.rm = T),
+                     var.exp.mpw.b = var(exp(ln.mpw.b), na.rm = T),
                      
                      min.cw.m = min(ln.cw.m, na.rm = T),
                      max.cw.m = max(ln.cw.m, na.rm = T),
@@ -200,11 +212,23 @@ mean_by_formation = df %>%
                      sd.cw.m = sd(ln.cw.m, na.rm = T),
                      var.cw.m = var(ln.cw.m, na.rm = T),
                      
+                     min.exp.cw.m = min(exp(ln.cw.m), na.rm = T),
+                     max.exp.cw.m = max(exp(ln.cw.m), na.rm = T),
+                     avg.exp.cw.m = mean(exp(ln.cw.m), na.rm = T),
+                     sd.exp.cw.m = sd(exp(ln.cw.m), na.rm = T),
+                     var.exp.cw.m = var(exp(ln.cw.m), na.rm = T),
+                     
                      min.cw.d = min(ln.cw.d, na.rm = T),
                      max.cw.d = max(ln.cw.d, na.rm = T),
                      avg.cw.d = mean(ln.cw.d, na.rm = T),
                      sd.cw.d = sd(ln.cw.d, na.rm = T),
                      var.cw.d = var(ln.cw.d, na.rm = T),
+                     
+                     min.exp.cw.d = min(exp(ln.cw.d), na.rm = T),
+                     max.exp.cw.d = max(exp(ln.cw.d), na.rm = T),
+                     avg.exp.cw.d = mean(exp(ln.cw.d), na.rm = T),
+                     sd.exp.cw.d = sd(exp(ln.cw.d), na.rm = T),
+                     var.exp.cw.d = var(exp(ln.cw.d), na.rm = T),
                      
                      min.ow.m = min(ln.ow.m, na.rm = T),
                      max.ow.m = max(ln.ow.m, na.rm = T),
@@ -212,11 +236,23 @@ mean_by_formation = df %>%
                      sd.ow.m = sd(ln.ow.m, na.rm = T),
                      var.ow.m = var(ln.ow.m, na.rm = T),
                      
+                     min.exp.ow.m = min(exp(ln.ow.m), na.rm = T),
+                     max.exp.ow.m = max(exp(ln.ow.m), na.rm = T),
+                     avg.exp.ow.m = mean(exp(ln.ow.m), na.rm = T),
+                     sd.exp.ow.m = sd(exp(ln.ow.m), na.rm = T),
+                     var.exp.ow.m = var(exp(ln.ow.m), na.rm = T),
+                     
                      min.oh = min(ln.oh, na.rm = T),
                      max.oh = max(ln.oh, na.rm = T),
                      avg.oh = mean(ln.oh, na.rm = T),
                      sd.oh = sd(ln.oh, na.rm = T),
                      var.oh = var(ln.oh, na.rm = T),
+                     
+                     min.exp.oh = min(exp(ln.oh), na.rm = T),
+                     max.exp.oh = max(exp(ln.oh), na.rm = T),
+                     avg.exp.oh = mean(exp(ln.oh), na.rm = T),
+                     sd.exp.oh = sd(exp(ln.oh), na.rm = T),
+                     var.exp.oh = var(exp(ln.oh), na.rm = T),
                      
                      min.o.side = min(ln.o.side, na.rm = T),
                      max.o.side = max(ln.o.side, na.rm = T),
@@ -224,11 +260,23 @@ mean_by_formation = df %>%
                      sd.o.side = sd(ln.o.side, na.rm = T),
                      var.o.side = var(ln.o.side, na.rm = T),
                      
+                     min.exp.o.side = min(exp(ln.o.side), na.rm = T),
+                     max.exp.o.side = max(exp(ln.o.side), na.rm = T),
+                     avg.exp.o.side = mean(exp(ln.o.side), na.rm = T),
+                     sd.exp.o.side = sd(exp(ln.o.side), na.rm = T),
+                     var.exp.o.side = var(exp(ln.o.side), na.rm = T),
+                     
                      min.c.side = min(ln.c.side, na.rm = T),
                      max.c.side = max(ln.c.side, na.rm = T),
                      avg.c.side = mean(ln.c.side, na.rm = T),
                      sd.c.side = sd(ln.c.side, na.rm = T),
-                     var.c.side = var(ln.c.side, na.rm = T)) %>%
+                     var.c.side = var(ln.c.side, na.rm = T),
+                     
+                     min.exp.c.side = min(exp(ln.c.side), na.rm = T),
+                     max.exp.c.side = max(exp(ln.c.side), na.rm = T),
+                     avg.exp.c.side = mean(exp(ln.c.side), na.rm = T),
+                     sd.exp.c.side = sd(exp(ln.c.side), na.rm = T),
+                     var.exp.c.side = var(exp(ln.c.side), na.rm = T)) %>%
     as.data.frame()
 ## Grabowski & Porto claim sampling of 60 per sp...
 #NKBS has heighest variance in traits because high sample size
