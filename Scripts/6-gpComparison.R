@@ -426,6 +426,24 @@ write.csv(diff_between_Gs,
           "./Results/differences.between.Gs.csv",
           row.names = FALSE)
 
+g.dotprod.list = list(dot_product.Gmax_NKLS_NKBS ,
+                      dot_product.Gmax_NKBS_tewk,
+                      dot_product.Gmax_tewk_uki,
+                      dot_product.Gmax_uki_tai,
+                      dot_product.Gmax_tai_SHCSBSB,
+                      dot_product.Gmax_SHCSBSB_mod)
+save(g.dotprod.list,
+     file = "./Results/g.dotprod.list.RData")
+
+g.angle.list = list(angle_degrees.Gmax_NKLS_NKBS,
+                    angle_degrees.Gmax_NKBS_tewk,
+                    angle_degrees.Gmax_tewk_uki,
+                    angle_degrees.Gmax_uki_tai, 
+                    angle_degrees.Gmax_tai_SHCSBSB,
+                    angle_degrees.Gmax_SHCSBSB_mod)
+save(g.angle.list,
+     file = "./Results/g.angle.list.RData")
+
 ##### DIRECTION OF PHENOTYPIC CHANGE COMPARED TO GMAX -----
 
 ### See if change is in direction of G max
@@ -736,7 +754,34 @@ delta.z.df <- as.data.frame(rbind(evolved_difference_unit_length_t1,
                     evolved_difference_unit_length_t6))
 colnames(delta.z.df) = traits
 delta.z.df <- cbind(delta.z.df, 
-                    form.trans = levels(formation_transition)[-7])    
+                    form.trans = levels(formation_transition)[-7])   
+
+delta.z.melt <- melt(delta.z.df, id.vars = c("form.trans"), 
+                     variable.name = "measurementType", value.name = "measurementValue")
+delta.z.melt$form.trans <- factor(delta.z.melt$form.trans, 
+                                  levels = c("NKLS to NKBS", 
+                                             "NKBS to Tewkesbury",
+                                             "Tewkesbury to Upper Kai-Iwi",
+                                             "Upper Kai-Iwi to Tainui",
+                                             "Tainui to SHCSBSB",
+                                             "SHCSBSB to modern"))
+
+p.delta_z.connected <- ggplot(delta.z.melt, aes(x = form.trans, y = measurementValue,
+                         group = measurementType,
+                         col = measurementType)) +
+    geom_line() +
+    geom_point(size = 3, shape = 17) +
+    scale_x_discrete(name = "Formation Transition",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = expression(Delta~z),
+                       lim = c(-2.5, 1), 
+                       position = "right") + 
+    scale_color_manual(values = col.traits.repo) + 
+    plot.theme
+
+ggsave(p.delta_z.connected, 
+       file = "./Results/delta_z.connected.png", 
+       width = 20, height = 20, units = "cm")
 
 p.delta_z <- ggplot(delta.z.df) +
     geom_point(aes(x = form.trans, y = ln.zh),
@@ -1602,21 +1647,30 @@ ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     scale_y_continuous(name = "Evolvability") +
     plot.theme
 
+X_sum_glob.trim$e.max <- as.numeric(X_sum_glob.trim$e.max)
+X_sum_glob.trim$e.min <- as.numeric(X_sum_glob.trim$e.min)
+X_sum_glob.trim$e.mean <- as.numeric(X_sum_glob.trim$e.mean)
+
 p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
-    #geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.min[1]),
-    #           color = "darkgray", linetype = "dashed") +
-    #geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.max[1]),
-    #           color = "darkgray", linetype = "dashed") +
-    #geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1])) +
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.min[1]),
+               color = "black", size = .5) +
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.max[1]),
+               color = "black", size = .5) +
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1]),
+               color = "black", size = .5) +
     geom_point(aes(y = as.numeric(observed_e_glob)),
-               size = 5, shape = 18) +
+               size = 5, shape = 17) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Evolvability",
                        lim = c(0.00, 0.0328)) +
     plot.theme
 
-p.evol_glob <- ggplot(X_sum.trim, aes(x = form.trans)) +
+ggsave(p.evol_glob, 
+       file = "./Results/globalG.evolvability.png", 
+       width = 14, height = 10, units = "cm")
+
+p.evol_glob_combo <- ggplot(X_sum.trim, aes(x = form.trans)) +
     geom_boxplot(aes(ymin = e.min, 
                      lower = e.min,
                      middle = e.mean,
@@ -1637,7 +1691,7 @@ p.evol_glob <- ggplot(X_sum.trim, aes(x = form.trans)) +
     scale_y_continuous(name = "Evolvability") +
     plot.theme
 
-ggsave(p.evol_glob, 
+ggsave(p.evol_glob_combo, 
        file = "./Results/globalG_and_G.evolvability.png", 
        width = 14, height = 10, units = "cm")
 

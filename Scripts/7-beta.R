@@ -26,7 +26,7 @@ G_ext_tai <- evol.diff.list[[5]]
 G_ext_SHCSBSB <- evol.diff.list[[6]]
 G_ext_mod <- evol.diff.list[[7]]
 Gmax_NKLS_norm <- evol.diff.list[[8]]
-Gmax_NKBS <- evol.diff.list[[9]]
+Gmax_NKBS_norm <- evol.diff.list[[9]]
 Gmax_tewk_norm <- evol.diff.list[[10]]
 Gmax_uki_norm <- evol.diff.list[[11]]
 Gmax_tai_norm <- evol.diff.list[[12]]
@@ -38,6 +38,24 @@ evolved_difference_unit_length_t3 <- evol.diff.list[[17]]
 evolved_difference_unit_length_t4 <- evol.diff.list[[18]]
 evolved_difference_unit_length_t5 <- evol.diff.list[[19]]
 evolved_difference_unit_length_t6 <- evol.diff.list[[20]]
+
+load(file = "./Results/g.dotprod.list.RData") #load the g matrices calculated above 
+dot_product.Gmax_NKLS_NKBS <- g.dotprod.list[1] 
+dot_product.Gmax_NKBS_tewk <- g.dotprod.list[2]
+dot_product.Gmax_tewk_uki <- g.dotprod.list[3]
+dot_product.Gmax_uki_tai <- g.dotprod.list[4]
+dot_product.Gmax_tai_SHCSBSB <- g.dotprod.list[5]
+dot_product.Gmax_SHCSBSB_mod <- g.dotprod.list[6]
+
+load(file = "./Results/g.angle.list.RData") #load the g matrices calculated above 
+
+angle_degrees.Gmax_NKLS_NKBS <- g.angle.list[1]
+angle_degrees.Gmax_NKBS_tewk <- g.angle.list[2]
+angle_degrees.Gmax_tewk_uki <- g.angle.list[3]
+angle_degrees.Gmax_uki_tai  <- g.angle.list[4]
+angle_degrees.Gmax_tai_SHCSBSB <- g.angle.list[5]
+angle_degrees.Gmax_SHCSBSB_mod <- g.angle.list[6]
+
 
 #### CALCULATE BETA ----
 #∆z = ß*G
@@ -308,3 +326,22 @@ ggsave(p.dist.gmat.b,
 summary(lm(as.numeric(dist.gmat) ~ as.numeric(mag.beta),
            data = diff.beta.gmax.df[1:6,])) 
 #nonsig at p = 0.2003; no relationship
+
+#### CALCULATE TIME NEEDED FOR GREATEST AMOUNT OF CHANGE IN CW.M ----
+#cw.m at Tewks = 376.17
+#cw.m at UKI = 499.61
+499.61-376.17 #total change = 123.44
+(499.61-376.17)/376.17 #percent change = 0.3281495
+#global G at Tewks = 0.0083280056
+#global G at UKI = 0.0063062218
+#avg global G = 0.007317114
+#look at total change in mean in one generation 
+#assume fitness, selection gradient of 10% = 0.1
+#mean-scaled evolvability = global G avg/trait mean squared (mean of time period before)
+0.007/(log(376.17)^2) #0.0001990594 = 0.0002
+#time the selection gradient
+0.0002*.1 #0.00002
+#The number of selective events to evolve from a size of 376.17 to 499.61:
+log(499.61 / 376.17) / log(1 + (0.00002)) # 13638.67
+#generation = 2
+14189.47*2 #29179.02
