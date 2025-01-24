@@ -16,7 +16,7 @@
 # to fossils, add NKLS, SHCSBSB, Tainui, UKI
 # add more overall because will limit minimum zooid number to 3
 
-## The output of this code is images.filtered_8Dec2023.csv
+## The output of this code is images.filtered_date.csv
 
 #### ENVIRONMENT ----
 

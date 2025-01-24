@@ -47,8 +47,8 @@ col.form = c("#F8766D", "#CD9600",  "#00BE67", #"#7CAE00"
 col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67", 
                "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
 
-col.traits.repo <- c("#F8766D", #zh
-                     "#CD9600", #oh
+col.traits.repo <- c("#F8766D", #zl
+                     "#CD9600", #ol
                      "#B79F00", #ow.m
                      "#00BE67", #o.side
                      "#00C094", #mpw.b

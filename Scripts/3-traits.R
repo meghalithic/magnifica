@@ -30,9 +30,9 @@ colnames(images.df)[colnames(images.df) == 'specimenNR'] <- 'colony.id'
 
 #### CALCULATE DISTANCES ----
 #measurements based off Voje et al. 2020 https://doi.org/10.5061/dryad.t4b8gthxm
-#zh is similar to LZ
+#zl is similar to LZ
 #cw.m is similar to WZ
-#oh is similar to LO
+#ol is similar to LO
 #ow.m is similar to WO
 #see "stegs_linear_24Mar2023.png" for linear measurements
 #z = zooid
@@ -52,15 +52,15 @@ colnames(images.df)[colnames(images.df) == 'specimenNR'] <- 'colony.id'
 #D^2 = X^2 + Y^2
 
 ## Zooid height (maximum height at centerline): 4 to 12
-images.df$zh.px <- len.py(images.df$X4, images.df$X12,
+images.df$zl.px <- len.py(images.df$X4, images.df$X12,
                        images.df$Y4, images.df$Y12)
 
 ## Operculum height of left side: 4 to 20
-images.df$oh.l.px <- len.py(images.df$X4, images.df$X20,
+images.df$ol.l.px <- len.py(images.df$X4, images.df$X20,
                          images.df$Y4, images.df$Y20)
 
 ## Operculum height of right side: 4 to 21
-images.df$oh.r.px <- len.py(images.df$X4, images.df$X21,
+images.df$ol.r.px <- len.py(images.df$X4, images.df$X21,
                          images.df$Y4, images.df$Y21)
 
 ## Operculum mid-width (maximum width at centerline): 19 to 0
@@ -112,9 +112,9 @@ images.df$c.side.l.px <- len.py(images.df$X9, images.df$X8,
 #all bleed are at 40x, which is 0.825 pixels per um
 #the only bleed numbers included are: 686, 244, 242; form.no = BLEED
 #recalculate them manually
-images.df$zh <- images.df$zh.px/images.df$scale
-images.df$oh.l <- images.df$oh.l.px/images.df$scale
-images.df$oh.r <- images.df$oh.r.px/images.df$scale
+images.df$zl <- images.df$zl.px/images.df$scale
+images.df$ol.l <- images.df$ol.l.px/images.df$scale
+images.df$ol.r <- images.df$ol.r.px/images.df$scale
 images.df$ow.b <- images.df$ow.b.px/images.df$scale
 images.df$ow.m <- images.df$ow.m.px/images.df$scale
 images.df$mpw.b <- images.df$mpw.b.px/images.df$scale
@@ -158,19 +158,19 @@ summary(lm(images.df$c.side.r ~ images.df$c.side.l))
 # slope = 0.86; p-value: < 2.2e-16; r2 = 0.78
 
 ## right v left side of operculum height
-p.oh.rl <- ggplot(images.df) +
-  geom_point(aes(x = oh.l, y = oh.r)) + #,
+p.ol.rl <- ggplot(images.df) +
+  geom_point(aes(x = ol.l, y = ol.r)) + #,
     #group = formation, fill = formation, col = formation)) +
   ggtitle(paste0("Operculum Height, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
   plot.theme +
   scale_y_continuous(name = "Operculum Height Right Side (pixels)") +
   scale_x_continuous(name = "Operculum Height Left Side (pixels)")
 
-ggsave(p.oh.rl, 
+ggsave(p.ol.rl, 
        file = "./Results/operculum.height.png", 
        width = 14, height = 10, units = "cm")
 
-summary(lm(images.df$oh.r ~ images.df$oh.l)) 
+summary(lm(images.df$ol.r ~ images.df$ol.l)) 
 # slope = 0.92; p-value < 2.2e-16; r2 = .89; no asymmetry
 
 ## Operculum average side length:
@@ -180,7 +180,7 @@ images.df$o.side <- rowMeans(cbind(images.df$o.side.l, images.df$o.side.r))
 images.df$c.side <- rowMeans(cbind(images.df$c.side.l, images.df$c.side.r))
 
 ## Operculum height
-images.df$oh <- (.5/images.df$ow.b)*sqrt(images.df$ow.b+images.df$oh.r+images.df$oh.l)
+images.df$ol <- (.5/images.df$ow.b)*sqrt(images.df$ow.b+images.df$ol.r+images.df$ol.l)
 
 ##### TRIM TO TRAITS ONLY ----
 traits.df <- images.df %>%
@@ -188,19 +188,19 @@ traits.df <- images.df %>%
                 source, Mag, 
                 colony.id, zooid.id, 
                 formation, locality,
-                zh, oh, ow.m, ow.b, 
+                zl, ol, ow.m, ow.b, 
                 mpw.b, cw.m, cw.d,
                 o.side, c.side)
 
 colnames(traits.df)[colnames(traits.df) == 'box_id'] <- 'boxID'
 
 ##### LN TRANSFORM -----
-traits.df$ln.zh <- log(traits.df$zh)
+traits.df$ln.zl <- log(traits.df$zl)
 traits.df$ln.mpw.b <- log(traits.df$mpw.b)
 traits.df$ln.cw.m <- log(traits.df$cw.m)
 traits.df$ln.cw.d <- log(traits.df$cw.d)
 traits.df$ln.ow.m <- log(traits.df$ow.m)
-traits.df$ln.oh <- log(traits.df$oh)
+traits.df$ln.ol <- log(traits.df$ol)
 traits.df$ln.o.side <- log(traits.df$o.side)
 traits.df$ln.c.side <- log(traits.df$c.side)
 #cw.b too variable??
@@ -240,7 +240,7 @@ table(df$Mag, df$formation) #modern is the only one with different magnification
 #the most are in 50
 
 ggplot(df) +
-    geom_density(aes(x = log(zh),
+    geom_density(aes(x = log(zl),
                      group = Mag, col = Mag)) +
     ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
@@ -320,7 +320,7 @@ ggplot(df) +
 #amazingly not shifted
 
 ggplot(df) +
-    geom_density(aes(x = log(oh),
+    geom_density(aes(x = log(ol),
                      group = Mag, col = Mag)) +
     ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
@@ -329,7 +329,7 @@ ggplot(df) +
     scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
 #mostly not shifted
 
-summary(manova(cbind(log(zh), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(oh)) ~ Mag, 
+summary(manova(cbind(log(zl), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(ol)) ~ Mag, 
                data = df[df$formation == "modern",]))
 #significant
 
@@ -344,7 +344,7 @@ df <- df.30
 df.30.mod <- df[df$formation == "modern",]
 
 ggplot(df.30.mod) +
-    geom_density(aes(x = log(zh),
+    geom_density(aes(x = log(zl),
                      group = locality, col = locality)) +
     ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
@@ -424,7 +424,7 @@ ggplot(df.30.mod) +
 #weirdness again with M797, a bit with KWB_Feb
 
 ggplot(df.30.mod) +
-    geom_density(aes(x = log(oh),
+    geom_density(aes(x = log(ol),
                      group = locality, col = locality)) +
     ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
@@ -433,16 +433,16 @@ ggplot(df.30.mod) +
     scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
 #weirdness with TS-3
 
-summary(manova(cbind(log(zh), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(oh)) ~ locality, 
+summary(manova(cbind(log(zl), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(ol)) ~ locality, 
                data = df.30.mod))
 #significant
 
 #what if remove z8862 and M797 and TAN1108/233?
 rm.loc <- c("M797", "TAN1108/233", "Z8662")
-summary(manova(cbind(log(zh), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(oh)) ~ locality, 
+summary(manova(cbind(log(zl), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(ol)) ~ locality, 
                data = df.30.mod[!(df.30.mod$locality %in% rm.loc),])) #still sig
 #what if remove all niwa?
-summary(manova(cbind(log(zh), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(oh)) ~ locality, 
+summary(manova(cbind(log(zl), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(ol)) ~ locality, 
                data = df.30.mod[df.30.mod$source != "NIWA",])) #still sig
 #still sig
 
@@ -470,7 +470,7 @@ setdiff(traits.old$zooid.id, traits.new.foss$zooid.id) #7, all 1200CC
 setdiff(traits.new.foss$image, traits.old$imageName)
 
 traits.old.trim <- traits.old[traits.old$specimenNR != "1200CC",]
-setdiff(traits.new.foss$ln.zh, traits.old.trim$ln.zh)
+setdiff(traits.new.foss$ln.zl, traits.old.trim$ln.zl)
 #calculate mean by formation, then look at changes over time
 #only the diff with NKBS should be affected, not ALL the other formations...
 # and it is in next script (exploratory analysis)

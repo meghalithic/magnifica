@@ -18,8 +18,8 @@ df <- read.csv("./Results/traits_1Jul2024.csv", #30Nov2023,29Sept2023.csv",
 #output from traits.R
 
 #### MANIPULATE DATA ----
-traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
-                      "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
+traits = names(df[, c("ln.zl", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
+                      "ln.ow.m", "ln.ol", "ln.c.side", "ln.o.side")])
 
 df$formation <- factor(df$formation, 
                        levels = c("NKLS", "NKBS", "Tewkesbury",
@@ -27,15 +27,15 @@ df$formation <- factor(df$formation,
                                   "SHCSBSB", "modern"))
 
 ##### DISTRIBUTION -----
-p.ln.zh <- ggplot(df) +
-    geom_density(aes(x = ln.zh)) +
+p.ln.zl <- ggplot(df) +
+    geom_density(aes(x = ln.zl)) +
     ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     scale_y_continuous(name = "Density") +
     scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
 
-p.ln.zh.form <- ggplot(df) +
-    geom_density(aes(x = ln.zh,
+p.ln.zl.form <- ggplot(df) +
+    geom_density(aes(x = ln.zl,
                      group = formation,
                      col = formation)) + #lots are bimodal
     ggtitle(paste0("Distribution of traits, N zooids = ", length(unique(df$zooid.id)),
@@ -77,18 +77,18 @@ p.dist <- ggplot(traits.melt.trim) +
 ## Find cutoff for frequencies of size bins
 # frequency by size bin (quarter ln bins)
 df.bins <- df %>% 
-  mutate(zh.bin = cut(ln.zh, breaks = seq(5.5, 7.5, .1))) %>%
+  mutate(zl.bin = cut(ln.zl, breaks = seq(5.5, 7.5, .1))) %>%
   as.data.frame()
 
 df.bin.f <- df.bins %>%
-  dplyr::group_by(zh.bin) %>%
+  dplyr::group_by(zl.bin) %>%
   dplyr::summarise(n = n()) %>%
   as.data.frame()
 View(df.bin.f)
 #(6.2,6.3]
 #6.25 like I eyeballed if sort by bin size
 
-sm.traits <- df[df$ln.zh < 6.25,]
+sm.traits <- df[df$ln.zl < 6.25,]
 sm.colonies <- unique(sm.traits$colony.id)
 length(sm.colonies) #41; was 95 images out of 891
 
@@ -96,10 +96,10 @@ bins <- c("(5.5,5.6]", "(5.6,5.7]", "(5.7,5.8]",
           "(5.8,5.9]", "(5.9,6]", "(6,6.1]", 
           "(6.1,6.2]", "(6.2,6.3]")
 
-df.bins$zh.bin <- as.character(df.bins$zh.bin)
+df.bins$zl.bin <- as.character(df.bins$zl.bin)
 
 df.bins$sm <- FALSE
-df.bins$sm[df.bins$zh.bin %in% bins] <- TRUE
+df.bins$sm[df.bins$zl.bin %in% bins] <- TRUE
 
 #look at proportions
 prop.sm <- df.bins %>% 
@@ -150,8 +150,8 @@ mean_by_formation_colony = df %>% #use this going forward
     dplyr::group_by(formation, colony.id) %>%
     dplyr::summarize(n.zooid = length(zooid.id),
                      
-                     avg.zh = mean(ln.zh, na.rm = T),
-                     sd.zh = sd(ln.zh, na.rm = T),
+                     avg.zl = mean(ln.zl, na.rm = T),
+                     sd.zl = sd(ln.zl, na.rm = T),
                      
                      avg.mpw.b = mean(ln.mpw.b, na.rm = T),
                      sd.mpw.b = sd(ln.mpw.b, na.rm = T),
@@ -165,8 +165,8 @@ mean_by_formation_colony = df %>% #use this going forward
                      avg.ow.m = mean(ln.ow.m, na.rm = T),
                      sd.ow.m = sd(ln.ow.m, na.rm = T),
                      
-                     avg.oh = mean(ln.oh, na.rm = T),
-                     sd.oh = sd(ln.oh, na.rm = T),
+                     avg.ol = mean(ln.ol, na.rm = T),
+                     sd.ol = sd(ln.ol, na.rm = T),
                      
                      avg.o.side = mean(ln.o.side, na.rm = T),
                      sd.o.side = sd(ln.o.side, na.rm = T),
@@ -182,17 +182,17 @@ mean_by_formation = df %>%
                      num.zooid = length(unique(zooid.id)),
                      avg.zooid = ceiling(num.zooid/num.col), #round up to nearest integer
                      
-                     min.zh = min(ln.zh, na.rm = T),
-                     max.zh = max(ln.zh, na.rm = T),
-                     avg.zh = mean(ln.zh, na.rm = T),
-                     sd.zh = sd(ln.zh, na.rm = T),
-                     var.zh = var(ln.zh, na.rm = T),
+                     min.zl = min(ln.zl, na.rm = T),
+                     max.zl = max(ln.zl, na.rm = T),
+                     avg.zl = mean(ln.zl, na.rm = T),
+                     sd.zl = sd(ln.zl, na.rm = T),
+                     var.zl = var(ln.zl, na.rm = T),
                      
-                     min.exp.zh = min(exp(ln.zh), na.rm = T),
-                     max.exp.zh = max(exp(ln.zh), na.rm = T),
-                     avg.exp.zh = mean(exp(ln.zh), na.rm = T),
-                     sd.exp.zh = sd(exp(ln.zh), na.rm = T),
-                     var.exp.zh = var(exp(ln.zh), na.rm = T),
+                     min.exp.zl = min(exp(ln.zl), na.rm = T),
+                     max.exp.zl = max(exp(ln.zl), na.rm = T),
+                     avg.exp.zl = mean(exp(ln.zl), na.rm = T),
+                     sd.exp.zl = sd(exp(ln.zl), na.rm = T),
+                     var.exp.zl = var(exp(ln.zl), na.rm = T),
                      
                      min.mpw.b = min(ln.mpw.b, na.rm = T),
                      max.mpw.b = max(ln.mpw.b, na.rm = T),
@@ -242,17 +242,17 @@ mean_by_formation = df %>%
                      sd.exp.ow.m = sd(exp(ln.ow.m), na.rm = T),
                      var.exp.ow.m = var(exp(ln.ow.m), na.rm = T),
                      
-                     min.oh = min(ln.oh, na.rm = T),
-                     max.oh = max(ln.oh, na.rm = T),
-                     avg.oh = mean(ln.oh, na.rm = T),
-                     sd.oh = sd(ln.oh, na.rm = T),
-                     var.oh = var(ln.oh, na.rm = T),
+                     min.ol = min(ln.ol, na.rm = T),
+                     max.ol = max(ln.ol, na.rm = T),
+                     avg.ol = mean(ln.ol, na.rm = T),
+                     sd.ol = sd(ln.ol, na.rm = T),
+                     var.ol = var(ln.ol, na.rm = T),
                      
-                     min.exp.oh = min(exp(ln.oh), na.rm = T),
-                     max.exp.oh = max(exp(ln.oh), na.rm = T),
-                     avg.exp.oh = mean(exp(ln.oh), na.rm = T),
-                     sd.exp.oh = sd(exp(ln.oh), na.rm = T),
-                     var.exp.oh = var(exp(ln.oh), na.rm = T),
+                     min.exp.ol = min(exp(ln.ol), na.rm = T),
+                     max.exp.ol = max(exp(ln.ol), na.rm = T),
+                     avg.exp.ol = mean(exp(ln.ol), na.rm = T),
+                     sd.exp.ol = sd(exp(ln.ol), na.rm = T),
+                     var.exp.ol = var(exp(ln.ol), na.rm = T),
                      
                      min.o.side = min(ln.o.side, na.rm = T),
                      max.o.side = max(ln.o.side, na.rm = T),
@@ -288,23 +288,23 @@ colony_means = df %>%
     dplyr::group_by(colony.id) %>%
     dplyr::summarize(formation = formation[1],
                      n.zooid = length(unique(zooid.id)),
-                     avg.zh = mean(ln.zh, na.rm = T),
+                     avg.zl = mean(ln.zl, na.rm = T),
                      avg.mpw.b = mean(ln.mpw.b, na.rm = T),
                      avg.cw.m = mean(ln.cw.m, na.rm = T),
                      avg.cw.d = mean(ln.cw.d, na.rm = T),
                      avg.ow.m = mean(ln.ow.m, na.rm = T),
-                     avg.oh = mean(ln.oh, na.rm = T),
+                     avg.ol = mean(ln.ol, na.rm = T),
                      avg.o.side = mean(ln.o.side, na.rm = T),
                      avg.c.side = mean(ln.c.side, na.rm = T)) %>%
     as.data.frame()
 
 means = df %>%
-    dplyr::summarize(avg.zh = mean(ln.zh, na.rm = T),
+    dplyr::summarize(avg.zl = mean(ln.zl, na.rm = T),
                      avg.mpw.b = mean(ln.mpw.b, na.rm = T),
                      avg.cw.m = mean(ln.cw.m, na.rm = T),
                      avg.cw.d = mean(ln.cw.d, na.rm = T),
                      avg.ow.m = mean(ln.ow.m, na.rm = T),
-                     avg.oh = mean(ln.oh, na.rm = T),
+                     avg.ol = mean(ln.ol, na.rm = T),
                      avg.o.side = mean(ln.o.side, na.rm = T),
                      avg.c.side = mean(ln.c.side, na.rm = T)) %>%
     as.data.frame()
@@ -316,7 +316,7 @@ save(sum.data.list,
 #### CORRELATIONS & ALLOMETRIES ----
 ## are these coming from the same individuals??
 ## ask KLV for other metadata for sites
-## OH hump is on the other side
+## ol hump is on the other side
 
 #from https://r-coder.com/correlation-plot-r/
 panel.hist <- function(x, ...) {
@@ -346,7 +346,7 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
 }
 
 plot.df <- df %>%
-    dplyr::select(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, ln.ow.m, ln.oh, ln.o.side, ln.c.side)
+    dplyr::select(ln.zl, ln.mpw.b, ln.cw.m, ln.cw.d, ln.ow.m, ln.ol, ln.o.side, ln.c.side)
 
 pairs(plot.df,
       upper.panel = panel.cor,         # Disabling the upper panel
@@ -400,83 +400,83 @@ mean_by_formation.meta <- merge(mean_by_formation, form.df,
                                 by.y = "formationCode")
 
 ## overall difference in zooid height
-mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]
+mean_by_formation$avg.zl[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zl[mean_by_formation$formation == "modern"]
 #exp(-0.09371967) = 0.910538 change in length
 mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]
 #exp(-0.1627765) = 0.8497811 change in width
 
-diff.ln.zh <- c()
+diff.ln.zl <- c()
 diff.ln.mpw.b <- c()
 diff.ln.cw.m <- c()
 diff.ln.cw.d <- c()
 diff.ln.ow.m <- c()
-diff.ln.oh <- c()
+diff.ln.ol <- c()
 diff.ln.o.side <- c()
 diff.ln.c.side <- c()
 
-diff.zh <- c()
+diff.zl <- c()
 diff.mpw.b <- c()
 diff.cw.m <- c()
 diff.cw.d <- c()
 diff.ow.m <- c()
-diff.oh <- c()
+diff.ol <- c()
 diff.o.side <- c()
 diff.c.side <- c()
 
-diff.zh.per <- c()
+diff.zl.per <- c()
 diff.mpw.b.per <- c()
 diff.cw.m.per <- c()
 diff.cw.d.per <- c()
 diff.ow.m.per <- c()
-diff.oh.per <- c()
+diff.ol.per <- c()
 diff.o.side.per <- c()
 diff.c.side.per <- c()
 
 for(i in 1:(nrow(mean_by_formation)-1)){
-    diff.ln.zh[i] <- mean_by_formation$avg.zh[i+1] - mean_by_formation$avg.zh[i]
+    diff.ln.zl[i] <- mean_by_formation$avg.zl[i+1] - mean_by_formation$avg.zl[i]
     diff.ln.mpw.b[i] <- mean_by_formation$avg.mpw.b[i+1] - mean_by_formation$avg.mpw.b[i]
     diff.ln.cw.m[i] <- mean_by_formation$avg.cw.m[i+1] - mean_by_formation$avg.cw.m[i]
     diff.ln.cw.d[i] <- mean_by_formation$avg.cw.d[i+1] - mean_by_formation$avg.cw.d[i]
     diff.ln.ow.m[i] <- mean_by_formation$avg.ow.m[i+1] - mean_by_formation$avg.ow.m[i]
-    diff.ln.oh[i] <- mean_by_formation$avg.oh[i+1] - mean_by_formation$avg.oh[i]
+    diff.ln.ol[i] <- mean_by_formation$avg.ol[i+1] - mean_by_formation$avg.ol[i]
     diff.ln.o.side[i] <- mean_by_formation$avg.o.side[i+1] - mean_by_formation$avg.o.side[i]
     diff.ln.c.side[i] <- mean_by_formation$avg.c.side[i+1] - mean_by_formation$avg.c.side[i]
     
-    diff.zh[i] <- exp(mean_by_formation$avg.zh[i+1]) - exp(mean_by_formation$avg.zh[i])
+    diff.zl[i] <- exp(mean_by_formation$avg.zl[i+1]) - exp(mean_by_formation$avg.zl[i])
     diff.mpw.b[i] <- exp(mean_by_formation$avg.mpw.b[i+1]) - exp(mean_by_formation$avg.mpw.b[i])
     diff.cw.m[i] <- exp(mean_by_formation$avg.cw.m[i+1]) - exp(mean_by_formation$avg.cw.m[i])
     diff.cw.d[i] <- exp(mean_by_formation$avg.cw.d[i+1]) - exp(mean_by_formation$avg.cw.d[i])
     diff.ow.m[i] <- exp(mean_by_formation$avg.ow.m[i+1]) - exp(mean_by_formation$avg.ow.m[i])
-    diff.oh[i] <- exp(mean_by_formation$avg.oh[i+1]) - exp(mean_by_formation$avg.oh[i])
+    diff.ol[i] <- exp(mean_by_formation$avg.ol[i+1]) - exp(mean_by_formation$avg.ol[i])
     diff.o.side[i] <- exp(mean_by_formation$avg.o.side[i+1]) - exp(mean_by_formation$avg.o.side[i])
     diff.c.side[i] <- exp(mean_by_formation$avg.c.side[i+1]) - exp(mean_by_formation$avg.c.side[i])
     
-    diff.zh.per[i] <- (abs(exp(mean_by_formation$avg.zh[i+1]) - exp(mean_by_formation$avg.zh[i]))/exp(mean_by_formation$avg.zh[i]))*100
+    diff.zl.per[i] <- (abs(exp(mean_by_formation$avg.zl[i+1]) - exp(mean_by_formation$avg.zl[i]))/exp(mean_by_formation$avg.zl[i]))*100
     diff.mpw.b.per[i] <- (abs(exp(mean_by_formation$avg.mpw.b[i+1]) - exp(mean_by_formation$avg.mpw.b[i]))/exp(mean_by_formation$avg.mpw.b[i]))*100
     diff.cw.m.per[i] <- (abs(exp(mean_by_formation$avg.cw.m[i+1]) - exp(mean_by_formation$avg.cw.m[i]))/exp(mean_by_formation$avg.cw.m[i]))*100
     diff.cw.d.per[i] <- (abs(exp(mean_by_formation$avg.cw.d[i+1]) - exp(mean_by_formation$avg.cw.d[i]))/exp(mean_by_formation$avg.cw.d[i]))*100
     diff.ow.m.per[i] <- (abs(exp(mean_by_formation$avg.ow.m[i+1]) - exp(mean_by_formation$avg.ow.m[i]))/exp(mean_by_formation$avg.ow.m[i]))*100
-    diff.oh.per[i] <- (abs(exp(mean_by_formation$avg.oh[i+1]) - exp(mean_by_formation$avg.oh[i]))/exp(mean_by_formation$avg.oh[i]))*100
+    diff.ol.per[i] <- (abs(exp(mean_by_formation$avg.ol[i+1]) - exp(mean_by_formation$avg.ol[i]))/exp(mean_by_formation$avg.ol[i]))*100
     diff.o.side.per[i] <- (abs(exp(mean_by_formation$avg.o.side[i+1]) - exp(mean_by_formation$avg.o.side[i]))/exp(mean_by_formation$avg.o.side[i]))*100
     diff.c.side.per[i] <- (abs(exp(mean_by_formation$avg.c.side[i+1]) - exp(mean_by_formation$avg.c.side[i]))/exp(mean_by_formation$avg.c.side[i]))*100
 }
 
 ##overall change
-exp(mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.zl[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zl[mean_by_formation$formation == "NKLS"])
 exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"])
 exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"])
 exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"])
 exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"])
-exp(mean_by_formation$avg.oh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.oh[mean_by_formation$formation == "NKLS"])
+exp(mean_by_formation$avg.ol[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ol[mean_by_formation$formation == "NKLS"])
 exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"])
 exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"])
 
-(abs(exp(mean_by_formation$avg.zh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.zh[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.zl[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zl[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.zl[mean_by_formation$formation == "NKLS"]))*100
 (abs(exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"]))*100
 (abs(exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"]))*100
 (abs(exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"]))*100
 (abs(exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"]))*100
-(abs(exp(mean_by_formation$avg.oh[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.oh[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.oh[mean_by_formation$formation == "NKLS"]))*100
+(abs(exp(mean_by_formation$avg.ol[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ol[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.ol[mean_by_formation$formation == "NKLS"]))*100
 (abs(exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"]))*100
 (abs(exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"]))*100
 
@@ -484,17 +484,17 @@ exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp
 diff.form <- c("NKLS to NKBS", "NKBS to Tewkesbury",
                "Tewkesbury to Upper Kai-Iwi", "Upper Kai-Iwi to Tainui",
                "Tainui to SHCSBSB", "SHCSBSB to modern")
-diff.stats <- as.data.frame(cbind(diff.form, diff.ln.zh, diff.ln.mpw.b, 
+diff.stats <- as.data.frame(cbind(diff.form, diff.ln.zl, diff.ln.mpw.b, 
                                   diff.ln.cw.m, diff.ln.cw.d, diff.ln.ow.m, 
-                                  diff.ln.oh, diff.ln.o.side, diff.ln.c.side,
+                                  diff.ln.ol, diff.ln.o.side, diff.ln.c.side,
                                   
-                                  diff.zh, diff.mpw.b, 
+                                  diff.zl, diff.mpw.b, 
                                   diff.cw.m, diff.cw.d, diff.ow.m, 
-                                  diff.oh, diff.o.side, diff.c.side,
+                                  diff.ol, diff.o.side, diff.c.side,
                                   
-                                  diff.zh.per, diff.mpw.b.per, 
+                                  diff.zl.per, diff.mpw.b.per, 
                                   diff.cw.m.per, diff.cw.d.per, diff.ow.m.per, 
-                                  diff.oh.per, diff.o.side.per, diff.c.side.per))
+                                  diff.ol.per, diff.o.side.per, diff.c.side.per))
 
 write.csv(diff.stats,
           "./Results/diff.in.traits.csv",
@@ -503,14 +503,14 @@ write.csv(diff.stats,
 ## how is sd a function of sample size (number of zooids and number of colonies)?
 #plot sd per colony by zooid no
 ggplot(mean_by_formation_colony) + 
-  geom_point(aes(x = n.zooid, y = sd.zh,
+  geom_point(aes(x = n.zooid, y = sd.zl,
                  col = formation)) + 
   plot.theme +
   scale_x_continuous(name = "Number of Zooids per Colony") +
   scale_y_continuous(expression(sd~ln~Zooid~Height~(mu*m))) +
   scale_color_manual(values = col.form)
 
-summary(lm(mean_by_formation_colony$sd.zh ~ mean_by_formation_colony$n.zooid))
+summary(lm(mean_by_formation_colony$sd.zl ~ mean_by_formation_colony$n.zooid))
 #sig but slope close to 0
 summary(lm(mean_by_formation_colony$sd.mpw.b ~ mean_by_formation_colony$n.zooid))
 #nonsig and slope close 0
@@ -520,7 +520,7 @@ summary(lm(mean_by_formation_colony$sd.cw.d ~ mean_by_formation_colony$n.zooid))
 #nonsig and slope close to 0
 summary(lm(mean_by_formation_colony$sd.ow.m ~ mean_by_formation_colony$n.zooid))
 #nonsig and slope close to 0
-summary(lm(mean_by_formation_colony$sd.oh ~ mean_by_formation_colony$n.zooid))
+summary(lm(mean_by_formation_colony$sd.ol ~ mean_by_formation_colony$n.zooid))
 #nonsig and slope around 0
 summary(lm(mean_by_formation_colony$sd.o.side ~ mean_by_formation_colony$n.zooid))
 #nonsig and slope close to 0 
@@ -529,14 +529,14 @@ summary(lm(mean_by_formation_colony$sd.c.side ~ mean_by_formation_colony$n.zooid
 
 #plot sd per formation by colony no
 ggplot(mean_by_formation) + 
-  geom_point(aes(x = num.col, y = sd.zh,
+  geom_point(aes(x = num.col, y = sd.zl,
                  col = formation)) + 
   plot.theme +
   scale_x_continuous(name = "Number of Colonies per Colony") +
   scale_y_continuous(expression(sd~ln~Zooid~Height~(mu*m))) +
   scale_color_manual(values = col.form)
 
-anova(lm(mean_by_formation$sd.zh ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+anova(lm(mean_by_formation$sd.zl ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
 #nonsig
 anova(lm(mean_by_formation$sd.mpw.b ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
 #nonsig
@@ -546,7 +546,7 @@ anova(lm(mean_by_formation$sd.cw.d ~ mean_by_formation$num.col + mean_by_formati
 #nonsig
 anova(lm(mean_by_formation$sd.ow.m ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
 #nonsig
-anova(lm(mean_by_formation$sd.oh ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
+anova(lm(mean_by_formation$sd.ol ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
 #nonsig
 anova(lm(mean_by_formation$sd.o.side ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
 #nonsig
@@ -556,14 +556,14 @@ anova(lm(mean_by_formation$sd.c.side ~ mean_by_formation$num.col + mean_by_forma
 #use formation means
 #mean_by_formation
 ggplot(data = mean_by_formation.meta) +
-  geom_point(aes(x = as.numeric(age.range), y = var.zh,
+  geom_point(aes(x = as.numeric(age.range), y = var.zl,
                  col = formation)) + 
   plot.theme +
   scale_x_continuous(name = "Age Range (Ma)") +
   scale_y_continuous(name = "Variation of Zooid Height (um)") +
   scale_color_manual(values = col.form)
 
-summary(lm(mean_by_formation.meta$var.zh ~ mean_by_formation.meta$age.range))
+summary(lm(mean_by_formation.meta$var.zl ~ mean_by_formation.meta$age.range))
 #nonsig
 summary(lm(mean_by_formation.meta$var.mpw.b ~ mean_by_formation.meta$age.range))
 #nonsig
@@ -573,7 +573,7 @@ summary(lm(mean_by_formation.meta$var.cw.d ~ mean_by_formation.meta$age.range))
 #nonsig
 summary(lm(mean_by_formation.meta$var.ow.m ~ mean_by_formation.meta$age.range))
 #nonsig
-summary(lm(mean_by_formation.meta$var.oh ~ mean_by_formation.meta$age.range))
+summary(lm(mean_by_formation.meta$var.ol ~ mean_by_formation.meta$age.range))
 #nonsig
 summary(lm(mean_by_formation.meta$var.o.side ~ mean_by_formation.meta$age.range))
 #nonsig
@@ -590,7 +590,7 @@ traits.melt$formation <- factor(traits.melt$formation,
                                            "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern")) 
 
 traits.melt <- traits.melt[traits.melt$colony.id %in% reg.colonies$colony.id,]
-box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",], 
+box.ln.zl <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zl",], 
        aes(x = formation, 
            y = measurementValue, 
            fill = formation)) +
@@ -609,11 +609,11 @@ box.ln.zh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zh",],
                                 1450, 2000)) +
   plot.theme
 
-ggsave(box.ln.zh, 
-       file = "./Results/boxplot.ln.zh.png", 
+ggsave(box.ln.zl, 
+       file = "./Results/boxplot.ln.zl.png", 
        width = 14, height = 10, units = "cm")
 
-box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",], 
+box.ln.ol <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ol",], 
                     aes(x = formation, 
                         y = measurementValue, 
                         fill = formation)) +
@@ -632,8 +632,8 @@ box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",],
                                   0.5)) +
     plot.theme
 
-ggsave(box.ln.oh, 
-       file = "./Results/boxplot.ln.oh.png", 
+ggsave(box.ln.ol, 
+       file = "./Results/boxplot.ln.ol.png", 
        width = 14, height = 10, units = "cm")
 
 
@@ -794,7 +794,7 @@ ggsave(box.ow.m.simple,
        file = "./Results/simple.boxplot.ln.ow.m.png", 
        width = 14, height = 10, units = "cm")
 
-box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",], 
+box.ln.ol <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ol",], 
                       aes(x = formation, 
                           y = measurementValue, 
                           fill = formation)) +
@@ -811,8 +811,8 @@ box.ln.oh <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.oh",],
                                   0.2, 0.5)) + 
     plot.theme
 
-ggsave(box.ln.oh, 
-       file = "./Results/boxplot.ln.oh.png", 
+ggsave(box.ln.ol, 
+       file = "./Results/boxplot.ln.ol.png", 
        width = 14, height = 10, units = "cm")
 
 box.ln.o.side <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.o.side",], 
@@ -887,21 +887,21 @@ ggsave(box.c.side.simple,
 #akin to Hunt 2004
 
 #how similar is variation within a formation to the modern?
-mean_by_formation$per.var.zh <- ((1-mean_by_formation$var.zh)/mean_by_formation$var.zh[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.zl <- ((1-mean_by_formation$var.zl)/mean_by_formation$var.zl[mean_by_formation$formation == "modern"])*100
 mean_by_formation$per.var.mpw.b <- ((1-mean_by_formation$var.mpw.b)/mean_by_formation$var.mpw.b[mean_by_formation$formation == "modern"])*100
 mean_by_formation$per.var.cw.m <- ((1-mean_by_formation$var.cw.m)/mean_by_formation$var.cw.m[mean_by_formation$formation == "modern"])*100
 mean_by_formation$per.var.cw.d <- ((1-mean_by_formation$var.cw.d)/mean_by_formation$var.cw.d[mean_by_formation$formation == "modern"])*100
 mean_by_formation$per.var.ow.m <- ((1-mean_by_formation$var.ow.m)/mean_by_formation$var.ow.m[mean_by_formation$formation == "modern"])*100
-mean_by_formation$per.var.oh <- ((1-mean_by_formation$var.oh)/mean_by_formation$var.oh[mean_by_formation$formation == "modern"])*100
+mean_by_formation$per.var.ol <- ((1-mean_by_formation$var.ol)/mean_by_formation$var.ol[mean_by_formation$formation == "modern"])*100
 mean_by_formation$per.var.o.side <- ((1-mean_by_formation$var.o.side)/mean_by_formation$var.o.side[mean_by_formation$formation == "modern"])*100
 mean_by_formation$per.var.c.side <- ((1-mean_by_formation$var.c.side)/mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])*100
 
-mean(mean_by_formation$per.var.zh) 
+mean(mean_by_formation$per.var.zl) 
 mean(mean_by_formation$per.var.mpw.b) 
 mean(mean_by_formation$per.var.cw.m) 
 mean(mean_by_formation$per.var.cw.d) 
 mean(mean_by_formation$per.var.ow.m) 
-mean(mean_by_formation$per.var.oh) 
+mean(mean_by_formation$per.var.ol) 
 mean(mean_by_formation$per.var.o.side)
 
 sum(mean_by_formation.meta[mean_by_formation.meta$formation == "NKLS", 41:52])/8
@@ -912,21 +912,21 @@ sum(mean_by_formation.meta[mean_by_formation.meta$formation == "Tainui", 41:52])
 sum(mean_by_formation.meta[mean_by_formation.meta$formation == "SHCSBSB", 41:52])/8
 
 #by what percent did the variance increase or decrease?
-mean_by_formation$infl.var.zh <- ((mean_by_formation$var.zh-mean_by_formation$var.zh[mean_by_formation$formation == "modern"])/mean_by_formation$var.zh[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.zl <- ((mean_by_formation$var.zl-mean_by_formation$var.zl[mean_by_formation$formation == "modern"])/mean_by_formation$var.zl[mean_by_formation$formation == "modern"])*100
 mean_by_formation$infl.var.mpw.b <- ((mean_by_formation$var.mpw.b-mean_by_formation$var.mpw.b[mean_by_formation$formation == "modern"])/mean_by_formation$var.mpw.b[mean_by_formation$formation == "modern"])*100
 mean_by_formation$infl.var.cw.m <- ((mean_by_formation$var.cw.m-mean_by_formation$var.cw.m[mean_by_formation$formation == "modern"])/mean_by_formation$var.cw.m[mean_by_formation$formation == "modern"])*100
 mean_by_formation$infl.var.cw.d <- ((mean_by_formation$var.cw.d-mean_by_formation$var.cw.d[mean_by_formation$formation == "modern"])/mean_by_formation$var.cw.d[mean_by_formation$formation == "modern"])*100
 mean_by_formation$infl.var.ow.m <- ((mean_by_formation$var.ow.m-mean_by_formation$var.ow.m[mean_by_formation$formation == "modern"])/mean_by_formation$var.ow.m[mean_by_formation$formation == "modern"])*100
-mean_by_formation$infl.var.oh <- ((mean_by_formation$var.oh-mean_by_formation$var.oh[mean_by_formation$formation == "modern"])/mean_by_formation$var.oh[mean_by_formation$formation == "modern"])*100
+mean_by_formation$infl.var.ol <- ((mean_by_formation$var.ol-mean_by_formation$var.ol[mean_by_formation$formation == "modern"])/mean_by_formation$var.ol[mean_by_formation$formation == "modern"])*100
 mean_by_formation$infl.var.o.side <- ((mean_by_formation$var.o.side-mean_by_formation$var.o.side[mean_by_formation$formation == "modern"])/mean_by_formation$var.o.side[mean_by_formation$formation == "modern"])*100
 mean_by_formation$infl.var.c.side <- ((mean_by_formation$var.c.side-mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])/mean_by_formation$var.c.side[mean_by_formation$formation == "modern"])*100
 
-mean(mean_by_formation$infl.var.zh) 
+mean(mean_by_formation$infl.var.zl) 
 mean(mean_by_formation$infl.var.mpw.b) 
 mean(mean_by_formation$infl.var.cw.m) 
 mean(mean_by_formation$infl.var.cw.d) 
 mean(mean_by_formation$infl.var.ow.m) 
-mean(mean_by_formation$infl.var.oh) 
+mean(mean_by_formation$infl.var.ol) 
 mean(mean_by_formation$infl.var.o.side)
 mean(mean_by_formation$infl.var.c.side)
 
@@ -942,18 +942,18 @@ sum(mean_by_formation[mean_by_formation$formation == "SHCSBSB", 53:60])/8
 
 ## percent increasel
 
-summary(lm(mean_by_formation.meta$var.zh ~ mean_by_formation.meta$age.range)) #non-sig
+summary(lm(mean_by_formation.meta$var.zl ~ mean_by_formation.meta$age.range)) #non-sig
 summary(lm(mean_by_formation.meta$var.mpw.b ~ mean_by_formation.meta$age.range)) 
 summary(lm(mean_by_formation.meta$var.cw.m ~ mean_by_formation.meta$age.range)) 
 summary(lm(mean_by_formation.meta$var.cw.d ~ mean_by_formation.meta$age.range)) 
 summary(lm(mean_by_formation.meta$var.ow.m ~ mean_by_formation.meta$age.range)) 
-summary(lm(mean_by_formation.meta$var.oh ~ mean_by_formation.meta$age.range)) 
+summary(lm(mean_by_formation.meta$var.ol ~ mean_by_formation.meta$age.range)) 
 summary(lm(mean_by_formation.meta$var.o.side ~ mean_by_formation.meta$age.range)) 
 summary(lm(mean_by_formation.meta$var.c.side ~ mean_by_formation.meta$age.range)) 
 
 ###### Variation in traits through time -------
 ggplot(mean_by_formation.meta) +
-    geom_point(aes(x = formation, y = var.zh),
+    geom_point(aes(x = formation, y = var.zl),
                size = 3, shape = 20, color = "#f8766dff") +
     geom_point(aes(x = formation, y = var.mpw.b),
                size = 3, shape = 20, color = "#cd9600ff") +
@@ -963,7 +963,7 @@ ggplot(mean_by_formation.meta) +
                size = 3, shape = 20, color = "#00be67ff") +
     geom_point(aes(x = formation, y = var.ow.m),
                size = 3, shape = 20, color = "#00c094ff") +
-    geom_point(aes(x = formation, y = var.oh),
+    geom_point(aes(x = formation, y = var.ol),
                size = 3, shape = 20, color = "#619cffff") +
     geom_point(aes(x = formation, y = var.c.side),
                size = 3, shape = 20, color = "#00bfc4ff") +
@@ -984,24 +984,24 @@ reg.colonies %>%
     dplyr::summarize(n.image = length(unique(image)),
                      n.col = length(unique(colony.id)),
                      n.zooid = length(zooid.id),
-                     avg.zh = mean(exp(ln.zh), na.rm = T),
+                     avg.zl = mean(exp(ln.zl), na.rm = T),
                      avg.mpw.b = mean(exp(ln.mpw.b), na.rm = T),
                      avg.cw.m = mean(exp(ln.cw.m), na.rm = T),
                      avg.cw.d = mean(exp(ln.cw.d), na.rm = T),
                      avg.ow.m = mean(exp(ln.ow.m), na.rm = T),
-                     avg.oh = mean(exp(ln.oh), na.rm = T),
+                     avg.ol = mean(exp(ln.ol), na.rm = T),
                      avg.o.side = mean(exp(ln.o.side), na.rm = T),
                      avg.c.side = mean(exp(ln.c.side), na.rm = T)) %>%
     as.data.frame()
 
 #modern doesn't have the fewest zooids (UKI & Tainui do)
 #modern does have the fewest colonies, only slightly less than UKI & Tainui
-#modern zh: in the middle
+#modern zl: in the middle
 #modern mpw.b: biggest, but Tainui close to that size
 #modern cw.m: in the middle
 #modern cw.d: in the middle
 #modern ow.m: towards big, but not the biggest
-#modern oh: in the middle
+#modern ol: in the middle
 #modern o.side: towards big, but not the biggest
 #modern c.side: in the middle
 
