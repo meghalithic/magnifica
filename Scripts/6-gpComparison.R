@@ -162,13 +162,13 @@ mean_by_formation
 
 ### Calculate the vector that defines the observed divergence between sample/formation 1
 # A vector containing trait means from sample/formation
-NKLS <- as.numeric(mean_by_formation[mean_by_formation == "NKLS", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")]) 
-NKBS <- as.numeric(mean_by_formation[mean_by_formation == "NKBS", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
-tewk <- as.numeric(mean_by_formation[mean_by_formation == "Tewkesbury", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
-uki <- as.numeric(mean_by_formation[mean_by_formation == "Upper Kai-Iwi", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
-tai <- as.numeric(mean_by_formation[mean_by_formation == "Tainui", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
-SHCSBSB <- as.numeric(mean_by_formation[mean_by_formation == "SHCSBSB", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
-mod <- as.numeric(mean_by_formation[mean_by_formation == "modern", c("avg.zh", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.oh", "avg.o.side", "avg.c.side")])
+NKLS <- as.numeric(mean_by_formation[mean_by_formation == "NKLS", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")]) 
+NKBS <- as.numeric(mean_by_formation[mean_by_formation == "NKBS", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
+tewk <- as.numeric(mean_by_formation[mean_by_formation == "Tewkesbury", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
+uki <- as.numeric(mean_by_formation[mean_by_formation == "Upper Kai-Iwi", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
+tai <- as.numeric(mean_by_formation[mean_by_formation == "Tainui", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
+SHCSBSB <- as.numeric(mean_by_formation[mean_by_formation == "SHCSBSB", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
+mod <- as.numeric(mean_by_formation[mean_by_formation == "modern", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
 
 #second - first
 #t1 = NKBS - NKLS
@@ -320,6 +320,19 @@ ggsave(p.evol,
        width = 14, height = 10, units = "cm")
 
 # By comparing the evolvabilities you estimated in the direction of change (lines 9 and 12) with the average evolvabilities calculated by running line 20, you get a sense of whether evolution happened in directions with above or below average evolvability.  
+
+##evolvability over time:
+ggplot(X_sum.trim, aes(x = form.trans)) +
+    geom_point(aes(y = e.mean),
+               size = 5, shape = 15, color = "black") +
+    geom_smooth(aes(y = e.mean)) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Evolvability") +
+    plot.theme
+#does not change a lot
+X_sum.trim$ages <- c(2.2, 1.9, 1.85, 0.75, 0.5, 0.45)
+summary(lm(X_sum.trim$e.mean ~ X_sum.trim$ages)) #slope of zero, non-sig
 
 ##### CHANGE IN GMAX BETWEEN FORMATIONS -----
 
@@ -554,7 +567,7 @@ evol.diff.list = list(G_ext_NKLS, G_ext_NKBS, G_ext_tewk, G_ext_uki,
 save(evol.diff.list,
      file = "./Results/evol.diff.list.RData")
 
-###### PC2-4 compared to Gmax -----
+###### PC2-4 compared to ∆z -----
 ## do for 2-4 as well
 G2_NKLS <- eigen(G_ext_NKLS)$vectors[,2]
 G2_NKBS <- eigen(G_ext_NKBS)$vectors[,2]
@@ -678,6 +691,97 @@ dot_product.G4_SHCSBSB <- sum(G4_SHCSBSB_norm * evolved_difference_unit_length_t
 angle_radians.G4_SHCSBSB <- acos(dot_product.G4_SHCSBSB)
 angle_degrees.G4_SHCSBSB <- angle_radians.G4_SHCSBSB * (180 / pi)
 
+#### LOOK AT SCALING OF PC1 AND PC2 OVER TIME -----
+Gmax_NKLS.val <- eigen(G_ext_NKLS)$values[1]
+Gmax_NKBS.val <- eigen(G_ext_NKBS)$values[1]
+Gmax_tewk.val <- eigen(G_ext_tewk)$values[1]
+Gmax_uki.val <- eigen(G_ext_uki)$values[1]
+Gmax_tai.val <- eigen(G_ext_tai)$values[1]
+Gmax_SHCSBSB.val <- eigen(G_ext_SHCSBSB)$values[1]
+Gmax_mod.val <- eigen(G_ext_mod)$values[1]
+
+G2_NKLS.val <- eigen(G_ext_NKLS)$values[2]
+G2_NKBS.val <- eigen(G_ext_NKBS)$values[2]
+G2_tewk.val <- eigen(G_ext_tewk)$values[2]
+G2_uki.val <- eigen(G_ext_uki)$values[2]
+G2_tai.val <- eigen(G_ext_tai)$values[2]
+G2_SHCSBSB.val <- eigen(G_ext_SHCSBSB)$values[2]
+G2_mod.val <- eigen(G_ext_mod)$values[2]
+
+G3_NKLS.val <- eigen(G_ext_NKLS)$values[3]
+G3_NKBS.val <- eigen(G_ext_NKBS)$values[3]
+G3_tewk.val <- eigen(G_ext_tewk)$values[3]
+G3_uki.val <- eigen(G_ext_uki)$values[3]
+G3_tai.val <- eigen(G_ext_tai)$values[3]
+G3_SHCSBSB.val <- eigen(G_ext_SHCSBSB)$values[3]
+G3_mod.val <- eigen(G_ext_mod)$values[3]
+
+G4_NKLS.val <- eigen(G_ext_NKLS)$values[4]
+G4_NKBS.val <- eigen(G_ext_NKBS)$values[4]
+G4_tewk.val <- eigen(G_ext_tewk)$values[4]
+G4_uki.val <- eigen(G_ext_uki)$values[4]
+G4_tai.val <- eigen(G_ext_tai)$values[4]
+G4_SHCSBSB.val <- eigen(G_ext_SHCSBSB)$values[4]
+G4_mod.val <- eigen(G_ext_mod)$values[4]
+
+
+Gmax_NKLS_scaled = Gmax_NKLS.val/(G2_NKLS.val + G3_NKLS.val + G4_NKLS.val)
+Gmax_NKBS_scaled = Gmax_NKBS.val/(G2_NKBS.val + G3_NKBS.val + G4_NKBS.val)
+Gmax_tewk_scaled = Gmax_tewk.val/(G2_tewk.val + G3_tewk.val + G4_tewk.val)
+Gmax_uki_scaled = Gmax_uki.val/(G2_uki.val + G3_uki.val + G4_uki.val)
+Gmax_tai_scaled = Gmax_tai.val/(G2_tai.val + G3_tai.val + G4_tai.val)
+Gmax_SHCSBSB_scaled = Gmax_SHCSBSB.val/(G2_SHCSBSB.val + G3_SHCSBSB.val + G4_SHCSBSB.val)
+Gmax_mod_scaled = Gmax_mod.val/(G2_mod.val + G3_mod.val + G4_mod.val)
+
+pc1 <- c(Gmax_NKLS_scaled, Gmax_NKBS_scaled, Gmax_tewk_scaled,
+         Gmax_uki_scaled, Gmax_tai_scaled, Gmax_SHCSBSB_scaled,
+         Gmax_mod_scaled)
+
+G2_NKLS_scaled = G2_NKLS.val/(Gmax_NKLS.val + G3_NKLS.val + G4_NKLS.val)
+G2_NKBS_scaled = G2_NKBS.val/(Gmax_NKBS.val + G3_NKBS.val + G4_NKBS.val)
+G2_tewk_scaled = G2_tewk.val/(Gmax_tewk.val + G3_tewk.val + G4_tewk.val)
+G2_uki_scaled = G2_uki.val/(Gmax_uki.val + G3_uki.val + G4_uki.val)
+G2_tai_scaled = G2_tai.val/(Gmax_tai.val + G3_tai.val + G4_tai.val)
+G2_SHCSBSB_scaled = G2_SHCSBSB.val/(Gmax_SHCSBSB.val + G3_SHCSBSB.val + G4_SHCSBSB.val)
+G2_mod_scaled = G2_mod.val/(Gmax_mod.val + G3_mod.val + G4_mod.val)
+
+pc2 <- c(G2_NKLS_scaled, G2_NKBS_scaled, G2_tewk_scaled,
+         G2_uki_scaled, G2_tai_scaled, G2_SHCSBSB_scaled,
+         G2_mod_scaled)
+
+form <- levels(formation_list)
+
+pc_time <- as.data.frame(cbind(pc1, pc2, form))
+pc_time$form <- factor(pc_time$form, levels = c("NKLS", "NKBS",
+                                                "Tewkesbury", "Upper Kai-Iwi",
+                                                "Tainui", "SHCSBSB", "modern"))
+pc_time$pc1 <- as.numeric(pc_time$pc1)
+pc_time$pc2 <- as.numeric(pc_time$pc2)
+
+pc_time$ages <- c(2.2, 1.9, 1.85, 0.75, 0.5, 0.45, 0)
+
+##pc1 over time:
+ggplot(pc_time, aes(x = form)) +
+    geom_point(aes(y = pc1),
+               size = 5, shape = 15, color = "black") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "PC1") +
+    plot.theme
+#does not change a lot
+summary(lm(pc_time$pc1 ~ pc_time$ages)) #slope of zero, non-sig
+
+##pc2 over time:
+ggplot(pc_time, aes(x = form)) +
+    geom_point(aes(y = pc2),
+               size = 5, shape = 15, color = "black") +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "PC1") +
+    plot.theme
+#does not change a lot
+summary(lm(pc_time$pc2 ~ pc_time$ages)) #slope of zero, non-sig
+
 #### LOOK AT TRENDS AS A FUNCTION OF TIME -----
 form.df <- form.meta[c(1:3, 5:8),] #in same order as mean_by_formation; remove Waipuru
 mean_by_formation
@@ -730,7 +834,7 @@ ggsave(p.dot.prod_gmax,
        file = "./Results/corr.gmax.p.diff.png", 
        width = 14, height = 10, units = "cm")
 
-p.ang_g <- ggplot(diff_between_Gs) +
+p.ang.diffs_g <- ggplot(diff_between_Gs) +
     geom_point(aes(x = angle.diff_Gs.time, y = angle_diff_Gs),
                size = 7, shape = 19) +
     scale_x_discrete(name = "Formation Transition",
@@ -742,7 +846,7 @@ p.ang_g <- ggplot(diff_between_Gs) +
                size = 1) +
     plot.theme
 
-ggsave(p.ang_g, 
+ggsave(p.ang.diff_g, 
        file = "./Results/angle.g.diff.png", 
        width = 20, height = 20, units = "cm")
 
@@ -766,16 +870,27 @@ delta.z.melt$form.trans <- factor(delta.z.melt$form.trans,
                                              "Tainui to SHCSBSB",
                                              "SHCSBSB to modern"))
 
-p.delta_z.connected <- ggplot(delta.z.melt, aes(x = form.trans, y = measurementValue,
-                         group = measurementType,
-                         col = measurementType)) +
+delta.z.melt$measurementType <- factor(delta.z.melt$measurementType, 
+                                  levels = c("ln.zl",
+                                             "ln.mpw.b",
+                                             "ln.cw.m",
+                                             "ln.cw.d",
+                                             "ln.ow.m",
+                                             "ln.ol",
+                                             "ln.c.side",
+                                             "ln.o.side"))
+
+p.delta_z.connected <- ggplot(delta.z.melt, 
+                              aes(x = form.trans, y = measurementValue,
+                                  group = measurementType,
+                                  col = measurementType)) +
     geom_line() +
     geom_point(size = 3, shape = 17) +
     scale_x_discrete(name = "Formation Transition",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = expression(Delta~z),
-                       lim = c(-2.5, 1), 
-                       position = "right") + 
+                       lim = c(-1, 1), 
+                       position = "left") + 
     scale_color_manual(values = col.traits.repo) + 
     plot.theme
 
@@ -784,7 +899,7 @@ ggsave(p.delta_z.connected,
        width = 20, height = 20, units = "cm")
 
 p.delta_z <- ggplot(delta.z.df) +
-    geom_point(aes(x = form.trans, y = ln.zh),
+    geom_point(aes(x = form.trans, y = ln.zl),
                size = 3, shape = 17, color = "#f8766dff") +
     geom_point(aes(x = form.trans, y = ln.mpw.b),
                size = 3, shape = 17, color = "#cd9600ff") +
@@ -794,7 +909,7 @@ p.delta_z <- ggplot(delta.z.df) +
                size = 3, shape = 17, color = "#00be67ff") +
     geom_point(aes(x = form.trans, y = ln.ow.m),
                size = 3, shape = 17, color = "#00c094ff") +
-    geom_point(aes(x = form.trans, y = ln.oh),
+    geom_point(aes(x = form.trans, y = ln.ol),
                size = 3, shape = 17, color = "#619cffff") +
     geom_point(aes(x = form.trans, y = ln.c.side),
                size = 3, shape = 17, color = "#00bfc4ff") +
@@ -812,16 +927,16 @@ ggsave(p.delta_z,
        width = 20, height = 20, units = "cm")
 
 diff_between_Gs$corr.diff_Gs <- as.numeric(diff_between_Gs$corr.diff_Gs)
-p.dot.prod_g <- ggplot(diff_between_Gs) +
+p.ang_g <- ggplot(diff_between_Gs) +
     geom_point(aes(x = angle.diff_Gs.time, y = abs(corr.diff_Gs)),
                size = 5, shape = 15) +
     scale_x_discrete(name = "Formation Transition",
                      guide = guide_axis(angle = 45)) +
-    scale_y_continuous(name = "Dot prodcut between G matrices") + 
+    scale_y_continuous(name = "Angle between G matrices") + 
     plot.theme
 
-ggsave(p.dot.prod_g, 
-       file = "./Results/dot.prod.g.diff.png", 
+ggsave(p.ang_g, 
+       file = "./Results/ang.g.diff.png", 
        width = 20, height = 20, units = "cm")
 
 #### ∆z in relation to diff in G over time ----
@@ -834,7 +949,7 @@ diffs <- merge(diff_between_Gs, delta.z.df,
 colnames(diffs)
 
 ggplot(diffs) +
-    geom_point(aes(x = angle_diff_Gs, y = ln.zh),
+    geom_point(aes(x = angle_diff_Gs, y = ln.zl),
                size = 3, shape = 20, color = "#f8766dff") +
     geom_point(aes(x = angle_diff_Gs, y = ln.mpw.b),
                size = 3, shape = 20, color = "#cd9600ff") +
@@ -844,7 +959,7 @@ ggplot(diffs) +
                size = 3, shape = 20, color = "#00be67ff") +
     geom_point(aes(x = angle_diff_Gs, y = ln.ow.m),
                size = 3, shape = 20, color = "#00c094ff") +
-    geom_point(aes(x = angle_diff_Gs, y = ln.oh),
+    geom_point(aes(x = angle_diff_Gs, y = ln.ol),
                size = 3, shape = 20, color = "#619cffff") +
     geom_point(aes(x = angle_diff_Gs, y = ln.c.side),
                size = 3, shape = 20, color = "#00bfc4ff") +
@@ -868,7 +983,7 @@ diff_between_Gs$time.1 <- c("NKLS", "NKBS", "Tewkesbury", "Upper Kai-Iwi",
 var.pheno.df <- merge(mean_by_formation[-7,], diff_between_Gs,
                       by.x = "formation", by.y = "time.1")    
 ggplot(var.pheno.df) +
-    geom_point(aes(x = angle_diff_Gs, y = var.zh),
+    geom_point(aes(x = angle_diff_Gs, y = var.zl),
                size = 3, shape = 20, color = "#f8766dff") +
     geom_point(aes(x = angle_diff_Gs, y = var.mpw.b),
                size = 3, shape = 20, color = "#cd9600ff") +
@@ -878,7 +993,7 @@ ggplot(var.pheno.df) +
                size = 3, shape = 20, color = "#00be67ff") +
     geom_point(aes(x = angle_diff_Gs, y = var.ow.m),
                size = 3, shape = 20, color = "#00c094ff") +
-    geom_point(aes(x = angle_diff_Gs, y = var.oh),
+    geom_point(aes(x = angle_diff_Gs, y = var.ol),
                size = 3, shape = 20, color = "#619cffff") +
     geom_point(aes(x = angle_diff_Gs, y = var.c.side),
                size = 3, shape = 20, color = "#00bfc4ff") +
@@ -1659,7 +1774,7 @@ p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1]),
                color = "black", size = .5) +
     geom_point(aes(y = as.numeric(observed_e_glob)),
-               size = 5, shape = 17) +
+               size = 7, shape = 18) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
     scale_y_continuous(name = "Evolvability",
@@ -1670,7 +1785,7 @@ ggsave(p.evol_glob,
        file = "./Results/globalG.evolvability.png", 
        width = 14, height = 10, units = "cm")
 
-p.evol_glob_combo <- ggplot(X_sum.trim, aes(x = form.trans)) +
+p.evol_glob_combo <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     geom_boxplot(aes(ymin = e.min, 
                      lower = e.min,
                      middle = e.mean,
@@ -1678,12 +1793,12 @@ p.evol_glob_combo <- ggplot(X_sum.trim, aes(x = form.trans)) +
                      upper = e.max,
                      fill = "gray"),
                  stat = "identity", fill = "gray") +
-    geom_point(aes(y = as.numeric(observed_e),
+    geom_point(aes(y = as.numeric(observed_e_glob),
                    color = "black"),
-               size = 5, shape = 17, color = "black") +
+               size = 7, shape = 18, color = "black") +
     geom_point(data = X_sum_glob.trim,
                aes(x = form.trans, y = as.numeric(observed_e_glob)),
-               size = 5, shape = 6, color = "black") +
+               size = 7, shape = 18, color = "black") +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1]),
                color = "lightgray", lty = 2, size = 1) +
     scale_x_discrete(name = "Formation",
@@ -1759,18 +1874,27 @@ angle_degrees.glob_Gmax_t6 <- angle_radians.glob_Gmax_t6 * (180 / pi)
 
 corr.diff_Glob_max_to_z <- c(dot_product.glob_Gmax_t1, dot_product.glob_Gmax_t2,
                              dot_product.glob_Gmax_t3, dot_product.glob_Gmax_t4,
-                             dot_product.glob_Gmax_t5, dot_product.glob_Gmax_t6, "")
+                             dot_product.glob_Gmax_t5, dot_product.glob_Gmax_t6)
 
 angle_diff_Glob_max_to_z <- c(angle_degrees.glob_Gmax_t1, angle_degrees.glob_Gmax_t2,
                               angle_degrees.glob_Gmax_t3, angle_degrees.glob_Gmax_t4, 
-                              angle_degrees.glob_Gmax_t5, angle_degrees.glob_Gmax_t6, "")
-diff_between_Glob_max_z <- as.data.frame(cbind(levels(formation_list), corr.diff_Glob_max_to_z, angle_diff_Glob_max_to_z))
-colnames(diff_between_Glob_max_z) <- c("formation", "corr.diff_Glob_max_to_P", "angle_diff_Glob_max_to_P")
-diff_between_Glob_max_z$angle_diff_Glob_max_to_z <- as.numeric(diff_between_Glob_max_z$angle_diff_Glob_max_to_z)
+                              angle_degrees.glob_Gmax_t5, angle_degrees.glob_Gmax_t6)
+
+diff_between_Glob_max_z <- as.data.frame(cbind(angle_diff_Glob_max_to_z, corr.diff_Glob_max_to_z))
+diff_between_Glob_max_z$angle.diff.time <- formation_transition[-7]
+diff_between_Glob_max_z$angle.diff.time <- factor(diff_between_Glob_max_z$angle.diff.time,
+                                              levels = c("NKLS to NKBS", 
+                                                         "NKBS to Tewkesbury",
+                                                         "Tewkesbury to Upper Kai-Iwi",
+                                                         "Upper Kai-Iwi to Tainui", 
+                                                         "Tainui to SHCSBSB",
+                                                         "SHCSBSB to modern"))
+colnames(diff_between_Glob_max_z) <- c("angle_diff_global_Gmax_to_z", "corr.diff_global_Gmax_to_z", "angle.diff.time")
+diff_between_Glob_max_z$angle_diff_global_Gmax_to_z <- as.numeric(diff_between_Glob_max_z$angle_diff_global_Gmax_to_z)
 
 for(i in 1:nrow(diff_between_Glob_max_z)){
-    if(isTRUE(diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i] > 90)){
-        diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i] <- 180 - as.numeric(diff_between_Glob_max_z$angle_diff_Glob_max_to_z[i])
+    if(isTRUE(diff_between_Glob_max_z$angle_diff_global_Gmax_to_z[i] > 90)){
+        diff_between_Glob_max_z$angle_diff_global_Gmax_to_z[i] <- 180 - as.numeric(diff_between_Glob_max_z$angle_diff_global_Gmax_to_z[i])
     }
     else{
         next
@@ -1780,3 +1904,18 @@ for(i in 1:nrow(diff_between_Glob_max_z)){
 write.csv(diff_between_Glob_max_z,
           "./Results/differences.between.Glob_max.z.csv",
           row.names = FALSE)
+
+p.global_g.pheno <- ggplot(diff_between_Glob_max_z[-7,]) +
+    geom_point(aes(x = angle.diff.time, y = angle_diff_global_Gmax_to_z),
+               size = 7, shape = 18) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Angle difference between Global G matrices and delta Z", 
+                       lim = c(0, 90)) +
+    geom_hline(yintercept = 45, 
+               color = "lightgray", lty = 2, size = 1) +
+    plot.theme
+
+ggsave(p.global_g.pheno, 
+       file = "./Results/angle.global_g.pheno.png", 
+       width = 14, height = 12, units = "cm")

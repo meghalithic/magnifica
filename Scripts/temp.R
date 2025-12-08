@@ -69,19 +69,19 @@ mean_by_formation.meta <- merge(mean_by_formation,
 
 #raw zh
 ggplot(mean_by_formation.meta) +
-    geom_point(aes(temp, exp(avg.zh)),
+    geom_point(aes(temp, exp(avg.zl)),
                shape = 16, size = 5) +
     xlab("Temperature (˚C)") + 
     ylab(expression(Zooid~Height~(mu*m))) + 
     plot.theme
 
-#ln zh
-summary(lm(mean_by_formation.meta$avg.zh ~ mean_by_formation.meta$temp))
+#ln zl
+summary(lm(mean_by_formation.meta$avg.zl ~ mean_by_formation.meta$temp))
 #nonsig p = 0.9514; slope = 0.001625; r2 = 0
 
-#raw zh
-summary(lm(exp(mean_by_formation.meta$avg.zh) ~ mean_by_formation.meta$temp))
-#nonsig p = 0.9711; slope = 0.8223; r2 = 0
+#raw zl
+summary(lm(exp(mean_by_formation.meta$avg.zl) ~ mean_by_formation.meta$temp))
+#nonsig p = 0.854; slope = 4.30; r2 = 0
 
 summary(lm(mean_by_formation.meta$avg.mpw.b ~ mean_by_formation.meta$temp))
 #nonsig
@@ -280,10 +280,41 @@ plot(pf.wid ~ pf.mat)
 (892.25-16.82)/-0.003
 
 #based on stegino
-(795.29-856.63)/0.82 #-74.80488
+(795.29-853.63)/4.3 #-13.56744
 #ending temp
-(892.25-856.63)/0.82 #43.43902
+(892.25-853.63)/4.3 #8.981395
 #diff
-43.43902--74.80488 #118.2439
+8.981395--13.56744 #22.54883
 
+## ALL TOGETHER
+ep.sp <- rep("ep", length(ep.temps))
+cr.sp <- rep("cr", length(cr.temps))
+hs.sp <- rep("hs", length(hs.temps))
+pf.sp <- rep("pf", length(pf.mat))
+sm.sp <- rep("sm", length(mean_by_formation.meta$temp))
+
+ep.df <- as.data.frame(cbind(ep.sp, ep.len, ep.temps))
+colnames(ep.df) <- c("sp", "len", "temps")
+cr.df <- as.data.frame(cbind(cr.sp, cr.len, cr.temps))
+colnames(cr.df) <- c("sp", "len", "temps")
+hs.df <- as.data.frame(cbind(hs.sp, hs.len, hs.temps))
+colnames(hs.df) <- c("sp", "len", "temps")
+pf.df <- as.data.frame(cbind(pf.sp, pf.len, pf.mat))
+colnames(pf.df) <- c("sp", "len", "temps")
+sm.df <- as.data.frame(cbind(sm.sp, exp(mean_by_formation.meta$avg.zl), mean_by_formation.meta$temp))
+colnames(sm.df) <- c("sp", "len", "temps")
+
+bryo.temp <- rbind(ep.df, cr.df, hs.df, pf.df, sm.df)
+str(bryo.temp)
+bryo.temp$len <- as.numeric(bryo.temp$len)
+bryo.temp$temps <- as.numeric(bryo.temp$temps)
+
+summary(lm(bryo.temp$temps ~ bryo.temp$len)) #slope = -0.018621l
+#based on stegino
+(795.29-24.105891)/-0.018621 #-41414.75
+#ending temp
+(892.25-24.105891)/-0.018621 #46621.78
+#diff
+46621.78--41414.75 #88036.53
+#NONSENSICAL
 

@@ -1,4 +1,5 @@
 #### LOAD PACKAGES ----
+library(coda)
 #library(coin)
 library(corrplot)
 #library(data.table)

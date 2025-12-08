@@ -29,10 +29,10 @@ df$formation <- factor(df$formation,
 ##### DISTRIBUTION -----
 p.ln.zl <- ggplot(df) +
     geom_density(aes(x = ln.zl)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~length~(mu*m)))
 
 p.ln.zl.form <- ggplot(df) +
     geom_density(aes(x = ln.zl,
@@ -42,7 +42,7 @@ p.ln.zl.form <- ggplot(df) +
                    ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~length~(mu*m)))
 
 traits.melt <- melt(data = df,
                     id.vars = c("boxID", "zooid.id","image",
@@ -507,7 +507,7 @@ ggplot(mean_by_formation_colony) +
                  col = formation)) + 
   plot.theme +
   scale_x_continuous(name = "Number of Zooids per Colony") +
-  scale_y_continuous(expression(sd~ln~Zooid~Height~(mu*m))) +
+  scale_y_continuous(expression(sd~ln~Zooid~length~(mu*m))) +
   scale_color_manual(values = col.form)
 
 summary(lm(mean_by_formation_colony$sd.zl ~ mean_by_formation_colony$n.zooid))
@@ -533,7 +533,7 @@ ggplot(mean_by_formation) +
                  col = formation)) + 
   plot.theme +
   scale_x_continuous(name = "Number of Colonies per Colony") +
-  scale_y_continuous(expression(sd~ln~Zooid~Height~(mu*m))) +
+  scale_y_continuous(expression(sd~ln~Zooid~length~(mu*m))) +
   scale_color_manual(values = col.form)
 
 anova(lm(mean_by_formation$sd.zl ~ mean_by_formation$num.col + mean_by_formation$num.zooid))
@@ -559,8 +559,8 @@ ggplot(data = mean_by_formation.meta) +
   geom_point(aes(x = as.numeric(age.range), y = var.zl,
                  col = formation)) + 
   plot.theme +
-  scale_x_continuous(name = "Age Range (Ma)") +
-  scale_y_continuous(name = "Variation of Zooid Height (um)") +
+  scale_x_continuous(name = "Age range (Ma)") +
+  scale_y_continuous(name = "Variation of zooid length (um)") +
   scale_color_manual(values = col.form)
 
 summary(lm(mean_by_formation.meta$var.zl ~ mean_by_formation.meta$age.range))
@@ -599,7 +599,7 @@ box.ln.zl <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.zl",],
   scale_fill_manual(values = col.form) +
   scale_x_discrete(name = "Formation",
                    guide = guide_axis(angle = 45)) +
-  scale_y_continuous(expression(Zooid~Height~(mu*m)),
+  scale_y_continuous(expression(Zooid~length~(mu*m)),
                      limits = c(5.5, 7.75),
                      breaks = c(log(250), log(400),
                                 log(650), log(1000),
@@ -622,7 +622,7 @@ box.ln.ol <- ggplot(data = traits.melt[traits.melt$measurementType == "ln.ol",],
     scale_fill_manual(values = col.form) +
     scale_x_discrete(name = "Formation",
                      guide = guide_axis(angle = 45)) +
-    scale_y_continuous(expression(Operculum~Height~(mu*m)),
+    scale_y_continuous(expression(Operculum~length~(mu*m)),
                        limits = c(-3, -.5),
                        breaks = c(log(0.05), log(0.1),
                                   log(.15), log(.25),
@@ -883,6 +883,99 @@ ggsave(box.c.side.simple,
        file = "./Results/simple.boxplot.ln.c.side.png", 
        width = 14, height = 10, units = "cm")
 
+ln.traits <- c("ln.zl", "ln.mpw.b", "ln.cw.m", "ln.cw.d",
+               "ln.ow.m", "ln.ol", "ln.c.side", "ln.o.side")
+tt <- traits.melt[traits.melt$measurementType %in% ln.traits,]
+tt$measurementType <- factor(tt$measurementType, 
+                             levels = c("ln.zl",
+                                        "ln.mpw.b",
+                                        "ln.cw.m",
+                                        "ln.cw.d",
+                                        "ln.ow.m",
+                                        "ln.ol",
+                                        "ln.c.side",
+                                        "ln.o.side"))
+
+box.simple <- ggplot(data = tt, 
+                     aes(x = formation, 
+                         y = measurementValue,
+                         group = measurementType,
+                         col = measurementType,
+                         fill = measurementType)) +
+    geom_boxplot(outlier.shape = NA) +
+    scale_color_manual(values = col.traits.repo) +
+    scale_fill_manual(values = col.traits.repo) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    plot.theme
+
+keep.mean.cols <- c("formation", 
+               "avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d",
+               "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")
+mean.form.trim <- mean_by_formation[, colnames(mean_by_formation) %in% keep.mean.cols]
+mean.z.melt <- melt(mean.form.trim, id.vars = c("formation"), 
+                     variable.name = "measurementType", 
+                    value.name = "measurementValue")
+
+keep.sd.cols <- c("formation", 
+                    "sd.zl", "sd.mpw.b", "sd.cw.m", "sd.cw.d",
+                    "sd.ow.m", "sd.ol", "sd.o.side", "sd.c.side")
+mean.form.sd <- mean_by_formation[, colnames(mean_by_formation) %in% keep.sd.cols]
+sd.z.melt <- melt(mean.form.sd, id.vars = c("formation"), 
+                    variable.name = "sd", 
+                    value.name = "sd.val")
+sd.z.melt$measurementType <- mean.z.melt$measurementType
+
+z.melt <- merge(mean.z.melt, sd.z.melt,
+                by = c("formation", "measurementType"))
+
+z.melt$formation <- factor(z.melt$formation, 
+                                  levels = c("NKLS", 
+                                             "NKBS",
+                                             "Tewkesbury",
+                                             "Upper Kai-Iwi",
+                                             "Tainui",
+                                             "SHCSBSB",
+                                             "modern"))
+
+
+z.melt$measurementType <- factor(z.melt$measurementType, 
+                                       levels = c("avg.zl",
+                                                  "avg.mpw.b",
+                                                  "avg.cw.m",
+                                                  "avg.cw.d",
+                                                  "avg.ow.m",
+                                                  "avg.ol",
+                                                  "avg.c.side",
+                                                  "avg.o.side"))
+
+z.melt$sd.2 <- z.melt$sd.val*2
+z.melt$min.2.sd <- z.melt$measurementValue - z.melt$sd.2
+z.melt$max.2.sd <- z.melt$measurementValue + z.melt$sd.2
+
+#95.44% = 2 sd
+p.mean_z.connected <- ggplot(z.melt, 
+                              aes(x = formation, y = measurementValue,
+                                  group = measurementType,
+                                  col = measurementType)) +
+    geom_line() +
+    geom_point(size = 3, shape = 15) +
+    geom_errorbar(aes(ymin = min.2.sd, ymax = max.2.sd),
+                  width = .1) +
+    scale_x_discrete(name = "Formation",
+                     guide = guide_axis(angle = 45)) +
+    scale_y_continuous(name = "Mean trait value",
+                       #lim = c(-1, 1), 
+                       position = "left") + 
+    scale_color_manual(values = col.traits.repo) + 
+    geom_point(size = 7, shape = "-", col = "black") +
+    plot.theme
+
+ggsave(p.mean_z.connected, 
+       file = "./Results/mean_z.connected.png", 
+       width = 20, height = 20, units = "cm")
+
+
 #### TIME AVERAGING ----
 #akin to Hunt 2004
 
@@ -940,7 +1033,7 @@ sum(mean_by_formation[mean_by_formation$formation == "SHCSBSB", 53:60])/8
 #just like gene, less than 1 % difference either direction of modern variance
 #don't take sample size into account though, but the variance eq does
 
-## percent increasel
+## percent increase
 
 summary(lm(mean_by_formation.meta$var.zl ~ mean_by_formation.meta$age.range)) #non-sig
 summary(lm(mean_by_formation.meta$var.mpw.b ~ mean_by_formation.meta$age.range)) 

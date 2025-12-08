@@ -282,6 +282,7 @@ write.csv(samp,
 #### P MATRIX ----
 p.cov = lapply(form_data, function (x){ (cov(x[, 5:12]))}) #traits per colony (not variation within colony)
 #p.cov is the same and the phen.var
+#pearson method is the default
 
 ##### P VARIANCES ----
 ##Phenotypic variance in traits and eigen vectors
@@ -315,7 +316,7 @@ P_PC_dist = ggplot(p.eig_per,
                        colour = rownames.p.eig_per_mat.)) +
     geom_line(aes(linetype = rownames.p.eig_per_mat.)) +
     geom_point() +
-    scale_y_continuous("Principal component rank",
+    scale_y_continuous("%Variation in the PC",
                        limits = c(-.02, 0.7)) +
     plot.theme + 
     theme_linedraw() +
@@ -398,19 +399,21 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
                          family = rep("gaussian", 8), #num of traits
                          data = form_data[[i]],
                          nitt = 1500000, thin = 1000, burnin = 500000,
-                         prior = prior[[i]], verbose = TRUE)
+                         prior = prior[[i]], verbose = TRUE,
+                         pr = TRUE)
 }
 
 ##need locality data for modern first
 model_G.mod <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
-                               ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1, #get rid of "trait" alone?
-                         #account for variation w/in colony:
-                         random = ~us(trait):colony.id + us(trait):locality, #the number of these determines # of Gs
-                         rcov = ~us(trait):units,
-                         family = rep("gaussian", 8), #num of traits
-                         data = form.mod, #need to have formation as factor in data matrix
-                         nitt = 1500000, thin = 1000, burnin = 500000,
-                         prior = prior.mod, verbose = TRUE)
+                              ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1, #get rid of "trait" alone?
+                        #account for variation w/in colony:
+                        random = ~us(trait):colony.id + us(trait):locality, #the number of these determines # of Gs
+                        rcov = ~us(trait):units,
+                        family = rep("gaussian", 8), #num of traits
+                        data = form.mod, #need to have formation as factor in data matrix
+                        nitt = 1500000, thin = 1000, burnin = 500000,
+                        prior = prior.mod, verbose = TRUE,
+                        pr = TRUE)
 
 save(model_G,
      file = "./Results/model_G.RData")
@@ -491,7 +494,7 @@ diag(prior.mod$R$V) < diag(phen.var.mod)
 
 #RETRIEVE THE P MATRIX FROM THE MCMC OBJECT
 # p matrix for each formation (maybe colony?)
-## chekcing NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
+## checking NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
 
 #vcov(model_G[[1]]) #does not work
 
@@ -522,22 +525,20 @@ d.p.m.uki
 d.col.vcv.uki #this 'g' matrix are smaller
 d.col.vcv.uki < diag(Pmat[[4]]) # zh, mpw.b, cw.m, cw.d, ow.m, oh, c.side, o.side are smaller; all larger than G matrix 
 
-##### POSTERIOR G MATRIX -----
-#Retrieving G from posterior
-g.model = model_G_all
+## on all
 ntraits = 8
 Gmat = lapply(g.model, function (x) { 
-  matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
+    matrix(posterior.mode(x$VCV)[1:ntraits^2], ntraits, ntraits)})
 #label lists as formations
 names(Gmat) = names(by_form) #formation_list or form_data
 #traits in Gmat are in different order than Pmat based on VCV 
 
 # why aren't traits labeled??
 for (i in seq_along(Gmat)){
-  colnames(Gmat[[i]]) <- traits
+    colnames(Gmat[[i]]) <- traits
 }
 for (i in seq_along(Gmat)){
-  rownames(Gmat[[i]]) <- traits
+    rownames(Gmat[[i]]) <- traits
 }
 
 ## chekcing NKBS, Waipuru, Upper Kai-Iwi because they are being wonky
@@ -547,6 +548,229 @@ diag(Gmat[[2]]) < diag(Pmat[[2]]) # all larger
 diag(Gmat[[4]]) < diag(Pmat[[4]]) # all larger
 
 diag(Gmat[[5]]) < diag(Pmat[[5]]) # all larger
+
+##### POSTERIOR G MATRIX -----
+
+#Retrieving G from posterior
+g.model = model_G_all
+
+#identify which columns are holding the posteriors
+#(varX, covXY, covYX, varY)
+colnames(g.model[[1]]$VCV)
+#interested in within colony vcv; so want ~us(trait):colonyid
+#have 8 traits, so total number of combos is 8^2 = 64
+
+## on one
+summary(g.model[[1]])
+#e.g.,                                  post.mean   l-95% CI    u-95% CI    eff.samp
+#traitln.zh:traitln.zh.colony.id        0.0065616   0.0046532   0.0091206   1000.0
+#just the within colony
+#gives summaries of the mean of the variances
+summary(g.model[[1]]$VCV)$statistics[1:64,]
+#gives mean, sd, se, and quantiles 5% CI (2.5 on either side)
+summary(g.model[[1]]$VCV)$quantiles[1:64,]
+
+mean(as.data.frame(g.model[[1]]$VCV[,1:64])$`traitln.zh:traitln.zh.colony.id`)
+quantile(as.data.frame(g.model[[1]]$VCV[,1:64])$`traitln.zh:traitln.zh.colony.id`, 
+         probs = c(0.05, 0.95))
+#these are slightly different from the summary model...why?
+#because I think summary does an HPD interval actually
+HPDinterval(g.model[[1]]$VCV[,1:64]) #yep, these match
+#great, so can recreate stuff
+
+
+
+vcv.g.1 <- g.model[[1]]$VCV[,1:64]
+#organized as vcv columns (e.g., traitln.zh:traitln.zh.colony.id)
+#with each iteration down the size (e.g. 1000)
+g.model[[1]]$VCV[1:1000] #gets 1000 variances of the first vcv column 
+#traitln.zh:traitln.zh.colony.id 
+#                    0.005992251
+mean(g.model[[1]]$VCV[1:1000]) #equals what's given in the summary model
+
+posterior.mode(g.model[[1]]$VCV[,1:64]) #get raw mean variances; similar to what is in the summary model
+posterior.mode(posterior.cor(g.model[[1]]$VCV[,1:64])) #transforms it to correlation, which ranges from -1 to 1
+HPDinterval(posterior.cor(g.model[[1]]$VCV[,1:64])) #get a lower and upper
+
+#from chatgpt
+#compare pair-wise
+vcv.g.1 <- g.model[[1]]$VCV[,1:64] #1000 variances per variable
+vcv.g.2 <- g.model[[2]]$VCV[,1:64]
+vcv.g.3 <- g.model[[3]]$VCV[,1:64]
+vcv.g.4 <- g.model[[4]]$VCV[,1:64]
+vcv.g.5 <- g.model[[5]]$VCV[,1:64]
+vcv.g.6 <- g.model[[6]]$VCV[,1:64]
+vcv.g.7 <- g.model[[7]]$VCV[,1:64]
+# Calculate differences
+#distribution of how the covariances vary; i.e., are the differences 0 or not?
+diffs.1.2 <- vcv.g.2-vcv.g.1 #differences between all 1000 variances for each variable 
+diffs.2.3 <- vcv.g.3-vcv.g.2 #differences between all 1000 variances for each variable 
+diffs.3.4 <- vcv.g.4-vcv.g.3 #differences between all 1000 variances for each variable 
+diffs.4.5 <- vcv.g.5-vcv.g.4 #differences between all 1000 variances for each variable 
+diffs.5.6 <- vcv.g.6-vcv.g.5 #differences between all 1000 variances for each variable 
+diffs.6.7 <- vcv.g.7-vcv.g.6 #differences between all 1000 variances for each variable 
+# Calculate 95% credible intervals for differences
+# since want to check if it overlaps 0 (i.e., no difference, want to get CI around this)
+ci_lower.1.2 <- apply(diffs.1.2, 2, quantile, probs = 0.025)
+ci_upper.1.2 <- apply(diffs.1.2, 2, quantile, probs = 0.975)
+
+ci_lower.2.3 <- apply(diffs.2.3, 2, quantile, probs = 0.025)
+ci_upper.2.3 <- apply(diffs.2.3, 2, quantile, probs = 0.975)
+
+ci_lower.3.4 <- apply(diffs.3.4, 2, quantile, probs = 0.025)
+ci_upper.3.4 <- apply(diffs.3.4, 2, quantile, probs = 0.975)
+
+ci_lower.4.5 <- apply(diffs.4.5, 2, quantile, probs = 0.025)
+ci_upper.4.5 <- apply(diffs.4.5, 2, quantile, probs = 0.975)
+
+ci_lower.5.6 <- apply(diffs.5.6, 2, quantile, probs = 0.025)
+ci_upper.5.6 <- apply(diffs.5.6, 2, quantile, probs = 0.975)
+
+ci_lower.6.7 <- apply(diffs.6.7, 2, quantile, probs = 0.025)
+ci_upper.6.7 <- apply(diffs.6.7, 2, quantile, probs = 0.975)
+
+# Check if the intervals contain zero (i.e., no difference)
+#so it is asking if the lower is above zero or the upper is below (i.e., does not contain zero)
+#false means no difference,
+#because it means the lower is not greater than 0 and the upper is not lower than 0
+different.1.2 <- (ci_lower.1.2 > 0 | ci_upper.1.2 < 0)
+unique(different.1.2) 
+
+different.2.3 <- (ci_lower.1.2 > 0 | ci_upper.1.2 < 0)
+different.3.4 <- (ci_lower.1.2 > 0 | ci_upper.1.2 < 0)
+different.4.5 <- (ci_lower.1.2 > 0 | ci_upper.1.2 < 0)
+different.5.6 <- (ci_lower.1.2 > 0 | ci_upper.1.2 < 0)
+different.6.7 <- (ci_lower.1.2 > 0 | ci_upper.1.2 < 0)
+
+unique(different.2.3) #no diff
+unique(different.3.4) #no diff
+unique(different.4.5) #no diff
+unique(different.5.6) #no diff
+unique(different.6.7) #no diff
+
+# Print results
+if (any(different.1.2)) {
+    print("The covariance matrices are significantly different.")
+} else {
+    print("No significant difference between covariance matrices.")
+}
+
+#using hdp:
+# Calculate HPD intervals for each element of the difference
+hpd_intervals.1.2 <- apply(diffs.1.2, 2, function(x) HPDinterval(as.mcmc(x), prob = 0.95))  # 95% HPD interval
+
+hpd_intervals.2.3 <- apply(diffs.2.3, 2, function(x) HPDinterval(as.mcmc(x), prob = 0.95))  # 95% HPD interval
+hpd_intervals.3.4 <- apply(diffs.3.4, 2, function(x) HPDinterval(as.mcmc(x), prob = 0.95))  # 95% HPD interval
+hpd_intervals.4.5 <- apply(diffs.4.5, 2, function(x) HPDinterval(as.mcmc(x), prob = 0.95))  # 95% HPD interval
+hpd_intervals.5.6 <- apply(diffs.5.6, 2, function(x) HPDinterval(as.mcmc(x), prob = 0.95))  # 95% HPD interval
+hpd_intervals.6.7 <- apply(diffs.6.7, 2, function(x) HPDinterval(as.mcmc(x), prob = 0.95))  # 95% HPD interval
+
+# Check if zero is included in the HPD intervals
+#true means no difference
+#here it is asking if it overlaps 0, so true means that it does
+contains_zero.1.2 <- apply(hpd_intervals.1.2, 2, function(x) (x[1] <= 0 & x[2] >= 0))
+contains_zero.2.3 <- apply(hpd_intervals.2.3, 2, function(x) (x[1] <= 0 & x[2] >= 0))
+contains_zero.3.4 <- apply(hpd_intervals.3.4, 2, function(x) (x[1] <= 0 & x[2] >= 0))
+contains_zero.4.5 <- apply(hpd_intervals.4.5, 2, function(x) (x[1] <= 0 & x[2] >= 0))
+contains_zero.5.6 <- apply(hpd_intervals.5.6, 2, function(x) (x[1] <= 0 & x[2] >= 0))
+contains_zero.6.7 <- apply(hpd_intervals.6.7, 2, function(x) (x[1] <= 0 & x[2] >= 0))
+unique(contains_zero.1.2)
+
+# Print results
+if (any(!contains_zero.1.2)) {
+    print("The covariance matrices are significantly different.")
+} else {
+    print("No significant difference between covariance matrices.")
+}
+
+#let's see if I get the same as above if I compare all the pairwise CI from each variable
+#extract l-95% CI and u-95% CI for each
+#see if for each variable, if the mean variance of time 1 is within the CI of time 1
+vcv.g1 <- as.data.frame(g.model[[1]]$VCV[,1:64])
+vcv.g2 <- as.data.frame(g.model[[2]]$VCV[,1:64])
+
+#get all the means
+mean.g1 <- apply(vcv.g1, 2, mean) %>% as.data.frame()
+colnames(mean.g1) <- "mean"
+mean.g1$variable <- rownames(mean.g1)
+
+mean.g2 <- apply(vcv.g2, 2, mean) %>% as.data.frame()
+colnames(mean.g2) <- "mean"
+mean.g2$variable <- rownames(mean.g2)
+
+#get all the ci
+l.ci.g1 <- apply(vcv.g1, 2, quantile, probs = 0.05) %>% as.data.frame()
+colnames(l.ci.g1) <- "lower.ci"
+l.ci.g1$variable <- rownames(l.ci.g1)
+u.ci.g1 <- apply(vcv.g1, 2, quantile, probs = 0.95) %>% as.data.frame()
+colnames(u.ci.g1) <- "upper.ci"
+u.ci.g1$variable <- rownames(u.ci.g1)
+ci.g1 <- merge(l.ci.g1, u.ci.g1, by = "variable")
+
+l.ci.g2 <- apply(vcv.g2, 2, quantile, probs = 0.05) %>% as.data.frame()
+colnames(l.ci.g2) <- "lower.ci"
+l.ci.g2$variable <- rownames(l.ci.g2)
+u.ci.g2 <- apply(vcv.g2, 2, quantile, probs = 0.95) %>% as.data.frame()
+colnames(u.ci.g2) <- "upper.ci"
+u.ci.g2$variable <- rownames(u.ci.g2)
+ci.g2 <- merge(l.ci.g2, u.ci.g2, by = "variable")
+
+#get all the hpd intervals
+var.g1 <- rownames(as.data.frame(HPDinterval(g.model[[1]]$VCV[,1:64])))
+l.hpd.g1 <- as.data.frame(HPDinterval(g.model[[1]]$VCV[,1:64]))$lower
+u.hpd.g1 <- as.data.frame(HPDinterval(g.model[[1]]$VCV[,1:64]))$upper
+hdp.g1 <- as.data.frame(cbind(var.g1, l.hpd.g1, u.hpd.g1))
+colnames(hdp.g1)[1] <- "variable"
+
+var.g2 <- rownames(as.data.frame(HPDinterval(g.model[[2]]$VCV[,1:64])))
+l.hpd.g2 <- as.data.frame(HPDinterval(g.model[[2]]$VCV[,1:64]))$lower
+u.hpd.g2 <- as.data.frame(HPDinterval(g.model[[2]]$VCV[,1:64]))$upper
+hdp.g2 <- as.data.frame(cbind(var.g2, l.hpd.g2, u.hpd.g2))
+colnames(hdp.g2)[1] <- "variable"
+
+#bring together
+stats.g1 <- merge(mean.g1, ci.g1, by = "variable")
+stats.g1 <- merge(stats.g1, hdp.g1, by = "variable")
+
+stats.g2 <- merge(mean.g2, ci.g2, by = "variable")
+stats.g2 <- merge(stats.g2, hdp.g2, by = "variable")
+
+stats.g1$l.hpd.g1 <- as.numeric(stats.g1$l.hpd.g1)
+stats.g1$u.hpd.g1 <- as.numeric(stats.g1$u.hpd.g1)
+stats.g2$l.hpd.g2 <- as.numeric(stats.g2$l.hpd.g2)
+stats.g2$u.hpd.g2 <- as.numeric(stats.g2$u.hpd.g2)
+
+#see if means overlap ci and hpd
+stats.g1$lower.ci <= stats.g2$mean & stats.g1$upper.ci >= stats.g2$mean
+
+stats.g1$l.hpd.g1 <= stats.g2$mean & stats.g1$u.hpd.g1 >= stats.g2$mean
+
+#see if ci and hpd overlap
+stats.g1$lower.ci <= stats.g2$lower.ci & stats.g1$upper.ci >= stats.g2$lower.ci |
+    stats.g1$lower.ci <= stats.g2$upper.ci & stats.g1$upper.ci >= stats.g2$upper.ci 
+
+stats.g1$l.hpd.g1 <= stats.g2$l.hpd.g2 & stats.g1$u.hpd.g1 >= stats.g2$l.hpd.g2 |
+    stats.g1$l.hpd.g1 <= stats.g2$u.hpd.g2 & stats.g1$u.hpd.g1 >= stats.g2$u.hpd.g2
+
+#seems to be so
+
+##### REIMANN DISTANCE -----
+# look at magnitude of beta (x axis) as a function of reimann distance
+# this is the distance (subtraction) between two matrices
+
+dist.NKLS_NKBS <- RiemannDist(G_ext_NKBS, G_ext_NKLS)
+dist.NKBS_tewk <- RiemannDist(G_ext_NKLS, G_ext_tewk)
+dist.tewk_uki <- RiemannDist(G_ext_tewk, G_ext_uki)
+dist.uki_tai <- RiemannDist(G_ext_uki, G_ext_tai)
+dist.tai_SHCSBSB <- RiemannDist(G_ext_tai, G_ext_SHCSBSB)
+dist.SHCSBSB_mod <- RiemannDist(G_ext_SHCSBSB, G_ext_mod)
+
+dist.gmat <- c(dist.NKLS_NKBS, dist.NKBS_tewk,
+               dist.tewk_uki, dist.uki_tai, 
+               dist.tai_SHCSBSB, dist.SHCSBSB_mod, "")
+
+# are these explained by sampling error alone?
+
 
 ##### G VARIANCES -----
 lapply(Gmat, isSymmetric)  #is.symmetric.matrix
@@ -809,6 +1033,96 @@ p.rare <- ggplot() +
 
 ggsave(p.rare, 
        file = "./Results/rarefaction.png", 
+       width = 14, height = 10, units = "cm")
+
+#### RAREFACTION FOR P ----
+##Rarefaction - 
+#How much difference in matrix structure is induced by sampling error?
+
+# We do a rarefaction analyses and compare a 'true' matrix with an 
+# under-sampled version of itself and see whether the dissimilarities observed 
+# across species can be explained by sampling alone.
+
+# Computing a pooled P across all individuals in all samples
+#P_pooled<-var(cbind(indata$tpg, indata$ds2, indata$lpt, indata$ds3), na.rm=TRUE)
+#G_test <- G_ext$NKLS
+#trait_means_global<-c(mean(indata$tpg, na.rm=TRUE), 
+#                      mean(indata$ds2, na.rm=TRUE), 
+#                      mean(indata$lpt, na.rm=TRUE), 
+#                      mean(indata$ds3, na.rm=TRUE))
+#P_pooled_mean_std <- meanStdG(P_pooled, trait_means_global)
+
+# We start by generating "individuals" (i.e., colonies) 
+# in a population with VCV patterns corresponding to a known G. 
+# We then calculate VCV matrices for those individuals and obtain their 
+# similarity with the 'true' G.
+repititions <- 200
+#Defining the population size. Each population size is repeated 200 times. 
+#Starting at 2 individuals and going up to 100, 
+col_form.n # max 328, min 19
+pop.size = sort(rep(c(2:500), repititions)) #make 500 so much bigger than max no. colonies
+pop.dist <- lapply(pop.size, function (x){mvrnorm(n = x, 
+                                                  rep(0,8), # mean 0 for 8 traits 
+                                                  P_ext[[1]])}) # Simulate individual trait data based on the first VCOV matrix in our time series and different sample sizes. 
+# Calculate VCOV matrices 
+pop.cv <- lapply(pop.dist, cov) 
+# Estimate selection gradients based on Random Skewers, comparing our true 
+# G matrix and the undersampled pooled P matrix. 
+RS_result = RandomSkewers(pop.cv, 
+                          P_ext[[1]]) 
+out_results <- cbind(RS_result$correlation, pop.size)
+
+# Computing Random Skewers between pairs of actual G matrices in our data
+#(n = 7 for 7 formations) 
+# sub-setting so that we only analyze the traits and formation of interest
+mean.df.sub <- mean_by_formation_colony[, c(1, 4, 6, 8, 10, 12, 14, 16, 18)] 
+#remove rows with NA so that the sample size gets correct when we plot 
+#the sample size for the VCOV.
+mean.df_complete_cases <- mean.df.sub[complete.cases(mean.df.sub), ] #remove rows with NA so that the sample size gets correct when we plot the sample size for the VCOV.
+
+# Calculating the sample size for each time point
+colony_samples = split.data.frame(mean.df_complete_cases, mean.df_complete_cases$formation) #Sample size
+sample_sizes_P = lapply(colony_samples, function(x){dim(x)[1]})
+
+comp_sampleN = matrix(0, 7, 7) #calculating the smallest sample size in the comparison among pairs of G for length of formation
+
+for (i in 1:length(sample_sizes_P)){
+    for (j in 1:length(sample_sizes_P)){
+        comp_sampleN[i,j] = min(as.numeric(sample_sizes_P[i]), as.numeric(sample_sizes_P[j]))
+    }
+}
+
+# Here, we do the actual Random Skewers test and 
+# combined the results (correlations in the response to selection) 
+# with the smallest sample size for the pairs of G that are investigated
+comp_mat = RandomSkewers(P_ext)
+melt_comp = melt(comp_mat$correlations[lower.tri(comp_mat$correlations)])
+melt_samples = melt(comp_sampleN[lower.tri(comp_sampleN)])
+obs_melt = cbind(melt_comp, melt_samples)
+colnames(obs_melt) = c("RS","N")
+
+#Plotting the result
+plot(out_results[, 2], out_results[, 1], 
+     xlab = "Sample size", ylab = "Similarity", 
+     pch = 19, col = "grey", cex = .5)
+points(obs_melt$N, obs_melt$RS, 
+       col = "#00BFC4", pch = 19, cex = .5)
+
+## none are outside the gray
+# previously the modern sites were, but it seems that was due to locality
+# and now that has been corrected for!
+
+p.rare <- ggplot() +
+    geom_point(aes(out_results[, 2], out_results[, 1]),
+               pch = 17, col = "grey", size = 2) +
+    geom_point(aes(obs_melt$N, obs_melt$RS),
+               col = "#00BFC4", pch = 17, size = 2) + 
+    plot.theme +
+    scale_x_continuous(name = "Sample size") +
+    scale_y_continuous(name = "Similarity") 
+
+ggsave(p.rare, 
+       file = "./Results/rarefaction_p.png", 
        width = 14, height = 10, units = "cm")
 
 #### GLOBAL G ----

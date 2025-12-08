@@ -143,7 +143,7 @@ summary(lm(images.df$o.side.r ~ images.df$o.side.l))
 # slope = 0.92; p-value < 2.2e-16; r2 = 0.95
 
 p.c.side.rl <- ggplot(images.df) +
-  geom_point(aes(x = c.side.l, y = c.side.l)) + #,
+  geom_point(aes(x = c.side.r, y = c.side.l)) + #,
     #group = formation, fill = formation, col = formation)) +
   ggtitle(paste0("Cryptocyst Side Length, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
   plot.theme +
@@ -451,6 +451,8 @@ summary(manova(cbind(log(zl), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(c
 write.csv(df,
           "./Results/traits_1Jul2024.csv",
           row.names = FALSE)
+
+##
 
 #### OLD ----
 ####compare
