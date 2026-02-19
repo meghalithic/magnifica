@@ -71,8 +71,8 @@ length(formation_list) #7
 
 #same order as in df
 names(df)
-traits = names(df[, c("ln.zh", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
-                      "ln.ow.m", "ln.oh", "ln.c.side", "ln.o.side")])
+traits = names(df[, c("ln.zl", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
+                      "ln.ow.m", "ln.ol", "ln.c.side", "ln.o.side")])
 length(traits) #8
 
 ##### TRIM DATASET ----
@@ -372,6 +372,72 @@ p.corr_mat = p.comp_mat$correlations + t(p.comp_mat$correlations)
 diag(p.corr_mat) = 1
 paste("Random Skewers similarity matrix")
 corrplot.mixed(p.corr_mat, upper = "number", lower = "pie")
+
+#### GLOBAL P MATRIX ----
+phen.var.glob = cov(dat_lg_N[, 5:12]) #traits of ALL; correct for colony and formation later
+#not divided by formation
+
+##### GLOBAL P VARIANCES ----
+##Phenotypic variance in traits and eigen vectors
+glob.Pmat = phen.var.glob
+
+isSymmetric(glob.Pmat)  #is.symmetric.matrix
+glob.p.variances = diag(glob.Pmat)
+paste("Trait variances")
+head(glob.p.variances)
+
+##### GLOBAL P EIGEN -----
+glob.p.eig_variances = eigen(glob.Pmat)$values
+paste("Eigenvalue variances")
+head(glob.p.eig_variances)
+
+glob.p.eig_percent = glob.p.eig_variances/sum(glob.p.eig_variances) 
+glob.p.eig_per_mat = data.frame(glob.p.eig_percent)
+glob.p.eig_per_mat$PC <- 1:nrow(glob.p.eig_per_mat)
+Glob_P_PC_dist = ggplot(glob.p.eig_per_mat,
+                      aes(x = PC, y = glob.p.eig_percent)) +
+    geom_point()  +
+    geom_line() +
+    plot.theme + 
+    theme_linedraw() +
+    scale_x_continuous("Principal component rank",
+                       breaks = c(1, 2, 3, 4, 5, 6, 7, 8),
+                       labels = c("PC1", "PC2", "PC3", "PC4",
+                                  "PC5", "PC6", "PC7", "PC8")) +
+    scale_y_continuous("%Variation in the PC",
+                       limits = c(-.02, 0.7))
+Glob_P_PC_dist #one negative; none above 1!
+
+ggsave(Glob_P_PC_dist, 
+       file = "./Results/GlobalP.PC.dist.png", 
+       width = 14, height = 10, units = "cm")
+
+##### GLOBAL P NOISE -----
+##Controlling for noise
+#Extend G
+glob.P_ext = ExtendMatrix(glob.Pmat, ret.dim = 5)$ExtMat #not 8 because last eigen value (#8) was negative
+#ignore warning from above
+glob.P_ext <- as.matrix(glob.P_ext)
+isSymmetric(glob.P_ext)
+glob.P_Ext_std_variances = diag(glob.P_ext)
+glob.P_Ext_eig_variances = eigen(glob.P_ext)$values
+
+##need to create random cov.m for comparison
+cov.mp <- RandomMatrix(8, 1, 1, 100)
+P_list <- list(glob.P_ext, as.matrix(cov.mp))
+
+glob.p.comp_mat = RandomSkewers(P_list) #need at least
+glob.p.corr_mat = glob.p.comp_mat$correlations + t(glob.p.comp_mat$correlations) 
+diag(glob.p.corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(glob.p.corr_mat, upper = "number", lower = "pie")
+
+
+save(glob.P_ext, 
+     file = "./Results/globalP_ext.RData")
+
+load(file="./Results/globalP_ext.RData") #load the g matrices calculated above 
+glob.P_ext
 
 #### G MATRIX ----
 

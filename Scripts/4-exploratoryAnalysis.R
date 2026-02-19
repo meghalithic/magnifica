@@ -399,7 +399,7 @@ mean_by_formation.meta <- merge(mean_by_formation, form.df,
                                 by.x = "formation",
                                 by.y = "formationCode")
 
-## overall difference in zooid height
+## overall difference in zooid length
 mean_by_formation$avg.zl[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.zl[mean_by_formation$formation == "modern"]
 #exp(-0.09371967) = 0.910538 change in length
 mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"] - mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]
