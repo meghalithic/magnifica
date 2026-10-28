@@ -536,8 +536,8 @@ ggsave(p.dot.prod_emax,
        width = 14, height = 10, units = "cm")
 
 #### AMOUNT OF VARIATION E EXPLAINS ----
-E_size <- c(sum(diag(E_ext_NKBS)),
-            sum(diag(E_ext_NKLS)),
+E_size <- c(sum(diag(E_ext_NKLS)),
+            sum(diag(E_ext_NKBS)),
             sum(diag(E_ext_tewk)),
             sum(diag(E_ext_uki)),
             sum(diag(E_ext_tai)),

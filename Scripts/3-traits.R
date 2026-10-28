@@ -181,6 +181,8 @@ images.df$c.side <- rowMeans(cbind(images.df$c.side.l, images.df$c.side.r))
 
 ## Operculum height
 images.df$ol <- (.5/images.df$ow.b)*sqrt(images.df$ow.b+images.df$ol.r+images.df$ol.l)
+ol <- (2*area)/base
+area = 
 
 ##### TRIM TO TRAITS ONLY ----
 traits.df <- images.df %>%

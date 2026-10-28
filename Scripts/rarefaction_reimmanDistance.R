@@ -89,6 +89,8 @@ for(i in 1:length(pop.cv)){
     
 out_results <- cbind(Reimann_result, pop.size)
 
+#NB: Unsure how to do a distribution of Reimann distances based on sample size, so below is the random skewers
+
 # Computing Random Skewers between pairs of actual G matrices in our data
 #(n = 7 for 7 formations) 
 # sub-setting so that we only analyze the traits and formation of interest
@@ -146,8 +148,8 @@ ggsave(p.rare,
 # look at magnitude of beta (x axis) as a function of reimann distance
 # this is the distance (subtraction) between two matrices
 
-dist.NKLS_NKBS <- RiemannDist(G_ext_NKBS, G_ext_NKLS)
-dist.NKBS_tewk <- RiemannDist(G_ext_NKLS, G_ext_tewk)
+dist.NKLS_NKBS <- RiemannDist(G_ext_NKLS, G_ext_NKBS)
+dist.NKBS_tewk <- RiemannDist(G_ext_NKBS, G_ext_tewk)
 dist.tewk_uki <- RiemannDist(G_ext_tewk, G_ext_uki)
 dist.uki_tai <- RiemannDist(G_ext_uki, G_ext_tai)
 dist.tai_SHCSBSB <- RiemannDist(G_ext_tai, G_ext_SHCSBSB)

@@ -233,12 +233,12 @@ diff.gmax.b <- c(diff.gmax.b.nkls.nkbs, diff.gmax.b.nkbs.tewk,
                  diff.gmax.b.tai.shcsbsb, diff.gmax.b.shcsbsb.mod, "")
 
 #angle
-ang.diff.gmax.b.nkls.nkbs <- abs(angle_degrees.Gmax_NKLS_NKBS) - abs(angle_radians.beta_t1_Gmax_t2)
-ang.diff.gmax.b.nkbs.tewk <- abs(angle_degrees.Gmax_NKBS_tewk) - abs(angle_radians.beta_t2_Gmax_t3)
-ang.diff.gmax.b.tewk.uki <- abs(angle_degrees.Gmax_tewk_uki) - abs(angle_radians.beta_t3_Gmax_t4)
-ang.diff.gmax.b.uki.tai <- abs(angle_degrees.Gmax_uki_tai) - abs(angle_radians.beta_t4_Gmax_t5)
-ang.diff.gmax.b.tai.shcsbsb <- abs(angle_degrees.Gmax_tai_SHCSBSB) - abs(angle_radians.beta_t5_Gmax_t6)
-ang.diff.gmax.b.shcsbsb.mod <- abs(angle_degrees.Gmax_SHCSBSB_mod) - abs(angle_radians.beta_t6_Gmax_t7)
+ang.diff.gmax.b.nkls.nkbs <- abs(angle_degrees.Gmax_NKLS_NKBS) - abs(angle_degrees.beta_t1_Gmax_t2)
+ang.diff.gmax.b.nkbs.tewk <- abs(angle_degrees.Gmax_NKBS_tewk) - abs(angle_degrees.beta_t2_Gmax_t3)
+ang.diff.gmax.b.tewk.uki <- abs(angle_degrees.Gmax_tewk_uki) - abs(angle_degrees.beta_t3_Gmax_t4)
+ang.diff.gmax.b.uki.tai <- abs(angle_degrees.Gmax_uki_tai) - abs(angle_degrees.beta_t4_Gmax_t5)
+ang.diff.gmax.b.tai.shcsbsb <- abs(angle_degrees.Gmax_tai_SHCSBSB) - abs(angle_degrees.beta_t5_Gmax_t6)
+ang.diff.gmax.b.shcsbsb.mod <- abs(angle_degrees.Gmax_SHCSBSB_mod) - abs(angle_degrees.beta_t6_Gmax_t7)
 
 ang.diff.gmax.b <- c(ang.diff.gmax.b.nkls.nkbs, ang.diff.gmax.b.nkbs.tewk,
                      ang.diff.gmax.b.tewk.uki, ang.diff.gmax.b.uki.tai,

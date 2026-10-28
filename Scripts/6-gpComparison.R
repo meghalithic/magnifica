@@ -1479,16 +1479,16 @@ p.dot.prod_p <- ggplot(diff_between_Ps) +
 
 #### COMPARE P AND G -----
 ##### SIZE OF P AND G ACROSS TIME AND ANGLE -----
-P_size <- c(sum(diag(P_ext_NKBS)),
-            sum(diag(P_ext_NKLS)),
+P_size <- c(sum(diag(P_ext_NKLS)),
+            sum(diag(P_ext_NKBS)),
             sum(diag(P_ext_tewk)),
             sum(diag(P_ext_uki)),
             sum(diag(P_ext_tai)),
             sum(diag(P_ext_SHCSBSB)),
             sum(diag(P_ext_mod)))
 
-G_size <- c(sum(diag(G_ext_NKBS)),
-            sum(diag(G_ext_NKLS)),
+G_size <- c(sum(diag(G_ext_NKLS)),
+            sum(diag(G_ext_NKBS)),
             sum(diag(G_ext_tewk)),
             sum(diag(G_ext_uki)),
             sum(diag(G_ext_tai)),
@@ -2192,3 +2192,61 @@ p.global_p.pheno <- ggplot(diff_between_Glob_Pmax_z[-7,]) +
 ggsave(p.global_p.pheno, 
        file = "./Results/angle.global_p.pheno.png", 
        width = 14, height = 12, units = "cm")
+
+#### CHECKING 5 DIM ----
+#### GLOBAL G 5 DIM ----
+#glob.Gmat
+
+# Rank-5 (Eckart-Young) reduction of an estimated G-matrix
+#
+# This procedure removes the noise-domiated eigen-directions (those with negative / near-zero eigenvalues that cannot be real genetic variance) while keeping the full trait space. The resulting G matrix can be fed directly into our random-skewers analysis.
+
+
+# G is here the G matrix you have already estimated uysing MCMCglmm
+
+p <- ncol(glob.Gmat)  # number of traits 
+k <- 5  # target rank (dimensions kept)
+
+eig <- eigen(glob.Gmat, symmetric = TRUE) # values sorted descending
+lambda <- eig$values # eigenvalues
+V      <- eig$vectors # eigenvectors (columns)
+
+# Sanity check: if some of the retained eigenvalues are negative, the rank chosen exceeds the number of real genetic dimensions.
+if (any(lambda[1:k] <= 0)) {
+    warning("At least one of the top-k eigenvalues is <= 0; ",
+            "we need to use a smaller k.")
+}
+
+# Build the rank-5 Eckart-Young approximation
+V_k      <- V[, 1:k, drop = FALSE]  # p x k  (all p rows, top k cols)
+lambda_k <- lambda[1:k] # top k eigenvalues
+
+G_rank5 <- V_k %*% diag(lambda_k) %*% t(V_k) # p x p, but rank k
+
+# Apply the same rank reduction to every matrix you use in the random-Skewers analysis  
+
+##### RANDOM SKEWERS -----
+isSymmetric(G_rank5)
+Glob_5_Ext_std_variances = diag(G_rank5) 
+Glob_5_Ext_eig_variances = eigen(G_rank5)$values
+##need to create random cov.m for comparison
+cov.m5 <- RandomMatrix(8, 1, 1, 100) 
+Glob_5_list <- list(G_rank5, as.matrix(cov.m5))
+
+glob.g5.comp_mat = RandomSkewers(Glob_5_list) #need at least
+glob.g5.corr_mat = glob.g5.comp_mat$correlations + t(glob.g5.comp_mat$correlations) 
+diag(glob.g5.corr_mat) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(glob.g5.corr_mat, upper = "number", lower = "pie")
+
+#compare to:
+corrplot.mixed(glob.g.corr_mat, upper = "number", lower = "pie")
+
+#compare glob ext with glob rank 5
+Glob_ext_5_list <- list(Glob_ext, G_rank5)
+
+g.comp_mat_ext_5 = RandomSkewers(Glob_ext_5_list) #need at least
+g.corr_mat_ext_5 = g.comp_mat_ext_5$correlations + t(g.comp_mat_ext_5$correlations) 
+diag(g.corr_mat_ext_5) = 1
+paste("Random Skewers similarity matrix")
+corrplot.mixed(g.corr_mat_ext_5,upper = "number", lower = "pie")

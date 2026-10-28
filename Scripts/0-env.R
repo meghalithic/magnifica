@@ -24,6 +24,7 @@ require(reshape2)
 require(stringr)
 #library(tibble)
 require(tidyverse)
+library(paleoTS)
 
 #### FUNCTIONS ----
 source("./Scripts/norm.vector.funct.R")
@@ -92,23 +93,24 @@ formation_list <- factor(formation_list, levels = c("NKLS", "NKBS", "Tewkesbury"
                                                "Upper Kai-Iwi", "Tainui", "SHCSBSB", "modern"))
 
 #### TEMPERATURE ----
-form.meta <- read.csv("~/Documents/GitHub/bryozoa/bryo_metadata/metadata/formations.csv", 
+form.meta <- read.csv("https://raw.githubusercontent.com/meghalithic/bryo_metadata/refs/heads/main/metadata/formations.csv", 
                       header = TRUE)
-form.meta <- form.meta[1:7,]
+form.meta <- form.meta[c(1:3, 5:7),]
 modern <- c("mod", "modern", "modern", "modern", NA, NA, "New Zealand", "Whanganui basin", NA, 0, 0, NA, 0, 0, NA, "")
 form.meta <- rbind(form.meta, modern)
 
-#this is downloaded from: http://www.lorraine-lisiecki.com/LR04_MISboundaries.txt
+#this is downloaded from: http://www.lorraine-lisiecki.com/LR04_MISboundaries.txt; https://www.lorraine-lisiecki.com/LR04stack.txt
 oxy.18 <- read.csv("Data/∂18O.csv",
                    header = TRUE)
 
-bottom = as.numeric(form.meta$Isotope_Stage_Start)
-top = as.numeric(form.meta$Isotope_Stage_End)
+#time and age are in Ka
+bottom = as.numeric(form.meta$Start_age)
+top = as.numeric(form.meta$End_age)
 form.meta$med.O18 <- c()
 form.meta$sd.med.O18 <- c()
 form.meta$n.O18 <- c()
 for (i in 1:nrow(form.meta)){
-    temp = oxy.18$d18O[which(oxy.18$Time <= bottom[i] & oxy.18$Time >= top[i])]
+    temp = oxy.18$d18O[which(oxy.18$Time <= trunc(bottom[i]) & oxy.18$Time >= trunc(top[i]))] #using trunc to get ages that are in between but not greater than
     form.meta$med.O18[i] = median(temp)
     form.meta$sd.med.O18[i] = sd(temp)
     form.meta$n.O18[i] <- length(temp)

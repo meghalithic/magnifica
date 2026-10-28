@@ -67,7 +67,7 @@ mean_by_formation.meta <- merge(mean_by_formation,
                                 by.x = "formation",
                                 by.y = "formationCode")
 
-#raw zh
+#raw zl
 ggplot(mean_by_formation.meta) +
     geom_point(aes(temp, exp(avg.zl)),
                shape = 16, size = 5) +
@@ -91,7 +91,7 @@ summary(lm(mean_by_formation.meta$avg.cw.d ~ mean_by_formation.meta$temp))
 #nonsig
 summary(lm(mean_by_formation.meta$avg.ow.m ~ mean_by_formation.meta$temp))
 #nonsig
-summary(lm(mean_by_formation.meta$avg.oh ~ mean_by_formation.meta$temp))
+summary(lm(mean_by_formation.meta$avg.ol ~ mean_by_formation.meta$temp))
 #nonsig
 summary(lm(mean_by_formation.meta$avg.o.side ~ mean_by_formation.meta$temp))
 #nonsig
@@ -99,30 +99,31 @@ summary(lm(mean_by_formation.meta$avg.c.side ~ mean_by_formation.meta$temp))
 #nonsig
 
 ##### AMOUNT OF CHANGE COMPARED TO TEMPERATURE -----
-temp.diff <- c((form.meta.trim$temp[form.meta.trim$formationCode == "NKLS"] - form.meta.trim$temp[form.meta.trim$formationCode == "NKBS"]),
-               (form.meta.trim$temp[form.meta.trim$formationCode == "NKBS"] - form.meta.trim$temp[form.meta.trim$formationCode == "Tewkesbury"]),
-               (form.meta.trim$temp[form.meta.trim$formationCode == "Tewkesbury"] - form.meta.trim$temp[form.meta.trim$formationCode == "Upper Kai-Iwi"]),
-               (form.meta.trim$temp[form.meta.trim$formationCode == "Upper Kai-Iwi"] - form.meta.trim$temp[form.meta.trim$formationCode == "Tainui"]),
-               (form.meta.trim$temp[form.meta.trim$formationCode == "Tainui"] - form.meta.trim$temp[form.meta.trim$formationCode == "SHCSBSB"]),
-               (form.meta.trim$temp[form.meta.trim$formationCode == "SHCSBSB"] - form.meta.trim$temp[form.meta.trim$formationCode == "modern"]))
+#young-old
+temp.diff <- c((form.meta.trim$temp[form.meta.trim$formationCode == "NKBS"] - form.meta.trim$temp[form.meta.trim$formationCode == "NKLS"]),
+               (form.meta.trim$temp[form.meta.trim$formationCode == "Tewkesbury"] - form.meta.trim$temp[form.meta.trim$formationCode == "NKBS"]),
+               (form.meta.trim$temp[form.meta.trim$formationCode == "Upper Kai-Iwi"] - form.meta.trim$temp[form.meta.trim$formationCode == "Tewkesbury"]),
+               (form.meta.trim$temp[form.meta.trim$formationCode == "Tainui"] - form.meta.trim$temp[form.meta.trim$formationCode == "Upper Kai-Iwi"]),
+               (form.meta.trim$temp[form.meta.trim$formationCode == "SHCSBSB"] - form.meta.trim$temp[form.meta.trim$formationCode == "Tainui"]),
+               (form.meta.trim$temp[form.meta.trim$formationCode == "modern"] - form.meta.trim$temp[form.meta.trim$formationCode == "SHCSBSB"]))
 diff.df$temp.diff <- temp.diff
 
-diff.df$diff.ln.zh <- as.numeric(diff.df$diff.ln.zh) 
+diff.df$diff.ln.zl <- as.numeric(diff.df$diff.ln.zl) 
 diff.df$diff.ln.mpw.b <- as.numeric(diff.df$diff.ln.mpw.b)
 diff.df$diff.ln.cw.m <- as.numeric(diff.df$diff.ln.cw.m)
 diff.df$diff.ln.cw.d <- as.numeric(diff.df$diff.ln.cw.d)
 diff.df$diff.ln.ow.m <- as.numeric(diff.df$diff.ln.ow.m)
-diff.df$diff.ln.oh <- as.numeric(diff.df$diff.ln.oh)
+diff.df$diff.ln.ol <- as.numeric(diff.df$diff.ln.ol)
 diff.df$diff.ln.o.side <- as.numeric(diff.df$diff.ln.o.side)
 diff.df$diff.ln.c.side <- as.numeric(diff.df$diff.ln.c.side)
 
 ggplot(diff.df) +
-    geom_point(aes(temp.diff, diff.ln.zh),
+    geom_point(aes(temp.diff, diff.ln.zl),
                shape = 16, size = 5) +
     xlab(expression(Delta~Temperature~(~degree~C))) + 
     ylab(expression(Delta~ln~Zooid~Height~(mu*m))) + 
     plot.theme
-summary(lm(diff.df$diff.ln.zh ~ diff.df$temp.diff)) #nonsig
+summary(lm(diff.df$diff.ln.zl ~ diff.df$temp.diff)) #nonsig
 
 ggplot(diff.df) +
     geom_point(aes(temp.diff, diff.ln.mpw.b),
@@ -157,12 +158,12 @@ ggplot(diff.df) +
 summary(lm(diff.df$diff.ln.ow.m ~ diff.df$temp.diff)) #nonsig
 
 ggplot(diff.df) +
-    geom_point(aes(temp.diff, diff.ln.oh),
+    geom_point(aes(temp.diff, diff.ln.ol),
                shape = 16, size = 5) +
     xlab(expression(Delta~Temperature~(~degree~C))) + 
     ylab(expression(Delta~ln~Operculum~Height~(mu*m))) + 
     plot.theme
-summary(lm(diff.df$diff.ln.oh ~ diff.df$temp.diff)) #nonsig
+summary(lm(diff.df$diff.ln.ol ~ diff.df$temp.diff)) #nonsig
 
 ggplot(diff.df) +
     geom_point(aes(temp.diff, diff.ln.o.side),
@@ -248,7 +249,7 @@ plot(pf.wid ~ pf.mat)
 #### HOW MUCH TEMP CHANGE ----
 #difference in small zooids to large zooids is 78.73 µm:
 #y = mx + b
-#y = zh
+#y = zl
 #figuring out x
 #modern: 892.25 (log: 6.775514)
 #NKLS: 795.29 (log: 6.681356)
@@ -279,12 +280,18 @@ plot(pf.wid ~ pf.mat)
 #ending temp
 (892.25-16.82)/-0.003
 
-#based on stegino
-(795.29-853.63)/4.3 #-13.56744
-#ending temp
-(892.25-853.63)/4.3 #8.981395
+#based on stegino (oldest)
+(795.29-902.3)/-22.88 #4.67701
+#ending temp (modern)
+(892.25-902.3)/-22.88 #0.4392483
 #diff
-8.981395--13.56744 #22.54883
+0.4392483-4.67701 #-4.237762 (a cooling; not observed)
+
+#actual temperature change (modern-start)
+4.07-2.87 #1.2 
+
+#maximum diff
+4.07--0.66 #4.73
 
 ## ALL TOGETHER
 ep.sp <- rep("ep", length(ep.temps))
