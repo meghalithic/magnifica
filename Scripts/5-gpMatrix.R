@@ -8,14 +8,14 @@
 # Similar to Voje et al. where we are looking at formations rather than species
 
 # These matrices are initially made based on the following linear measurements:
-# zh = zooid height
+# zh = zooid length
 # mpw.b = median process base width
 # cw.m = cryptocyst mid-width
 # cw.d = cryptocyst distal-width
-# ow.m = operculum mid-width
+# ow.m = orifice mid-width
 # we added:
 # c.side = cryptocyst side length
-# o.side = operculum side length
+# o.side = orifice side length
 
 # specimenNR = colony ID
 # new.ID = individual zooid ID
@@ -71,8 +71,9 @@ length(formation_list) #7
 
 #same order as in df
 names(df)
-traits = names(df[, c("ln.zl", "ln.mpw.b", "ln.cw.m", "ln.cw.d", 
-                      "ln.ow.m", "ln.ol", "ln.c.side", "ln.o.side")])
+traits = names(df[, c("ln.zl", "ln.mpw.b", 
+                      "ln.cw.m", "ln.cw.d", "ln.c.side", 
+                      "ln.ow.m", "ln.ol", "ln.o.side")])
 length(traits) #8
 
 ##### TRIM DATASET ----
@@ -86,7 +87,7 @@ df = as.data.frame(df.trim)
 
 #### PLOT TRAITS ----
 
-p.zh = ggplot(data = df) + 
+p.zl = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[1]], 
                    group = formation,
                    col = formation)) + 
@@ -118,6 +119,14 @@ p.cw.d = ggplot(data = df) +
   scale_x_continuous(name = traits[4]) +
   scale_color_manual(values = col.form)
 
+p.c.side = ggplot(data = df) + 
+    geom_density(aes(x = df[, traits[7]], 
+                     group = formation,
+                     col = formation)) + 
+    plot.theme +
+    scale_x_continuous(name = traits[7]) +
+    scale_color_manual(values = col.form)
+
 p.ow.m = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[5]], 
                    group = formation,
@@ -126,20 +135,12 @@ p.ow.m = ggplot(data = df) +
   scale_x_continuous(name = traits[5]) +
   scale_color_manual(values = col.form)
 
-p.oh = ggplot(data = df) + 
+p.ol = ggplot(data = df) + 
   geom_density(aes(x = df[, traits[6]], 
                    group = formation,
                    col = formation)) + 
   plot.theme +
   scale_x_continuous(name = traits[6]) +
-  scale_color_manual(values = col.form)
-
-p.c.side = ggplot(data = df) + 
-  geom_density(aes(x = df[, traits[7]], 
-                   group = formation,
-                   col = formation)) + 
-  plot.theme +
-  scale_x_continuous(name = traits[7]) +
   scale_color_manual(values = col.form)
 
 p.o.side = ggplot(data = df) + 
@@ -150,7 +151,9 @@ p.o.side = ggplot(data = df) +
   scale_x_continuous(name = traits[8]) +
   scale_color_manual(values = col.form)
 
-Fig = list(p.zh, p.mpw.b, p.cw.m, p.cw.d, p.ow.m, p.oh, p.c.side, p.o.side)
+Fig = list(p.zl, p.mpw.b, 
+           p.cw.m, p.cw.d, p.c.side, 
+           p.ow.m, p.ol, p.o.side)
 ml <- marrangeGrob(Fig, nrow = 4, ncol = 2)
 ml
 #see a really big shift between Tewkesbury and earlier and Upper Kai-Iwi and after
@@ -356,7 +359,7 @@ biplot(P_pc_SHCSBSB, scale = 0)
 biplot(P_pc_mod, scale = 0)
 #all kinda look the same, with modern looking most different;
 #where PC1 is length on left and width on right
-#and PC2 is operculum height v everything else
+#and PC2 is orifice length v everything else
 
 ##### P NOISE -----
 ##Controlling for noise
@@ -919,7 +922,7 @@ biplot(G_pc_SHCSBSB, scale = 0)
 biplot(G_pc_mod, scale = 0)
 #all kinda look the same as the P matrix with modern and uki looking most different, 
 #where PC1 is length on left and width on right
-#and PC2 is operculum height v everything else
+#and PC2 is orifice length v everything else
 
 ##### G NOISE -----
 ##Controlling for noise

@@ -26,10 +26,10 @@ mm.df = mean_by_formation_colony %>%
                      mean.mpw.b = mean(avg.mpw.b),
                      mean.cw.m = mean(avg.cw.m),
                      mean.cw.d = mean(avg.cw.d),
+                     mean.c.side = mean(avg.c.side),
                      mean.ow.m = mean(avg.ow.m),
                      mean.ol = mean(avg.ol),
-                     mean.o.side = mean(avg.o.side),
-                     mean.c.side = mean(avg.c.side)) %>%
+                     mean.o.side = mean(avg.o.side)) %>%
     as.data.frame()
 
 #average of variances
@@ -39,10 +39,10 @@ vv.df = mean_by_formation_colony %>%
                      var.mpw.b = mean(var.mpw.b),
                      var.cw.m = mean(var.cw.m),
                      var.cw.d = mean(var.cw.d),
+                     var.c.side = mean(var.c.side),
                      var.ow.m = mean(var.ow.m),
                      var.ol = mean(var.ol),
-                     var.o.side = mean(var.o.side),
-                     var.c.side = mean(var.c.side)) %>%
+                     var.o.side = mean(var.o.side)) %>%
     as.data.frame()
 
 #middle age in MYA
@@ -108,6 +108,20 @@ cw.d.m4 <- fitSimple(pts.cw.d, model = "Stasis", method = "Joint", pool = FALSE)
 cw.d.m5 <- fitSimple(pts.cw.d, model = "StrictStasis", method = "Joint", pool = FALSE)
 compareModels(cw.d.m1, cw.d.m2, cw.d.m3, cw.d.m4, cw.d.m5)
 
+## C SIDE
+pts.c.side <- as.paleoTS(mm = mm.df$mean.c.side,
+                         vv = vv.df$var.c.side,
+                         nn = trait.n,
+                         tt = trait.age,
+                         oldest = "first")
+
+c.side.m1 <- fitSimple(pts.c.side, model = "OU", method = "Joint", pool = FALSE)
+c.side.m2 <- fitSimple(pts.c.side, model = "GRW", method = "Joint", pool = FALSE)
+c.side.m3 <- fitSimple(pts.c.side, model = "URW", method = "Joint", pool = FALSE)
+c.side.m4 <- fitSimple(pts.c.side, model = "Stasis", method = "Joint", pool = FALSE)
+c.side.m5 <- fitSimple(pts.c.side, model = "StrictStasis", method = "Joint", pool = FALSE)
+compareModels(c.side.m1, c.side.m2, c.side.m3, c.side.m4, c.side.m5)
+
 ## OW.M
 pts.ow.m <- as.paleoTS(mm = mm.df$mean.ow.m,
                        vv = vv.df$var.ow.m,
@@ -149,20 +163,6 @@ o.side.m3 <- fitSimple(pts.o.side, model = "URW", method = "Joint", pool = FALSE
 o.side.m4 <- fitSimple(pts.o.side, model = "Stasis", method = "Joint", pool = FALSE)
 o.side.m5 <- fitSimple(pts.o.side, model = "StrictStasis", method = "Joint", pool = FALSE)
 compareModels(o.side.m1, o.side.m2, o.side.m3, o.side.m4, o.side.m5)
-
-## C SIDE
-pts.c.side <- as.paleoTS(mm = mm.df$mean.c.side,
-                         vv = vv.df$var.c.side,
-                         nn = trait.n,
-                         tt = trait.age,
-                         oldest = "first")
-
-c.side.m1 <- fitSimple(pts.c.side, model = "OU", method = "Joint", pool = FALSE)
-c.side.m2 <- fitSimple(pts.c.side, model = "GRW", method = "Joint", pool = FALSE)
-c.side.m3 <- fitSimple(pts.c.side, model = "URW", method = "Joint", pool = FALSE)
-c.side.m4 <- fitSimple(pts.c.side, model = "Stasis", method = "Joint", pool = FALSE)
-c.side.m5 <- fitSimple(pts.c.side, model = "StrictStasis", method = "Joint", pool = FALSE)
-compareModels(c.side.m1, c.side.m2, c.side.m3, c.side.m4, c.side.m5)
 
 #### HALDANES ----
 #Rate (haldanes) = (log(X2) -log(xI))/alogx (t2 - tl)/((t2-t1)/tgen)

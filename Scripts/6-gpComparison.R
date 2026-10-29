@@ -165,13 +165,13 @@ mean_by_formation
 
 ### Calculate the vector that defines the observed divergence between sample/formation 1
 # A vector containing trait means from sample/formation
-NKLS <- as.numeric(mean_by_formation[mean_by_formation == "NKLS", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")]) 
-NKBS <- as.numeric(mean_by_formation[mean_by_formation == "NKBS", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
-tewk <- as.numeric(mean_by_formation[mean_by_formation == "Tewkesbury", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
-uki <- as.numeric(mean_by_formation[mean_by_formation == "Upper Kai-Iwi", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
-tai <- as.numeric(mean_by_formation[mean_by_formation == "Tainui", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
-SHCSBSB <- as.numeric(mean_by_formation[mean_by_formation == "SHCSBSB", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
-mod <- as.numeric(mean_by_formation[mean_by_formation == "modern", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.ow.m", "avg.ol", "avg.o.side", "avg.c.side")])
+NKLS <- as.numeric(mean_by_formation[mean_by_formation == "NKLS", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.c.side", "avg.ow.m", "avg.ol", "avg.o.side")]) 
+NKBS <- as.numeric(mean_by_formation[mean_by_formation == "NKBS", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.c.side", "avg.ow.m", "avg.ol", "avg.o.side")])
+tewk <- as.numeric(mean_by_formation[mean_by_formation == "Tewkesbury", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.c.side", "avg.ow.m", "avg.ol", "avg.o.side")])
+uki <- as.numeric(mean_by_formation[mean_by_formation == "Upper Kai-Iwi", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.c.side", "avg.ow.m", "avg.ol", "avg.o.side")])
+tai <- as.numeric(mean_by_formation[mean_by_formation == "Tainui", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.c.side", "avg.ow.m", "avg.ol", "avg.o.side")])
+SHCSBSB <- as.numeric(mean_by_formation[mean_by_formation == "SHCSBSB", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.c.side", "avg.ow.m", "avg.ol", "avg.o.side")])
+mod <- as.numeric(mean_by_formation[mean_by_formation == "modern", c("avg.zl", "avg.mpw.b", "avg.cw.m", "avg.cw.d", "avg.c.side", "avg.ow.m", "avg.ol", "avg.o.side")])
 
 #second - first
 #t1 = NKBS - NKLS
@@ -878,9 +878,9 @@ delta.z.melt$measurementType <- factor(delta.z.melt$measurementType,
                                              "ln.mpw.b",
                                              "ln.cw.m",
                                              "ln.cw.d",
+                                             "ln.c.side",
                                              "ln.ow.m",
                                              "ln.ol",
-                                             "ln.c.side",
                                              "ln.o.side"))
 
 p.delta_z.connected <- ggplot(delta.z.melt, 
@@ -910,12 +910,12 @@ p.delta_z <- ggplot(delta.z.df) +
                size = 3, shape = 17, color = "#b79f00ff") +
     geom_point(aes(x = form.trans, y = ln.cw.d),
                size = 3, shape = 17, color = "#00be67ff") +
+    geom_point(aes(x = form.trans, y = ln.c.side),
+               size = 3, shape = 17, color = "#00bfc4ff") +
     geom_point(aes(x = form.trans, y = ln.ow.m),
                size = 3, shape = 17, color = "#00c094ff") +
     geom_point(aes(x = form.trans, y = ln.ol),
                size = 3, shape = 17, color = "#619cffff") +
-    geom_point(aes(x = form.trans, y = ln.c.side),
-               size = 3, shape = 17, color = "#00bfc4ff") +
     geom_point(aes(x = form.trans, y = ln.o.side),
                size = 3, shape = 17, color = "#c77cffff") +
     scale_x_discrete(name = "Formation Transition",
@@ -960,12 +960,12 @@ ggplot(diffs) +
                size = 3, shape = 20, color = "#b79f00ff") +
     geom_point(aes(x = angle_diff_Gs, y = ln.cw.d),
                size = 3, shape = 20, color = "#00be67ff") +
+    geom_point(aes(x = angle_diff_Gs, y = ln.c.side),
+               size = 3, shape = 20, color = "#00bfc4ff") +
     geom_point(aes(x = angle_diff_Gs, y = ln.ow.m),
                size = 3, shape = 20, color = "#00c094ff") +
     geom_point(aes(x = angle_diff_Gs, y = ln.ol),
                size = 3, shape = 20, color = "#619cffff") +
-    geom_point(aes(x = angle_diff_Gs, y = ln.c.side),
-               size = 3, shape = 20, color = "#00bfc4ff") +
     geom_point(aes(x = angle_diff_Gs, y = ln.o.side),
                size = 3, shape = 20, color = "#c77cffff") +
     scale_x_continuous(name = expression(Theta~between~Gs)) +
@@ -994,12 +994,12 @@ ggplot(var.pheno.df) +
                size = 3, shape = 20, color = "#b79f00ff") +
     geom_point(aes(x = angle_diff_Gs, y = var.cw.d),
                size = 3, shape = 20, color = "#00be67ff") +
+    geom_point(aes(x = angle_diff_Gs, y = var.c.side),
+               size = 3, shape = 20, color = "#00bfc4ff") +
     geom_point(aes(x = angle_diff_Gs, y = var.ow.m),
                size = 3, shape = 20, color = "#00c094ff") +
     geom_point(aes(x = angle_diff_Gs, y = var.ol),
                size = 3, shape = 20, color = "#619cffff") +
-    geom_point(aes(x = angle_diff_Gs, y = var.c.side),
-               size = 3, shape = 20, color = "#00bfc4ff") +
     geom_point(aes(x = angle_diff_Gs, y = var.o.side),
                size = 3, shape = 20, color = "#c77cffff") +
     scale_x_continuous(name = expression(Theta~between~Gs)) +

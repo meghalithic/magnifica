@@ -36,9 +36,8 @@ colnames(images.df)[colnames(images.df) == 'specimenNR'] <- 'colony.id'
 #ow.m is similar to WO
 #see "stegs_linear_24Mar2023.png" for linear measurements
 #z = zooid
-#h = height
-#o = operculum
-#l = left
+#o = orifice
+#l = left or length
 #r = right
 #w = width
 #m = mid
@@ -51,41 +50,17 @@ colnames(images.df)[colnames(images.df) == 'specimenNR'] <- 'colony.id'
 #Y = |(Y1-Y0)|
 #D^2 = X^2 + Y^2
 
-## Zooid height (maximum height at centerline): 4 to 12
+## Zooid length (maximum length at centerline): 4 to 12
 images.df$zl.px <- len.py(images.df$X4, images.df$X12,
                        images.df$Y4, images.df$Y12)
 
-## Operculum height of left side: 4 to 20
-images.df$ol.l.px <- len.py(images.df$X4, images.df$X20,
-                         images.df$Y4, images.df$Y20)
-
-## Operculum height of right side: 4 to 21
-images.df$ol.r.px <- len.py(images.df$X4, images.df$X21,
-                         images.df$Y4, images.df$Y21)
-
-## Operculum mid-width (maximum width at centerline): 19 to 0
-images.df$ow.m.px <- len.py(images.df$X19, images.df$X0,
-                         images.df$Y19, images.df$Y0)
-
-## Operculum base width: 21 to 20
-images.df$ow.b.px <- len.py(images.df$X21, images.df$X20,
-                         images.df$Y21, images.df$Y20)
-
-## Operculum side length of right side: 21 to 18
-images.df$o.side.r.px <- len.py(images.df$X21, images.df$X18,
-                             images.df$Y21, images.df$Y18)
-
-## Operculum side length of left side: 20 to 17
-images.df$o.side.l.px <- len.py(images.df$X20, images.df$X17,
-                             images.df$Y20, images.df$Y17)
-
 ## Median process base width: 5 to 6
 images.df$mpw.b.px <- len.py(images.df$X5, images.df$X6,
-                          images.df$Y5, images.df$Y6)
+                             images.df$Y5, images.df$Y6)
 
 ## Cryptocyst mid-width: 10 to 11
 images.df$cw.m.px <- len.py(images.df$X10, images.df$X11,
-                         images.df$Y10, images.df$Y11)
+                            images.df$Y10, images.df$Y11)
 
 ## Cryptocyst base width: 9 to 1
 #images.df$cw.b.px <- len.py(images.df$X9, images.df$X1,
@@ -93,15 +68,39 @@ images.df$cw.m.px <- len.py(images.df$X10, images.df$X11,
 
 ## Cryptocyst distal width: 8 to 7
 images.df$cw.d.px <- len.py(images.df$X8, images.df$X7,
-                         images.df$Y8, images.df$Y7)
+                            images.df$Y8, images.df$Y7)
 
 ## Cryptocyst side length of right side: 1 to 7
 images.df$c.side.r.px <- len.py(images.df$X1, images.df$X7,
-                             images.df$Y1, images.df$Y7)
+                                images.df$Y1, images.df$Y7)
 
 ## Cryptocyst side length of left side: 9 to 8
 images.df$c.side.l.px <- len.py(images.df$X9, images.df$X8,
-                             images.df$Y9, images.df$Y8)
+                                images.df$Y9, images.df$Y8)
+
+## Orifice length of left side: 4 to 20
+images.df$ol.l.px <- len.py(images.df$X4, images.df$X20,
+                         images.df$Y4, images.df$Y20)
+
+## Orifice length of right side: 4 to 21
+images.df$ol.r.px <- len.py(images.df$X4, images.df$X21,
+                         images.df$Y4, images.df$Y21)
+
+## Orifice mid-width (maximum width at centerline): 19 to 0
+images.df$ow.m.px <- len.py(images.df$X19, images.df$X0,
+                         images.df$Y19, images.df$Y0)
+
+## Orifice base width: 21 to 20
+images.df$ow.b.px <- len.py(images.df$X21, images.df$X20,
+                         images.df$Y21, images.df$Y20)
+
+## Orifice side length of right side: 21 to 18
+images.df$o.side.r.px <- len.py(images.df$X21, images.df$X18,
+                             images.df$Y21, images.df$Y18)
+
+## Orifice side length of left side: 20 to 17
+images.df$o.side.l.px <- len.py(images.df$X20, images.df$X17,
+                             images.df$Y20, images.df$Y17)
 
 ## centroid size
 #It is the square root of the sum of squared distances of all the 
@@ -113,15 +112,15 @@ images.df$c.side.l.px <- len.py(images.df$X9, images.df$X8,
 #the only bleed numbers included are: 686, 244, 242; form.no = BLEED
 #recalculate them manually
 images.df$zl <- images.df$zl.px/images.df$scale
-images.df$ol.l <- images.df$ol.l.px/images.df$scale
-images.df$ol.r <- images.df$ol.r.px/images.df$scale
-images.df$ow.b <- images.df$ow.b.px/images.df$scale
-images.df$ow.m <- images.df$ow.m.px/images.df$scale
 images.df$mpw.b <- images.df$mpw.b.px/images.df$scale
 images.df$cw.m <- images.df$cw.m.px/images.df$scale
 images.df$cw.d <- images.df$cw.d.px/images.df$scale
 images.df$c.side.r <- images.df$c.side.r.px/images.df$scale
 images.df$c.side.l <- images.df$c.side.l.px/images.df$scale
+images.df$ow.b <- images.df$ow.b.px/images.df$scale
+images.df$ow.m <- images.df$ow.m.px/images.df$scale
+images.df$ol.l <- images.df$ol.l.px/images.df$scale
+images.df$ol.r <- images.df$ol.r.px/images.df$scale
 images.df$o.side.r <- images.df$o.side.r.px/images.df$scale
 images.df$o.side.l <- images.df$o.side.l.px/images.df$scale
 
@@ -129,15 +128,15 @@ images.df$o.side.l <- images.df$o.side.l.px/images.df$scale
 p.o.side.rl <- ggplot(images.df) +
   geom_point(aes(x = o.side.l, y = o.side.r)) + #,
                  #group = formation, fill = formation, col = formation)) +
-  ggtitle(paste0("Operculum Side Length, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
+  ggtitle(paste0("Orifice Side Length, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
   plot.theme +
   theme(legend.position = "top") + 
-  scale_y_continuous(name = "Operculum Length Right Side (pixels)") +
-  scale_x_continuous(name = "Operculum Length Left Side (pixels)")
+  scale_y_continuous(name = "Orifice Length Right Side (pixels)") +
+  scale_x_continuous(name = "Orifice Length Left Side (pixels)")
 #modern doesn't look that different from everything else
 
 ggsave(p.o.side.rl, 
-       file = "./Results/operculum.length.png", width = 14, height = 10, units = "cm")
+       file = "./Results/orifice.length.png", width = 14, height = 10, units = "cm")
 
 summary(lm(images.df$o.side.r ~ images.df$o.side.l)) 
 # slope = 0.92; p-value < 2.2e-16; r2 = 0.95
@@ -157,29 +156,29 @@ ggsave(p.c.side.rl,
 summary(lm(images.df$c.side.r ~ images.df$c.side.l)) 
 # slope = 0.86; p-value: < 2.2e-16; r2 = 0.78
 
-## right v left side of operculum height
+## right v left side of orifice length
 p.ol.rl <- ggplot(images.df) +
   geom_point(aes(x = ol.l, y = ol.r)) + #,
     #group = formation, fill = formation, col = formation)) +
-  ggtitle(paste0("Operculum Height, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
+  ggtitle(paste0("Orifice Length, N zooids = ", nrow(images.df), ", N colony = ", length(unique(images.df$colony.id)))) +
   plot.theme +
-  scale_y_continuous(name = "Operculum Height Right Side (pixels)") +
-  scale_x_continuous(name = "Operculum Height Left Side (pixels)")
+  scale_y_continuous(name = "Orifice Length Right Side (pixels)") +
+  scale_x_continuous(name = "Orifice Length Left Side (pixels)")
 
 ggsave(p.ol.rl, 
-       file = "./Results/operculum.height.png", 
+       file = "./Results/orifice.length.png", 
        width = 14, height = 10, units = "cm")
 
 summary(lm(images.df$ol.r ~ images.df$ol.l)) 
 # slope = 0.92; p-value < 2.2e-16; r2 = .89; no asymmetry
 
-## Operculum average side length:
+## Orifice average side length:
 images.df$o.side <- rowMeans(cbind(images.df$o.side.l, images.df$o.side.r))
 
 ## Cryptocyst average side length:
 images.df$c.side <- rowMeans(cbind(images.df$c.side.l, images.df$c.side.r))
 
-## Operculum height
+## Orifice length
 images.df$ol <- (.5/images.df$ow.b)*sqrt(images.df$ow.b+images.df$ol.r+images.df$ol.l)
 ol <- (2*area)/base
 area = 
@@ -190,9 +189,9 @@ traits.df <- images.df %>%
                 source, Mag, 
                 colony.id, zooid.id, 
                 formation, locality,
-                zl, ol, ow.m, ow.b, 
-                mpw.b, cw.m, cw.d,
-                o.side, c.side)
+                zl, mpw.b, 
+                cw.m, cw.d, c.side,
+                ow.m, ol, ow.b, o.side)
 
 colnames(traits.df)[colnames(traits.df) == 'box_id'] <- 'boxID'
 
@@ -244,91 +243,91 @@ table(df$Mag, df$formation) #modern is the only one with different magnification
 ggplot(df) +
     geom_density(aes(x = log(zl),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #shifted larger with larger mag
 
 ggplot(df) +
     geom_density(aes(x = log(ow.b),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #slightly shifted larger with larger mag
 
 ggplot(df) +
     geom_density(aes(x = log(ow.m),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #shifted larger with larger mag
 
 ggplot(df) +
     geom_density(aes(x = log(mpw.b),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #shifted larger with larger mag
 
 ggplot(df) +
     geom_density(aes(x = log(cw.m),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #amazingly not shifted
 
 ggplot(df) +
     geom_density(aes(x = log(cw.d),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #amazingly not shifted
 
 ggplot(df) +
     geom_density(aes(x = log(o.side),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #only slightly shifted
 
 ggplot(df) +
     geom_density(aes(x = log(c.side),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #amazingly not shifted
 
 ggplot(df) +
     geom_density(aes(x = log(ol),
                      group = Mag, col = Mag)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #mostly not shifted
 
 summary(manova(cbind(log(zl), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(ol)) ~ Mag, 
@@ -348,91 +347,91 @@ df.30.mod <- df[df$formation == "modern",]
 ggplot(df.30.mod) +
     geom_density(aes(x = log(zl),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #TS-3 weird, but otherwise ok
 
 ggplot(df.30.mod) +
     geom_density(aes(x = log(ow.b),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #weirdness with M797, TAN1108/233
 
 ggplot(df.30.mod) +
     geom_density(aes(x = log(ow.m),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #
 
 ggplot(df.30.mod) +
     geom_density(aes(x = log(mpw.b),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #something weird with Z8662
 
 ggplot(df.30.mod) +
     geom_density(aes(x = log(cw.m),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #some weirdness with M797 and TS-10
 
 ggplot(df.30.mod) +
     geom_density(aes(x = log(cw.d),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #some weirdness with TAN1108/233, M797
 
 ggplot(df.30.mod) +
     geom_density(aes(x = log(o.side),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #Z8662 off
 
 ggplot(df.30.mod) +
     geom_density(aes(x = log(c.side),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #weirdness again with M797, a bit with KWB_Feb
 
 ggplot(df.30.mod) +
     geom_density(aes(x = log(ol),
                      group = locality, col = locality)) +
-    ggtitle(paste0("Zooid height, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
+    ggtitle(paste0("Zooid length, N zooids = ", nrow(df), ", N colony = ", length(unique(df$colony.id)))) +
     plot.theme +
     theme(legend.position = "right") + 
     scale_y_continuous(name = "Density") +
-    scale_x_continuous(expression(ln~Zooid~Height~(mu*m)))
+    scale_x_continuous(expression(ln~Zooid~Length~(mu*m)))
 #weirdness with TS-3
 
 summary(manova(cbind(log(zl), log(ow.b), log(ow.m), log(mpw.b), log(cw.m), log(cw.d), log(o.side), log(c.side), log(ol)) ~ locality, 

@@ -50,13 +50,13 @@ col.traits = c("#F8766D", "#CD9600", "#7CAE00", "#00BE67",
                "#00BFC4", "#00A9FF", "#C77CFF", "#FF61CC")
 
 col.traits.repo <- c("#F8766D", #zl
-                     "#CD9600", #ol
-                     "#B79F00", #ow.m
-                     "#00BE67", #o.side
-                     "#00C094", #mpw.b
-                     "#619CFF", #cw.d
-                     "#00BFC4", #cw.m
-                     "#C77CFF") #c.side)
+                     "#CD9600", #mpw.b 
+                     "#B79F00", #cw.m 
+                     "#00BE67", #cw.d 
+                     "#00C094", #c.side
+                     "#619CFF", #ow
+                     "#00BFC4", #ol
+                     "#C77CFF") #o.side
 
 plot.theme <- theme(text = element_text(size = 16),
       legend.position = "none",
