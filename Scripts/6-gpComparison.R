@@ -371,60 +371,60 @@ eigen(as.matrix(G_ext_SHCSBSB))$values[1]/sum(eigen(as.matrix(G_ext_SHCSBSB))$va
 eigen(as.matrix(G_ext_mod))$values[1]/sum(eigen(as.matrix(G_ext_mod))$values) #0.5337849
 
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
-Gmax_NKLS <- eigen(G_ext_NKLS)$vectors[,1]
-Gmax_NKBS <- eigen(G_ext_NKBS)$vectors[,1]
-Gmax_tewk <- eigen(G_ext_tewk)$vectors[,1]
-Gmax_uki <- eigen(G_ext_uki)$vectors[,1]
-Gmax_tai <- eigen(G_ext_tai)$vectors[,1]
-Gmax_SHCSBSB <- eigen(G_ext_SHCSBSB)$vectors[,1]
-Gmax_mod <- eigen(G_ext_mod)$vectors[,1]
+Gmax_NKLS <- eigen(G_ext_NKLS)$values[1]
+Gmax_NKBS <- eigen(G_ext_NKBS)$values[1]
+Gmax_tewk <- eigen(G_ext_tewk)$values[1]
+Gmax_uki <- eigen(G_ext_uki)$values[1]
+Gmax_tai <- eigen(G_ext_tai)$values[1]
+Gmax_SHCSBSB <- eigen(G_ext_SHCSBSB)$values[1]
+Gmax_mod <- eigen(G_ext_mod)$values[1]
 
 # Put Gmax to norm length
-Gmax_NKLS_norm <- f.normalize_vector(Gmax_NKLS)
-Gmax_NKBS_norm <- f.normalize_vector(Gmax_NKBS)
-Gmax_tewk_norm <- f.normalize_vector(Gmax_tewk)
-Gmax_uki_norm <- f.normalize_vector(Gmax_uki)
-Gmax_tai_norm <- f.normalize_vector(Gmax_tai)
-Gmax_SHCSBSB_norm <- f.normalize_vector(Gmax_SHCSBSB)
-Gmax_mod_norm <- f.normalize_vector(Gmax_mod)
+#Gmax_NKLS_norm <- f.normalize_vector(Gmax_NKLS)
+#Gmax_NKBS_norm <- f.normalize_vector(Gmax_NKBS)
+#Gmax_tewk_norm <- f.normalize_vector(Gmax_tewk)
+#Gmax_uki_norm <- f.normalize_vector(Gmax_uki)
+#Gmax_tai_norm <- f.normalize_vector(Gmax_tai)
+#Gmax_SHCSBSB_norm <- f.normalize_vector(Gmax_SHCSBSB)
+#Gmax_mod_norm <- f.normalize_vector(Gmax_mod)
 
 # Calculate the dot product of the unit vectors; tells number 0 to 1
-dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS_norm * Gmax_NKBS_norm) #0.9823321
+dot_product.Gmax_NKLS_NKBS <- sum(Gmax_NKLS * Gmax_NKBS) #0.9823321
 # Calculate the angle in radians
 angle_radians.Gmax_NKLS_NKBS <- acos(dot_product.Gmax_NKLS_NKBS)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKLS_NKBS <- angle_radians.Gmax_NKLS_NKBS * (180 / pi)
 #10.78629
 
-dot_product.Gmax_NKBS_tewk <- sum(Gmax_NKBS_norm * Gmax_tewk_norm) #0.9930473
+dot_product.Gmax_NKBS_tewk <- sum(Gmax_NKBS * Gmax_tewk) #0.9930473
 # Calculate the angle in radians
 angle_radians.Gmax_NKBS_tewk <- acos(dot_product.Gmax_NKBS_tewk)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKBS_tewk <- angle_radians.Gmax_NKBS_tewk * (180 / pi)
 #6.760309
 
-dot_product.Gmax_tewk_uki <- sum(Gmax_tewk_norm * Gmax_uki_norm) #0.9590283
+dot_product.Gmax_tewk_uki <- sum(Gmax_tewk * Gmax_uki) #0.9590283
 # Calculate the angle in radians
 angle_radians.Gmax_tewk_uki <- acos(dot_product.Gmax_tewk_uki)
 # Convert the angle to degrees
 angle_degrees.Gmax_tewk_uki <- angle_radians.Gmax_tewk_uki * (180 / pi)
 #16.45787
 
-dot_product.Gmax_uki_tai <- sum(Gmax_uki_norm * Gmax_tai_norm) #0.9656406
+dot_product.Gmax_uki_tai <- sum(Gmax_uki * Gmax_tai) #0.9656406
 # Calculate the angle in radians
 angle_radians.Gmax_uki_tai <- acos(dot_product.Gmax_uki_tai)
 # Convert the angle to degrees
 angle_degrees.Gmax_uki_tai <- angle_radians.Gmax_uki_tai * (180 / pi)
 #15.06301
 
-dot_product.Gmax_tai_SHCSBSB <- sum(Gmax_tai_norm * Gmax_SHCSBSB_norm) #0.7542782
+dot_product.Gmax_tai_SHCSBSB <- sum(Gmax_tai * Gmax_SHCSBSB) #0.7542782
 # Calculate the angle in radians
 angle_radians.Gmax_tai_SHCSBSB <- acos(dot_product.Gmax_tai_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai_SHCSBSB <- angle_radians.Gmax_tai_SHCSBSB * (180 / pi)
 #41.03766
 
-dot_product.Gmax_SHCSBSB_mod <- sum(Gmax_SHCSBSB_norm * Gmax_mod_norm) #0.1992655
+dot_product.Gmax_SHCSBSB_mod <- sum(Gmax_SHCSBSB * Gmax_mod) #0.1992655
 # Calculate the angle in radians
 angle_radians.Gmax_SHCSBSB_mod <- acos(dot_product.Gmax_SHCSBSB_mod)
 # Convert the angle to degrees
@@ -486,42 +486,42 @@ save(g.angle.list,
 ### See if change is in direction of G max
 ## use Gmax of t1 and compare to ∆z
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_NKLS <- sum(Gmax_NKLS_norm * evolved_difference_unit_length_t1) 
+dot_product.Gmax_NKLS <- sum(Gmax_NKLS * evolved_difference_unit_length_t1) 
 # Calculate the angle in radians
 angle_radians.Gmax_NKLS <- acos(dot_product.Gmax_NKLS)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKLS <- angle_radians.Gmax_NKLS * (180 / pi)
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_NKBS <- sum(Gmax_NKBS_norm * evolved_difference_unit_length_t2)
+dot_product.Gmax_NKBS <- sum(Gmax_NKBS * evolved_difference_unit_length_t2)
 # Calculate the angle in radians
 angle_radians.Gmax_NKBS <- acos(dot_product.Gmax_NKBS)
 # Convert the angle to degrees
 angle_degrees.Gmax_NKBS <- angle_radians.Gmax_NKBS * (180 / pi)
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_tewk <- sum(Gmax_tewk_norm * evolved_difference_unit_length_t3) 
+dot_product.Gmax_tewk <- sum(Gmax_tewk * evolved_difference_unit_length_t3) 
 # Calculate the angle in radians
 angle_radians.Gmax_tewk <- acos(dot_product.Gmax_tewk)
 # Convert the angle to degrees
 angle_degrees.Gmax_tewk <- angle_radians.Gmax_tewk * (180 / pi)
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_uki <- sum(Gmax_uki_norm * evolved_difference_unit_length_t4)
+dot_product.Gmax_uki <- sum(Gmax_uki * evolved_difference_unit_length_t4)
 # Calculate the angle in radians
 angle_radians.Gmax_uki <- acos(dot_product.Gmax_uki)
 # Convert the angle to degrees
 angle_degrees.Gmax_uki <- angle_radians.Gmax_uki * (180 / pi)
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_tai <- sum(Gmax_tai_norm * evolved_difference_unit_length_t5)
+dot_product.Gmax_tai <- sum(Gmax_tai * evolved_difference_unit_length_t5)
 # Calculate the angle in radians
 angle_radians.Gmax_tai <- acos(dot_product.Gmax_tai)
 # Convert the angle to degrees
 angle_degrees.Gmax_tai <- angle_radians.Gmax_tai * (180 / pi)
 
 # Calculate the dot product of the unit vectors
-dot_product.Gmax_SHCSBSB <- sum(Gmax_SHCSBSB_norm * evolved_difference_unit_length_t6) 
+dot_product.Gmax_SHCSBSB <- sum(Gmax_SHCSBSB * evolved_difference_unit_length_t6) 
 # Calculate the angle in radians
 angle_radians.Gmax_SHCSBSB <- acos(dot_product.Gmax_SHCSBSB)
 # Convert the angle to degrees
@@ -579,9 +579,6 @@ ggsave(p.g.pheno,
 
 evol.diff.list = list(G_ext_NKLS, G_ext_NKBS, G_ext_tewk, G_ext_uki,
                       G_ext_tai, G_ext_SHCSBSB, G_ext_mod,
-                      Gmax_NKLS_norm, Gmax_NKBS, Gmax_tewk_norm, 
-                      Gmax_uki_norm, Gmax_tai_norm, Gmax_SHCSBSB_norm,
-                      Gmax_mod_norm,
                       evolved_difference_unit_length_t1,
                       evolved_difference_unit_length_t2,
                       evolved_difference_unit_length_t3,
@@ -593,125 +590,125 @@ save(evol.diff.list,
 
 ###### PC2-4 compared to ∆z -----
 ## do for 2-4 as well
-G2_NKLS <- eigen(G_ext_NKLS)$vectors[,2]
-G2_NKBS <- eigen(G_ext_NKBS)$vectors[,2]
-G2_tewk <- eigen(G_ext_tewk)$vectors[,2]
-G2_uki <- eigen(G_ext_uki)$vectors[,2]
-G2_tai <- eigen(G_ext_tai)$vectors[,2]
-G2_SHCSBSB <- eigen(G_ext_SHCSBSB)$vectors[,2]
-G2_mod <- eigen(G_ext_mod)$vectors[,2]
+G2_NKLS <- eigen(G_ext_NKLS)$values[2]
+G2_NKBS <- eigen(G_ext_NKBS)$values[2]
+G2_tewk <- eigen(G_ext_tewk)$values[2]
+G2_uki <- eigen(G_ext_uki)$values[2]
+G2_tai <- eigen(G_ext_tai)$values[2]
+G2_SHCSBSB <- eigen(G_ext_SHCSBSB)$values[2]
+G2_mod <- eigen(G_ext_mod)$values[2]
 
-G3_NKLS <- eigen(G_ext_NKLS)$vectors[,3]
-G3_NKBS <- eigen(G_ext_NKBS)$vectors[,3]
-G3_tewk <- eigen(G_ext_tewk)$vectors[,3]
-G3_uki <- eigen(G_ext_uki)$vectors[,3]
-G3_tai <- eigen(G_ext_tai)$vectors[,3]
-G3_SHCSBSB <- eigen(G_ext_SHCSBSB)$vectors[,3]
-G3_mod <- eigen(G_ext_mod)$vectors[,3]
+G3_NKLS <- eigen(G_ext_NKLS)$values[3]
+G3_NKBS <- eigen(G_ext_NKBS)$values[3]
+G3_tewk <- eigen(G_ext_tewk)$values[3]
+G3_uki <- eigen(G_ext_uki)$values[3]
+G3_tai <- eigen(G_ext_tai)$values[3]
+G3_SHCSBSB <- eigen(G_ext_SHCSBSB)$values[3]
+G3_mod <- eigen(G_ext_mod)$values[3]
 
-G4_NKLS <- eigen(G_ext_NKLS)$vectors[,4]
-G4_NKBS <- eigen(G_ext_NKBS)$vectors[,4]
-G4_tewk <- eigen(G_ext_tewk)$vectors[,4]
-G4_uki <- eigen(G_ext_uki)$vectors[,4]
-G4_tai <- eigen(G_ext_tai)$vectors[,4]
-G4_SHCSBSB <- eigen(G_ext_SHCSBSB)$vectors[,4]
-G4_mod <- eigen(G_ext_mod)$vectors[,4]
+G4_NKLS <- eigen(G_ext_NKLS)$values[4]
+G4_NKBS <- eigen(G_ext_NKBS)$values[4]
+G4_tewk <- eigen(G_ext_tewk)$values[4]
+G4_uki <- eigen(G_ext_uki)$values[4]
+G4_tai <- eigen(G_ext_tai)$values[4]
+G4_SHCSBSB <- eigen(G_ext_SHCSBSB)$values[4]
+G4_mod <- eigen(G_ext_mod)$values[4]
 
 ## normalize
-G2_NKLS_norm <- f.normalize_vector(G2_NKLS)
-G2_NKBS_norm <- f.normalize_vector(G2_NKBS)
-G2_tewk_norm <- f.normalize_vector(G2_tewk)
-G2_uki_norm <- f.normalize_vector(G2_uki)
-G2_tai_norm <- f.normalize_vector(G2_tai)
-G2_SHCSBSB_norm <- f.normalize_vector(G2_SHCSBSB)
-G2_mod_norm <- f.normalize_vector(G2_mod)
-
-G3_NKLS_norm <- f.normalize_vector(G3_NKLS)
-G3_NKBS_norm <- f.normalize_vector(G3_NKBS)
-G3_tewk_norm <- f.normalize_vector(G3_tewk)
-G3_uki_norm <- f.normalize_vector(G3_uki)
-G3_tai_norm <- f.normalize_vector(G3_tai)
-G3_SHCSBSB_norm <- f.normalize_vector(G3_SHCSBSB)
-G3_mod_norm <- f.normalize_vector(G3_mod)
-
-G4_NKLS_norm <- f.normalize_vector(G4_NKLS)
-G4_NKBS_norm <- f.normalize_vector(G4_NKBS)
-G4_tewk_norm <- f.normalize_vector(G4_tewk)
-G4_uki_norm <- f.normalize_vector(G4_uki)
-G4_tai_norm <- f.normalize_vector(G4_tai)
-G4_SHCSBSB_norm <- f.normalize_vector(G4_SHCSBSB)
-G4_mod_norm <- f.normalize_vector(G4_mod)
+# G2_NKLS_norm <- f.normalize_vector(G2_NKLS)
+# G2_NKBS_norm <- f.normalize_vector(G2_NKBS)
+# G2_tewk_norm <- f.normalize_vector(G2_tewk)
+# G2_uki_norm <- f.normalize_vector(G2_uki)
+# G2_tai_norm <- f.normalize_vector(G2_tai)
+# G2_SHCSBSB_norm <- f.normalize_vector(G2_SHCSBSB)
+# G2_mod_norm <- f.normalize_vector(G2_mod)
+# 
+# G3_NKLS_norm <- f.normalize_vector(G3_NKLS)
+# G3_NKBS_norm <- f.normalize_vector(G3_NKBS)
+# G3_tewk_norm <- f.normalize_vector(G3_tewk)
+# G3_uki_norm <- f.normalize_vector(G3_uki)
+# G3_tai_norm <- f.normalize_vector(G3_tai)
+# G3_SHCSBSB_norm <- f.normalize_vector(G3_SHCSBSB)
+# G3_mod_norm <- f.normalize_vector(G3_mod)
+# 
+# G4_NKLS_norm <- f.normalize_vector(G4_NKLS)
+# G4_NKBS_norm <- f.normalize_vector(G4_NKBS)
+# G4_tewk_norm <- f.normalize_vector(G4_tewk)
+# G4_uki_norm <- f.normalize_vector(G4_uki)
+# G4_tai_norm <- f.normalize_vector(G4_tai)
+# G4_SHCSBSB_norm <- f.normalize_vector(G4_SHCSBSB)
+# G4_mod_norm <- f.normalize_vector(G4_mod)
 
 ## for 2-4 as well:
-dot_product.G2_NKLS <- sum(G2_NKLS_norm * evolved_difference_unit_length_t1) 
+dot_product.G2_NKLS <- sum(G2_NKLS * evolved_difference_unit_length_t1) 
 angle_radians.G2_NKLS <- acos(dot_product.G2_NKLS)
 angle_degrees.G2_NKLS <- angle_radians.G2_NKLS * (180 / pi)
 
-dot_product.G2_NKBS <- sum(G2_NKBS_norm * evolved_difference_unit_length_t2)
+dot_product.G2_NKBS <- sum(G2_NKBS * evolved_difference_unit_length_t2)
 angle_radians.G2_NKBS <- acos(dot_product.G2_NKBS)
 angle_degrees.G2_NKBS <- angle_radians.G2_NKBS * (180 / pi)
 
-dot_product.G2_tewk <- sum(G2_tewk_norm * evolved_difference_unit_length_t3) 
+dot_product.G2_tewk <- sum(G2_tewk * evolved_difference_unit_length_t3) 
 angle_radians.G2_tewk <- acos(dot_product.G2_tewk)
 angle_degrees.G2_tewk <- angle_radians.G2_tewk * (180 / pi)
 
-dot_product.G2_uki <- sum(G2_uki_norm * evolved_difference_unit_length_t4)
+dot_product.G2_uki <- sum(G2_uki * evolved_difference_unit_length_t4)
 angle_radians.G2_uki <- acos(dot_product.G2_uki)
 angle_degrees.G2_uki <- angle_radians.G2_uki * (180 / pi)
 
-dot_product.G2_tai <- sum(G2_tai_norm * evolved_difference_unit_length_t5) 
+dot_product.G2_tai <- sum(G2_tai * evolved_difference_unit_length_t5) 
 angle_radians.G2_tai <- acos(dot_product.G2_tai)
 angle_degrees.G2_tai <- angle_radians.G2_tai * (180 / pi)
 
-dot_product.G2_SHCSBSB <- sum(G2_SHCSBSB_norm * evolved_difference_unit_length_t6) 
+dot_product.G2_SHCSBSB <- sum(G2_SHCSBSB * evolved_difference_unit_length_t6) 
 angle_radians.G2_SHCSBSB <- acos(dot_product.G2_SHCSBSB)
 angle_degrees.G2_SHCSBSB <- angle_radians.G2_SHCSBSB * (180 / pi)
 
-dot_product.G3_NKLS <- sum(G3_NKLS_norm * evolved_difference_unit_length_t1) 
+dot_product.G3_NKLS <- sum(G3_NKLS * evolved_difference_unit_length_t1) 
 angle_radians.G3_NKLS <- acos(dot_product.G3_NKLS)
 angle_degrees.G3_NKLS <- angle_radians.G3_NKLS * (180 / pi)
 
-dot_product.G3_NKBS <- sum(G3_NKBS_norm * evolved_difference_unit_length_t3) 
+dot_product.G3_NKBS <- sum(G3_NKBS * evolved_difference_unit_length_t3) 
 angle_radians.G3_NKBS <- acos(dot_product.G3_NKBS)
 angle_degrees.G3_NKBS <- angle_radians.G3_NKBS * (180 / pi)
 
-dot_product.G3_tewk <- sum(G3_tewk_norm * evolved_difference_unit_length_t3) 
+dot_product.G3_tewk <- sum(G3_tewk * evolved_difference_unit_length_t3) 
 angle_radians.G3_tewk <- acos(dot_product.G3_tewk)
 angle_degrees.G3_tewk <- angle_radians.G3_tewk * (180 / pi)
 
-dot_product.G3_uki <- sum(G3_uki_norm * evolved_difference_unit_length_t4) 
+dot_product.G3_uki <- sum(G3_uki * evolved_difference_unit_length_t4) 
 angle_radians.G3_uki <- acos(dot_product.G3_uki)
 angle_degrees.G3_uki <- angle_radians.G3_uki * (180 / pi)
 
-dot_product.G3_tai <- sum(G3_tai_norm * evolved_difference_unit_length_t5) 
+dot_product.G3_tai <- sum(G3_tai * evolved_difference_unit_length_t5) 
 angle_radians.G3_tai <- acos(dot_product.G3_tai)
 angle_degrees.G3_tai <- angle_radians.G3_tai * (180 / pi)
 
-dot_product.G3_SHCSBSB <- sum(G3_SHCSBSB_norm * evolved_difference_unit_length_t6) 
+dot_product.G3_SHCSBSB <- sum(G3_SHCSBSB * evolved_difference_unit_length_t6) 
 angle_radians.G3_SHCSBSB <- acos(dot_product.G3_SHCSBSB)
 angle_degrees.G3_SHCSBSB <- angle_radians.G3_SHCSBSB * (180 / pi)
 
-dot_product.G4_NKLS <- sum(G4_NKLS_norm * evolved_difference_unit_length_t1) 
+dot_product.G4_NKLS <- sum(G4_NKLS * evolved_difference_unit_length_t1) 
 angle_radians.G4_NKLS <- acos(dot_product.G4_NKLS)
 angle_degrees.G4_NKLS <- angle_radians.G4_NKLS * (180 / pi)
 
-dot_product.G4_NKBS <- sum(G4_NKBS_norm * evolved_difference_unit_length_t4) 
+dot_product.G4_NKBS <- sum(G4_NKBS * evolved_difference_unit_length_t4) 
 angle_radians.G4_NKBS <- acos(dot_product.G4_NKBS)
 angle_degrees.G4_NKBS <- angle_radians.G4_NKBS * (180 / pi)
 
-dot_product.G4_tewk <- sum(G4_tewk_norm * evolved_difference_unit_length_t3) 
+dot_product.G4_tewk <- sum(G4_tewk * evolved_difference_unit_length_t3) 
 angle_radians.G4_tewk <- acos(dot_product.G4_tewk)
 angle_degrees.G4_tewk <- angle_radians.G4_tewk * (180 / pi)
 
-dot_product.G4_uki <- sum(G4_uki_norm * evolved_difference_unit_length_t4) 
+dot_product.G4_uki <- sum(G4_uki * evolved_difference_unit_length_t4) 
 angle_radians.G4_uki <- acos(dot_product.G4_uki)
 angle_degrees.G4_uki <- angle_radians.G4_uki * (180 / pi)
 
-dot_product.G4_tai <- sum(G4_tai_norm * evolved_difference_unit_length_t5) 
+dot_product.G4_tai <- sum(G4_tai * evolved_difference_unit_length_t5) 
 angle_radians.G4_tai <- acos(dot_product.G4_tai)
 angle_degrees.G4_tai <- angle_radians.G4_tai * (180 / pi)
 
-dot_product.G4_SHCSBSB <- sum(G4_SHCSBSB_norm * evolved_difference_unit_length_t6) 
+dot_product.G4_SHCSBSB <- sum(G4_SHCSBSB * evolved_difference_unit_length_t6) 
 angle_radians.G4_SHCSBSB <- acos(dot_product.G4_SHCSBSB)
 angle_degrees.G4_SHCSBSB <- angle_radians.G4_SHCSBSB * (180 / pi)
 
@@ -1239,60 +1236,60 @@ eigen(as.matrix(P_ext_SHCSBSB))$values[1]/sum(eigen(as.matrix(P_ext_SHCSBSB))$va
 eigen(as.matrix(P_ext_mod))$values[1]/sum(eigen(as.matrix(P_ext_mod))$values) #0.4686239; G: 0.5337849
 
 ### How much is the direction of Pmax (i.e., the direction first ) varying between different G-matrices? 
-Pmax_NKLS <- eigen(P_ext_NKLS)$vectors[,1]
-Pmax_NKBS <- eigen(P_ext_NKBS)$vectors[,1]
-Pmax_tewk <- eigen(P_ext_tewk)$vectors[,1]
-Pmax_uki <- eigen(P_ext_uki)$vectors[,1]
-Pmax_tai <- eigen(P_ext_tai)$vectors[,1]
-Pmax_SHCSBSB <- eigen(P_ext_SHCSBSB)$vectors[,1]
-Pmax_mod <- eigen(P_ext_mod)$vectors[,1]
+Pmax_NKLS <- eigen(P_ext_NKLS)$values[1]
+Pmax_NKBS <- eigen(P_ext_NKBS)$values[1]
+Pmax_tewk <- eigen(P_ext_tewk)$values[1]
+Pmax_uki <- eigen(P_ext_uki)$values[1]
+Pmax_tai <- eigen(P_ext_tai)$values[1]
+Pmax_SHCSBSB <- eigen(P_ext_SHCSBSB)$values[1]
+Pmax_mod <- eigen(P_ext_mod)$values[1]
 
 # Put Pmax to norm length
-Pmax_NKLS_norm <- f.normalize_vector(Pmax_NKLS)
-Pmax_NKBS_norm <- f.normalize_vector(Pmax_NKBS)
-Pmax_tewk_norm <- f.normalize_vector(Pmax_tewk)
-Pmax_uki_norm <- f.normalize_vector(Pmax_uki)
-Pmax_tai_norm <- f.normalize_vector(Pmax_tai)
-Pmax_SHCSBSB_norm <- f.normalize_vector(Pmax_SHCSBSB)
-Pmax_mod_norm <- f.normalize_vector(Pmax_mod)
+#Pmax_NKLS_norm <- f.normalize_vector(Pmax_NKLS)
+#Pmax_NKBS_norm <- f.normalize_vector(Pmax_NKBS)
+#Pmax_tewk_norm <- f.normalize_vector(Pmax_tewk)
+#Pmax_uki_norm <- f.normalize_vector(Pmax_uki)
+#Pmax_tai_norm <- f.normalize_vector(Pmax_tai)
+#Pmax_SHCSBSB_norm <- f.normalize_vector(Pmax_SHCSBSB)
+#Pmax_mod_norm <- f.normalize_vector(Pmax_mod)
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_NKLS_NKBS <- sum(Pmax_NKLS_norm * Pmax_NKBS_norm) #0.9934551
+dot_product.Pmax_NKLS_NKBS <- sum(Pmax_NKLS * Pmax_NKBS) #0.9934551
 # Calculate the angle in radians
 angle_radians.Pmax_NKLS_NKBS <- acos(dot_product.Pmax_NKLS_NKBS)
 # Convert the angle to degrees
 angle_degrees.Pmax_NKLS_NKBS <- angle_radians.Pmax_NKLS_NKBS * (180 / pi)
 #6.558851
 
-dot_product.Pmax_NKBS_tewk <- sum(Pmax_NKBS_norm * Pmax_tewk_norm) #0.9970584
+dot_product.Pmax_NKBS_tewk <- sum(Pmax_NKBS * Pmax_tewk) #0.9970584
 # Calculate the angle in radians
 angle_radians.Pmax_NKBS_tewk <- acos(dot_product.Pmax_NKBS_tewk)
 # Convert the angle to degrees
 angle_degrees.Pmax_NKBS_tewk <- angle_radians.Pmax_NKBS_tewk * (180 / pi)
 #4.395792
 
-dot_product.Pmax_tewk_uki <- sum(Pmax_tewk_norm * Pmax_uki_norm) #0.9622356
+dot_product.Pmax_tewk_uki <- sum(Pmax_tewk * Pmax_uki) #0.9622356
 # Calculate the angle in radians
 angle_radians.Pmax_tewk_uki <- acos(dot_product.Pmax_tewk_uki)
 # Convert the angle to degrees
 angle_degrees.Pmax_tewk_uki <- angle_radians.Pmax_tewk_uki * (180 / pi)
 #15.79629
 
-dot_product.Pmax_uki_tai <- sum(Pmax_uki_norm * Pmax_tai_norm) #0.9729122
+dot_product.Pmax_uki_tai <- sum(Pmax_uki * Pmax_tai) #0.9729122
 # Calculate the angle in radians
 angle_radians.Pmax_uki_tai <- acos(dot_product.Pmax_uki_tai)
 # Convert the angle to degrees
 angle_degrees.Pmax_uki_tai <- angle_radians.Pmax_uki_tai * (180 / pi)
 #13.36625
 
-dot_product.Pmax_tai_SHCSBSB <- sum(Pmax_tai_norm * Pmax_SHCSBSB_norm) #0.9848919
+dot_product.Pmax_tai_SHCSBSB <- sum(Pmax_tai * Pmax_SHCSBSB) #0.9848919
 # Calculate the angle in radians
 angle_radians.Pmax_tai_SHCSBSB <- acos(dot_product.Pmax_tai_SHCSBSB)
 # Convert the angle to degrees
 angle_degrees.Pmax_tai_SHCSBSB <- angle_radians.Pmax_tai_SHCSBSB * (180 / pi)
 #9.972182
 
-dot_product.Pmax_SHCSBSB_mod <- sum(Pmax_SHCSBSB_norm * Pmax_mod_norm) #0.8828773
+dot_product.Pmax_SHCSBSB_mod <- sum(Pmax_SHCSBSB * Pmax_mod) #0.8828773
 # Calculate the angle in radians
 angle_radians.Pmax_SHCSBSB_mod <- acos(dot_product.Pmax_SHCSBSB_mod)
 # Convert the angle to degrees
@@ -1371,7 +1368,7 @@ ggsave(p.ang_p,
 ### See if change is in direction of P max
 ## use Pmax of t1 and compare to ∆z
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_NKLS <- sum(Pmax_NKLS_norm * evolved_difference_unit_length_t1) #-0.3122769
+dot_product.Pmax_NKLS <- sum(Pmax_NKLS * evolved_difference_unit_length_t1) #-0.3122769
 # Calculate the angle in radians
 angle_radians.Pmax_NKLS <- acos(dot_product.Pmax_NKLS)
 # Convert the angle to degrees
@@ -1379,7 +1376,7 @@ angle_degrees.Pmax_NKLS <- angle_radians.Pmax_NKLS * (180 / pi)
 #108.1965; 71.8035
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_NKBS <- sum(Pmax_NKBS_norm * evolved_difference_unit_length_t2) #0.7131075
+dot_product.Pmax_NKBS <- sum(Pmax_NKBS * evolved_difference_unit_length_t2) #0.7131075
 # Calculate the angle in radians
 angle_radians.Pmax_NKBS <- acos(dot_product.Pmax_NKBS)
 # Convert the angle to degrees
@@ -1387,7 +1384,7 @@ angle_degrees.Pmax_NKBS <- angle_radians.Pmax_NKBS * (180 / pi)
 #44.51169
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_tewk <- sum(Pmax_tewk_norm * evolved_difference_unit_length_t3) #-0.8358853
+dot_product.Pmax_tewk <- sum(Pmax_tewk * evolved_difference_unit_length_t3) #-0.8358853
 # Calculate the angle in radians
 angle_radians.Pmax_tewk <- acos(dot_product.Pmax_tewk)
 # Convert the angle to degrees
@@ -1395,7 +1392,7 @@ angle_degrees.Pmax_tewk <- angle_radians.Pmax_tewk * (180 / pi)
 #146.7081; 33.2919
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_uki <- sum(Pmax_uki_norm * evolved_difference_unit_length_t4) #-0.6393634
+dot_product.Pmax_uki <- sum(Pmax_uki * evolved_difference_unit_length_t4) #-0.6393634
 # Calculate the angle in radians
 angle_radians.Pmax_uki <- acos(dot_product.Pmax_uki)
 # Convert the angle to degrees
@@ -1403,7 +1400,7 @@ angle_degrees.Pmax_uki <- angle_radians.Pmax_uki * (180 / pi)
 #129.7444; 50.2556
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_tai <- sum(Pmax_tai_norm * evolved_difference_unit_length_t5) #0.5922247
+dot_product.Pmax_tai <- sum(Pmax_tai * evolved_difference_unit_length_t5) #0.5922247
 # Calculate the angle in radians
 angle_radians.Pmax_tai <- acos(dot_product.Pmax_tai)
 # Convert the angle to degrees
@@ -1411,7 +1408,7 @@ angle_degrees.Pmax_tai <- angle_radians.Pmax_tai * (180 / pi)
 #53.68496
 
 # Calculate the dot product of the unit vectors
-dot_product.Pmax_SHCSBSB <- sum(Pmax_SHCSBSB_norm * evolved_difference_unit_length_t6) #-0.2165188
+dot_product.Pmax_SHCSBSB <- sum(Pmax_SHCSBSB * evolved_difference_unit_length_t6) #-0.2165188
 # Calculate the angle in radians
 angle_radians.Pmax_SHCSBSB <- acos(dot_product.Pmax_SHCSBSB)
 # Convert the angle to degrees
@@ -1864,13 +1861,13 @@ is.positive.definite(Glob_ext_pos)
 #if not due to sample size, then expect results to be similar to using individual Gs
 
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
-Gmax_glob <- eigen(Glob_ext)$vectors[,1]
+Gmax_glob <- eigen(Glob_ext)$value[1]
 
 # Put Gmax to norm length
-Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
+#Gmax_glob_norm <- f.normalize_vector(Gmax_glob)
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t1 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t1) #0.04496316
+dot_product.glob_Gmax_t1 <- sum(Gmax_glob * evolved_difference_unit_length_t1) #0.04496316
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t1 <- acos(dot_product.glob_Gmax_t1)
 # Convert the angle to degrees
@@ -1878,7 +1875,7 @@ angle_degrees.glob_Gmax_t1 <- angle_radians.glob_Gmax_t1 * (180 / pi)
 #87.42293
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t2 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t2) #0.6801539
+dot_product.glob_Gmax_t2 <- sum(Gmax_glob * evolved_difference_unit_length_t2) #0.6801539
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t2 <- acos(dot_product.glob_Gmax_t2)
 # Convert the angle to degrees
@@ -1886,7 +1883,7 @@ angle_degrees.glob_Gmax_t2 <- angle_radians.glob_Gmax_t2 * (180 / pi)
 #47.14433
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t3 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t3) #-0.9257524
+dot_product.glob_Gmax_t3 <- sum(Gmax_glob * evolved_difference_unit_length_t3) #-0.9257524
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t3 <- acos(dot_product.glob_Gmax_t3)
 # Convert the angle to degrees
@@ -1894,7 +1891,7 @@ angle_degrees.glob_Gmax_t3 <- angle_radians.glob_Gmax_t3 * (180 / pi)
 #157.7821; 22.2179
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t4 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t4) #-0.6336965
+dot_product.glob_Gmax_t4 <- sum(Gmax_glob * evolved_difference_unit_length_t4) #-0.6336965
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t4 <- acos(dot_product.glob_Gmax_t4)
 # Convert the angle to degrees
@@ -1902,7 +1899,7 @@ angle_degrees.glob_Gmax_t4 <- angle_radians.glob_Gmax_t4 * (180 / pi)
 #129.3234; 50.6766
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t5 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t5) #0.6262436
+dot_product.glob_Gmax_t5 <- sum(Gmax_glob * evolved_difference_unit_length_t5) #0.6262436
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t5 <- acos(dot_product.glob_Gmax_t5)
 # Convert the angle to degrees
@@ -1910,7 +1907,7 @@ angle_degrees.glob_Gmax_t5 <- angle_radians.glob_Gmax_t5 * (180 / pi)
 #51.22648
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Gmax_t6 <- sum(Gmax_glob_norm * evolved_difference_unit_length_t6) #-0.1895484
+dot_product.glob_Gmax_t6 <- sum(Gmax_glob * evolved_difference_unit_length_t6) #-0.1895484
 # Calculate the angle in radians
 angle_radians.glob_Gmax_t6 <- acos(dot_product.glob_Gmax_t6)
 # Convert the angle to degrees
@@ -2137,13 +2134,14 @@ is.positive.definite(glob.P_ext_pos)
 #if not due to sample size, then expect results to be similar to using individual Gs
 
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
-Pmax_glob <- eigen(glob.P_ext)$vectors[,1]
+#Pmax_glob <- eigen(glob.P_ext)$vectors[,1]
+Pmax_glob <- eigen(glob.P_ext)$values[1]
 
 # Put Gmax to norm length
-Pmax_glob_norm <- f.normalize_vector(Pmax_glob)
+#Pmax_glob_norm <- f.normalize_vector(Pmax_glob)
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Pmax_t1 <- sum(Pmax_glob_norm * evolved_difference_unit_length_t1) #0.04496316
+dot_product.glob_Pmax_t1 <- sum(Pmax_glob * evolved_difference_unit_length_t1) #0.04496316
 # Calculate the angle in radians
 angle_radians.glob_Pmax_t1 <- acos(dot_product.glob_Pmax_t1)
 # Convert the angle to degrees
@@ -2151,7 +2149,7 @@ angle_degrees.glob_Pmax_t1 <- angle_radians.glob_Pmax_t1 * (180 / pi)
 #67.50535
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Pmax_t2 <- sum(Pmax_glob_norm * evolved_difference_unit_length_t2) #0.6801539
+dot_product.glob_Pmax_t2 <- sum(Pmax_glob * evolved_difference_unit_length_t2) #0.6801539
 # Calculate the angle in radians
 angle_radians.glob_Pmax_t2 <- acos(dot_product.glob_Pmax_t2)
 # Convert the angle to degrees
@@ -2159,7 +2157,7 @@ angle_degrees.glob_Pmax_t2 <- angle_radians.glob_Pmax_t2 * (180 / pi)
 #55.71109
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Pmax_t3 <- sum(Pmax_glob_norm * evolved_difference_unit_length_t3) #-0.9257524
+dot_product.glob_Pmax_t3 <- sum(Pmax_glob * evolved_difference_unit_length_t3) #-0.9257524
 # Calculate the angle in radians
 angle_radians.glob_Pmax_t3 <- acos(dot_product.glob_Pmax_t3)
 # Convert the angle to degrees
@@ -2167,7 +2165,7 @@ angle_degrees.glob_Pmax_t3 <- angle_radians.glob_Pmax_t3 * (180 / pi)
 #160.0369; 19.9631
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Pmax_t4 <- sum(Pmax_glob_norm * evolved_difference_unit_length_t4) #-0.6336965
+dot_product.glob_Pmax_t4 <- sum(Pmax_glob * evolved_difference_unit_length_t4) #-0.6336965
 # Calculate the angle in radians
 angle_radians.glob_Pmax_t4 <- acos(dot_product.glob_Pmax_t4)
 # Convert the angle to degrees
@@ -2175,7 +2173,7 @@ angle_degrees.glob_Pmax_t4 <- angle_radians.glob_Pmax_t4 * (180 / pi)
 #139.3734; 40.6266
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Pmax_t5 <- sum(Pmax_glob_norm * evolved_difference_unit_length_t5) #0.6262436
+dot_product.glob_Pmax_t5 <- sum(Pmax_glob * evolved_difference_unit_length_t5) #0.6262436
 # Calculate the angle in radians
 angle_radians.glob_Pmax_t5 <- acos(dot_product.glob_Pmax_t5)
 # Convert the angle to degrees
@@ -2183,7 +2181,7 @@ angle_degrees.glob_Pmax_t5 <- angle_radians.glob_Pmax_t5 * (180 / pi)
 #47.16654
 
 # Calculate the dot product of the unit vectors
-dot_product.glob_Pmax_t6 <- sum(Pmax_glob_norm * evolved_difference_unit_length_t6) #-0.1895484
+dot_product.glob_Pmax_t6 <- sum(Pmax_glob * evolved_difference_unit_length_t6) #-0.1895484
 # Calculate the angle in radians
 angle_radians.glob_Pmax_t6 <- acos(dot_product.glob_Pmax_t6)
 # Convert the angle to degrees
