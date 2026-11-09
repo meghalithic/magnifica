@@ -179,9 +179,7 @@ images.df$o.side <- rowMeans(cbind(images.df$o.side.l, images.df$o.side.r))
 images.df$c.side <- rowMeans(cbind(images.df$c.side.l, images.df$c.side.r))
 
 ## Orifice length
-images.df$ol <- (.5/images.df$ow.b)*sqrt(images.df$ow.b+images.df$ol.r+images.df$ol.l)
-ol <- (2*area)/base
-area = 
+df$ol <- (.5/df$ow.b)*sqrt(pmax((df$ow.b+df$ol.r+df$ol.l)*(-df$ow.b+df$ol.r+df$ol.l)*(df$ow.b-df$ol.r+df$ol.l)*(df$ow.b+df$ol.r-df$ol.l),0))
 
 ##### TRIM TO TRAITS ONLY ----
 traits.df <- images.df %>%

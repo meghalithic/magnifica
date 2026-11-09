@@ -167,11 +167,11 @@ ggsave(ml,
 ## if significant, then significantly different from normal (i.e., non-normal)
 p.vals <- c()
 
-#ln.zh
-sub.ln.zh <- sample(df[, traits[1]], 
+#ln.zl
+sub.ln.zl <- sample(df[, traits[1]], 
                     5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.zh)
-p.vals[1] <- shapiro.test(sub.ln.zh)$p.value
+shapiro.test(sub.ln.zl)
+p.vals[1] <- shapiro.test(sub.ln.zl)$p.value
 
 #ln.mpw.b
 sub.ln.mpw.b <- sample(df[, traits[2]], 
@@ -191,23 +191,23 @@ sub.ln.cw.d <- sample(df[, traits[4]],
 shapiro.test(sub.ln.cw.d) 
 p.vals[4] <- shapiro.test(sub.ln.cw.d)$p.value
 
-#ln.ow.m
-sub.ln.ow.m <- sample(df[, traits[5]], 
-                      5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.ow.m) 
-p.vals[5] <- shapiro.test(sub.ln.ow.m)$p.value
-
-#ln.oh
-sub.ln.oh <- sample(df[, traits[6]], 
-                    5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.oh) 
-p.vals[6] <- shapiro.test(sub.ln.oh)$p.value
-
 #ln.c.side
-sub.ln.c.side <- sample(df[, traits[7]], 
+sub.ln.c.side <- sample(df[, traits[5]], 
+                      5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.c.side) 
+p.vals[5] <- shapiro.test(sub.ln.c.side)$p.value
+
+#ln.ow.m
+sub.ln.ow.m <- sample(df[, traits[6]], 
+                    5000, replace = FALSE, prob = NULL)
+shapiro.test(sub.ln.ow.m) 
+p.vals[6] <- shapiro.test(sub.ln.ow.m)$p.value
+
+#ln.ol
+sub.ln.ol <- sample(df[, traits[7]], 
                         5000, replace = FALSE, prob = NULL)
-shapiro.test(sub.ln.c.side)
-p.vals[7] <- shapiro.test(sub.ln.c.side)$p.value
+shapiro.test(sub.ln.ol)
+p.vals[7] <- shapiro.test(sub.ln.ol)$p.value
 
 #ln.o.side
 sub.ln.o.side <- sample(df[, traits[8]], 
@@ -224,13 +224,13 @@ write.csv(p.vals.df,
 #by formation
 df.norm <- df %>%
     dplyr::group_by(formation) %>%
-    dplyr::summarise(p.val.zh = shapiro.test(ln.zh)$p.value,
+    dplyr::summarise(p.val.zl = shapiro.test(ln.zl)$p.value,
                      p.val.mpw.b = shapiro.test(ln.mpw.b)$p.value,
                      p.val.cw.m = shapiro.test(ln.cw.m)$p.value,
                      p.val.cw.d = shapiro.test(ln.cw.d)$p.value,
-                     p.val.ow.m = shapiro.test(ln.ow.m)$p.value,
-                     p.val.oh = shapiro.test(ln.oh)$p.value,
                      p.val.c.side = shapiro.test(ln.c.side)$p.value,
+                     p.val.ow.m = shapiro.test(ln.ow.m)$p.value,
+                     p.val.ol = shapiro.test(ln.o)$p.value,
                      p.val.o.side = shapiro.test(ln.o.side)$p.value) %>%
     as.data.frame()
 write.csv(df.norm,
@@ -460,8 +460,9 @@ prior.mod = list(G = list(G1 = list(V = phen.var.mod/2, nu = 2),
 #Running the MCMC chain
 model_G = list()
 for (i in 1:length(formation_list)){ #length 7 because 7 formations 
-  model_G[[i]] <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
-                                 ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1,
+  model_G[[i]] <- MCMCglmm(cbind(ln.zl, ln.mpw.b, 
+                                 ln.cw.m, ln.cw.d, ln.c.side, #same order as in priors
+                                 ln.ow.m, ln.ol, ln.o.side) ~ trait-1,
                          #account for variation w/in colony:
                          random = ~us(trait):colony.id, #the number of these determines # of Gs #+ us(trait):formation
                          rcov = ~us(trait):units,
@@ -473,8 +474,9 @@ for (i in 1:length(formation_list)){ #length 7 because 7 formations
 }
 
 ##need locality data for modern first
-model_G.mod <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
-                              ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait-1, #get rid of "trait" alone?
+model_G.mod <- MCMCglmm(cbind(ln.zl, ln.mpw.b, 
+                              ln.cw.m, ln.cw.d, ln.c.side, #same order as in priors
+                              ln.ow.m, ln.ol, ln.o.side) ~ trait-1, #get rid of "trait" alone?
                         #account for variation w/in colony:
                         random = ~us(trait):colony.id + us(trait):locality, #the number of these determines # of Gs
                         rcov = ~us(trait):units,
@@ -632,15 +634,15 @@ colnames(g.model[[1]]$VCV)
 ## on one
 summary(g.model[[1]])
 #e.g.,                                  post.mean   l-95% CI    u-95% CI    eff.samp
-#traitln.zh:traitln.zh.colony.id        0.0065616   0.0046532   0.0091206   1000.0
+#traitln.zl:traitln.zl.colony.id        0.0065616   0.0046532   0.0091206   1000.0
 #just the within colony
 #gives summaries of the mean of the variances
 summary(g.model[[1]]$VCV)$statistics[1:64,]
 #gives mean, sd, se, and quantiles 5% CI (2.5 on either side)
 summary(g.model[[1]]$VCV)$quantiles[1:64,]
 
-mean(as.data.frame(g.model[[1]]$VCV[,1:64])$`traitln.zh:traitln.zh.colony.id`)
-quantile(as.data.frame(g.model[[1]]$VCV[,1:64])$`traitln.zh:traitln.zh.colony.id`, 
+mean(as.data.frame(g.model[[1]]$VCV[,1:64])$`traitln.zl:traitln.zl.colony.id`)
+quantile(as.data.frame(g.model[[1]]$VCV[,1:64])$`traitln.zl:traitln.zl.colony.id`, 
          probs = c(0.05, 0.95))
 #these are slightly different from the summary model...why?
 #because I think summary does an HPD interval actually
@@ -650,10 +652,10 @@ HPDinterval(g.model[[1]]$VCV[,1:64]) #yep, these match
 
 
 vcv.g.1 <- g.model[[1]]$VCV[,1:64]
-#organized as vcv columns (e.g., traitln.zh:traitln.zh.colony.id)
+#organized as vcv columns (e.g., traitln.zl:traitln.zl.colony.id)
 #with each iteration down the size (e.g. 1000)
 g.model[[1]]$VCV[1:1000] #gets 1000 variances of the first vcv column 
-#traitln.zh:traitln.zh.colony.id 
+#traitln.zl:traitln.zl.colony.id 
 #                    0.005992251
 mean(g.model[[1]]$VCV[1:1000]) #equals what's given in the summary model
 
@@ -1054,7 +1056,10 @@ out_results <- cbind(RS_result$correlation, pop.size)
 # Computing Random Skewers between pairs of actual G matrices in our data
 #(n = 7 for 7 formations) 
 # sub-setting so that we only analyze the traits and formation of interest
-mean.df.sub <- mean_by_formation_colony[, c(1, 4, 6, 8, 10, 12, 14, 16, 18)] 
+mean.df.sub <- mean_by_formation_colony[, c("formation", 
+                                            "avg.zl", "avg.mpw.b", 
+                                            "avg.cw.m", "avg.cw.d", "avg.c.side", 
+                                            "avg.ow.m", "avg.ol", "avg.o.side")] 
 #remove rows with NA so that the sample size gets correct when we plot 
 #the sample size for the VCOV.
 mean.df_complete_cases <- mean.df.sub[complete.cases(mean.df.sub), ] #remove rows with NA so that the sample size gets correct when we plot the sample size for the VCOV.
@@ -1144,7 +1149,10 @@ out_results <- cbind(RS_result$correlation, pop.size)
 # Computing Random Skewers between pairs of actual G matrices in our data
 #(n = 7 for 7 formations) 
 # sub-setting so that we only analyze the traits and formation of interest
-mean.df.sub <- mean_by_formation_colony[, c(1, 4, 6, 8, 10, 12, 14, 16, 18)] 
+mean.df.sub <- mean_by_formation_colony[, c("formation", 
+                                            "avg.zl", "avg.mpw.b", 
+                                            "avg.cw.m", "avg.cw.d", "avg.c.side", 
+                                            "avg.ow.m", "avg.ol", "avg.o.side")] 
 #remove rows with NA so that the sample size gets correct when we plot 
 #the sample size for the VCOV.
 mean.df_complete_cases <- mean.df.sub[complete.cases(mean.df.sub), ] #remove rows with NA so that the sample size gets correct when we plot the sample size for the VCOV.
@@ -1206,8 +1214,9 @@ prior.glob = list(G = list(G1 = list(V = phen.var.glob/2, nu = 2)), #nu = 10 #V 
 ##### MCMC -----
 #Running the MCMC chain
 
-model_Global <- MCMCglmm(cbind(ln.zh, ln.mpw.b, ln.cw.m, ln.cw.d, #same order as in priors
-                               ln.ow.m, ln.oh, ln.c.side, ln.o.side) ~ trait + trait:formation - 1, #get rid of "trait" alone?
+model_Global <- MCMCglmm(cbind(ln.zl, ln.mpw.b, 
+                               ln.cw.m, ln.cw.d, ln.c.side, #same order as in priors
+                               ln.ow.m, ln.ol, ln.o.side) ~ trait + trait:formation - 1, #get rid of "trait" alone?
                          #account for variation w/in colony:
                          random = ~us(trait):colony.id, #the number of these determines # of Gs
                          rcov = ~us(trait):units,

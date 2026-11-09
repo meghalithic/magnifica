@@ -103,9 +103,10 @@ form.meta <- rbind(form.meta, modern)
 oxy.18 <- read.csv("Data/∂18O.csv",
                    header = TRUE)
 
-#time and age are in Ka
-bottom = as.numeric(form.meta$Start_age)
-top = as.numeric(form.meta$End_age)
+#time is in Ka
+#age is in Mya, so need to convert to Ka
+bottom = as.numeric(form.meta$Start_age)*1000
+top = as.numeric(form.meta$End_age)*1000
 form.meta$med.O18 <- c()
 form.meta$sd.med.O18 <- c()
 form.meta$n.O18 <- c()
@@ -116,7 +117,7 @@ for (i in 1:nrow(form.meta)){
     form.meta$n.O18[i] <- length(temp)
 }
 
-#convert ot ˚C
+#convert to ˚C
 form.meta$temp <- 16.5 - (4.3*form.meta$med.O18) + (0.14*(form.meta$med.O18^2))
 
 #make factors

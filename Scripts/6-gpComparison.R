@@ -65,49 +65,70 @@ NKLS_comp_mat = RandomSkewers(list(G_ext[[1]], P_ext[[1]])) #need at least
 NKLS_corr_mat = NKLS_comp_mat$correlations + t(NKLS_comp_mat$correlations) 
 diag(NKLS_corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(NKLS_corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(NKLS_corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #NKBS
 NKBS_comp_mat = RandomSkewers(list(G_ext[[2]], P_ext[[2]])) #need at least
 NKBS_corr_mat = NKBS_comp_mat$correlations + t(NKBS_comp_mat$correlations) 
 diag(NKBS_corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(NKBS_corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(NKBS_corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #Tewkesbury
 Tewkesbury_comp_mat = RandomSkewers(list(G_ext[[3]], P_ext[[3]])) #need at least
 Tewkesbury_corr_mat = Tewkesbury_comp_mat$correlations + t(Tewkesbury_comp_mat$correlations) 
 diag(Tewkesbury_corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(Tewkesbury_corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(Tewkesbury_corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #Upper Kai-Iwi
 UKai_Iwi_comp_mat = RandomSkewers(list(G_ext[[4]], P_ext[[4]])) #need at least
 UKai_Iwi_corr_mat = UKai_Iwi_comp_mat$correlations + t(UKai_Iwi_comp_mat$correlations) 
 diag(UKai_Iwi_corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(UKai_Iwi_corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(UKai_Iwi_corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #Tainui
 Tainui_comp_mat = RandomSkewers(list(G_ext[[5]], P_ext[[5]])) #need at least
 Tainui_corr_mat = Tainui_comp_mat$correlations + t(Tainui_comp_mat$correlations) 
 diag(Tainui_corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(Tainui_corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(Tainui_corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #SHCSBSB
 SHCSBSB_comp_mat = RandomSkewers(list(G_ext[[6]], P_ext[[6]])) #need at least
 SHCSBSB_corr_mat = SHCSBSB_comp_mat$correlations + t(SHCSBSB_comp_mat$correlations) 
 diag(SHCSBSB_corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(SHCSBSB_corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(SHCSBSB_corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #modern
 modern_comp_mat = RandomSkewers(list(G_ext[[7]], P_ext[[7]])) #need at least
 modern_corr_mat = modern_comp_mat$correlations + t(modern_comp_mat$correlations) 
 diag(modern_corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(modern_corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(modern_corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 corr.p.g <- c(NKLS_corr_mat[1,2], NKBS_corr_mat[1,2],
               Tewkesbury_corr_mat[1,2], UKai_Iwi_corr_mat[1,2], 
@@ -1605,49 +1626,70 @@ NKLS_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[1]])) #need at least
 NKLS_corr_mat.glob = NKLS_comp_mat.glob$correlations + t(NKLS_comp_mat.glob$correlations) 
 diag(NKLS_corr_mat.glob) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(NKLS_corr_mat.glob, upper = "number", lower = "pie")
+corrplot.mixed(NKLS_corr_mat.glob, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #NKBS
 NKBS_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[2]])) #need at least
 NKBS_corr_mat.glob = NKBS_comp_mat.glob$correlations + t(NKBS_comp_mat.glob$correlations) 
 diag(NKBS_corr_mat.glob) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(NKBS_corr_mat.glob, upper = "number", lower = "pie")
+corrplot.mixed(NKBS_corr_mat.glob, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #Tewkesbury
 Tewkesbury_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[3]])) #need at least
 Tewkesbury_corr_mat.glob = Tewkesbury_comp_mat.glob$correlations + t(Tewkesbury_comp_mat.glob$correlations) 
 diag(Tewkesbury_corr_mat.glob) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(Tewkesbury_corr_mat.glob, upper = "number", lower = "pie")
+corrplot.mixed(Tewkesbury_corr_mat.glob, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #Upper Kai-Iwi
 UKai_Iwi_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[4]])) #need at least
 UKai_Iwi_corr_mat.glob = UKai_Iwi_comp_mat.glob$correlations + t(UKai_Iwi_comp_mat.glob$correlations) 
 diag(UKai_Iwi_corr_mat.glob) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(UKai_Iwi_corr_mat.glob, upper = "number", lower = "pie")
+corrplot.mixed(UKai_Iwi_corr_mat.glob, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #Tainui
 Tainui_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[5]])) #need at least
 Tainui_corr_mat.glob = Tainui_comp_mat.glob$correlations + t(Tainui_comp_mat.glob$correlations) 
 diag(Tainui_corr_mat.glob) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(Tainui_corr_mat.glob, upper = "number", lower = "pie")
+corrplot.mixed(Tainui_corr_mat.glob, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #SHCSBSB
 SHCSBSB_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[6]])) #need at least
 SHCSBSB_corr_mat.glob = SHCSBSB_comp_mat.glob$correlations + t(SHCSBSB_comp_mat.glob$correlations) 
 diag(SHCSBSB_corr_mat.glob) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(SHCSBSB_corr_mat.glob, upper = "number", lower = "pie")
+corrplot.mixed(SHCSBSB_corr_mat.glob, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #modern
 modern_comp_mat.glob = RandomSkewers(list(Glob_ext, P_ext[[7]])) #need at least
 modern_corr_mat.glob = modern_comp_mat.glob$correlations + t(modern_comp_mat.glob$correlations) 
 diag(modern_corr_mat.glob) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(modern_corr_mat.glob, upper = "number", lower = "pie")
+corrplot.mixed(modern_corr_mat.glob, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 corr.p.glob <- c(NKLS_corr_mat.glob[1,2], NKBS_corr_mat.glob[1,2],
                  Tewkesbury_corr_mat.glob[1,2], UKai_Iwi_corr_mat.glob[1,2], 
@@ -1929,7 +1971,10 @@ comp_mat.glob.p = RandomSkewers(list(Glob_ext, glob.P_ext)) #need at least
 corr_mat.glob.p = comp_mat.glob.p$correlations + t(comp_mat.glob.p$correlations) 
 diag(corr_mat.glob.p) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(corr_mat.glob.p, upper = "number", lower = "pie")
+corrplot.mixed(corr_mat.glob.p, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 #97%
 
 ##### EVOLVABILITY -----
@@ -2237,10 +2282,16 @@ glob.g5.comp_mat = RandomSkewers(Glob_5_list) #need at least
 glob.g5.corr_mat = glob.g5.comp_mat$correlations + t(glob.g5.comp_mat$correlations) 
 diag(glob.g5.corr_mat) = 1
 paste("Random Skewers similarity matrix")
-corrplot.mixed(glob.g5.corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(glob.g5.corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #compare to:
-corrplot.mixed(glob.g.corr_mat, upper = "number", lower = "pie")
+corrplot.mixed(glob.g.corr_mat, 
+               upper = "number", lower = "pie", 
+               number.digits = 3,
+               tl.cex = .7)
 
 #compare glob ext with glob rank 5
 Glob_ext_5_list <- list(Glob_ext, G_rank5)
