@@ -47,7 +47,7 @@ df <- read.csv("./Results/colonies.traits_1Jul2024.csv",
 #already have small zooid removed and at least 5 zooids per colony
 #output from exploratoryAnalysis.R
 
-load(file = "./Results/sum.data.list.RData") #load the g matrices calculated above 
+load(file = "./Results/sum.data.list.RData") #load the matrices calculated above 
 mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
 means <- sum.data.list[[3]]
@@ -439,7 +439,7 @@ corrplot.mixed(glob.p.corr_mat, upper = "number", lower = "pie")
 save(glob.P_ext, 
      file = "./Results/globalP_ext.RData")
 
-load(file="./Results/globalP_ext.RData") #load the g matrices calculated above 
+load(file="./Results/globalP_ext.RData") #load the matrices calculated above 
 glob.P_ext
 
 #### G MATRIX ----
@@ -497,7 +497,7 @@ model_G_all[[7]] <- model_G.mod
 save(model_G_all,
      file = "./Results/model_G_all.RData")
 
-load(file = "./Results/model_G_all.RData") #load the g matrices calculated above 
+load(file = "./Results/model_G_all.RData") #load the matrices calculated above 
 
 
 ##### CHECK MODELS -----
@@ -953,7 +953,7 @@ data.list = list(Pmat, Gmat,
 save(data.list,
      file = "./Results/data.list.RData")
 
-load(file = "./Results/data.list.RData") #load the g matrices calculated above 
+load(file = "./Results/data.list.RData") #load the matrices calculated above 
 
 
 #### CHECK P > G ----
@@ -1141,7 +1141,7 @@ pop.dist <- lapply(pop.size, function (x){mvrnorm(n = x,
 # Calculate VCOV matrices 
 pop.cv <- lapply(pop.dist, cov) 
 # Estimate selection gradients based on Random Skewers, comparing our true 
-# G matrix and the undersampled pooled P matrix. 
+# P matrix and the undersampled pooled P matrix. 
 RS_result = RandomSkewers(pop.cv, 
                           P_ext[[1]]) 
 out_results <- cbind(RS_result$correlation, pop.size)
@@ -1161,7 +1161,7 @@ mean.df_complete_cases <- mean.df.sub[complete.cases(mean.df.sub), ] #remove row
 colony_samples = split.data.frame(mean.df_complete_cases, mean.df_complete_cases$formation) #Sample size
 sample_sizes_P = lapply(colony_samples, function(x){dim(x)[1]})
 
-comp_sampleN = matrix(0, 7, 7) #calculating the smallest sample size in the comparison among pairs of G for length of formation
+comp_sampleN = matrix(0, 7, 7) #calculating the smallest sample size in the comparison among pairs of P for length of formation
 
 for (i in 1:length(sample_sizes_P)){
     for (j in 1:length(sample_sizes_P)){
@@ -1171,7 +1171,7 @@ for (i in 1:length(sample_sizes_P)){
 
 # Here, we do the actual Random Skewers test and 
 # combined the results (correlations in the response to selection) 
-# with the smallest sample size for the pairs of G that are investigated
+# with the smallest sample size for the pairs of P that are investigated
 comp_mat = RandomSkewers(P_ext)
 melt_comp = melt(comp_mat$correlations[lower.tri(comp_mat$correlations)])
 melt_samples = melt(comp_sampleN[lower.tri(comp_sampleN)])
@@ -1228,7 +1228,7 @@ model_Global <- MCMCglmm(cbind(ln.zl, ln.mpw.b,
 save(model_Global, 
      file = "./Results/global_matrix.RData")
 
-load(file="./Results/global_matrix.RData") #load the g matrices calculated above 
+load(file="./Results/global_matrix.RData") #load the matrices calculated above 
 model_Global
 
 ##### CHECK MODELS -----
@@ -1305,6 +1305,6 @@ corrplot.mixed(glob.corr_mat,upper = "number", lower = "pie")
 save(Glob_ext, 
      file = "./Results/global_ext.RData")
 
-load(file="./Results/global_ext.RData") #load the g matrices calculated above 
+load(file="./Results/global_ext.RData") #load the matrices calculated above 
 Glob_ext
 

@@ -26,12 +26,12 @@
 
 source("./Scripts/0-env.R")
 
-load(file = "./Results/sum.data.list.RData") #load the g matrices calculated above 
+load(file = "./Results/sum.data.list.RData") #load the matrices calculated above 
 mean_by_formation <- sum.data.list[[1]]
 mean_by_formation_colony <- sum.data.list[[2]]
 means <- sum.data.list[[3]]
 
-load(file = "./Results/data.list.RData") #load the g matrices calculated above 
+load(file = "./Results/data.list.RData") #load the matrices calculated above 
 
 Pmat <- data.list[[1]]
 Gmat <- data.list[[2]]
@@ -45,13 +45,13 @@ form_data <- data.list[[9]]
 by_form.n <- data.list[[10]]
 col_form.n <- data.list[[11]]
 
-load(file="./Results/global_ext.RData") #load the g matrices calculated above 
+load(file="./Results/global_ext.RData") #load the matrices calculated above 
 Glob_ext
 
-load(file = "./Results/model_G_all.RData") #load the g matrices calculated above 
+load(file = "./Results/model_G_all.RData") #load the matrices calculated above 
 g.model <- model_G_all
 
-load(file="./Results/globalP_ext.RData") #load the g matrices calculated above 
+load(file="./Results/globalP_ext.RData") #load the matrices calculated above 
 glob.P_ext
 
 #### CORR OF G & P ----
@@ -1026,13 +1026,13 @@ ggplot(var.pheno.df) +
 #seemingly no relationship
 
 #### SUBSTITUTE P FOR G ----
-P_ext_NKLS = round(as.matrix(P_ext[[1]]), 6) # The G matrix estimated for sample/formation 1
-P_ext_NKBS = round(as.matrix(P_ext[[2]]), 6) # The G matrix estimated for sample/formation 2
-P_ext_tewk = round(as.matrix(P_ext[[3]]), 6) # The G matrix estimated for sample/formation 3
-P_ext_uki = round(as.matrix(P_ext[[4]]), 6) # The G matrix estimated for sample/formation 5
-P_ext_tai = round(as.matrix(P_ext[[5]]), 6) # The G matrix estimated for sample/formation 6
-P_ext_SHCSBSB = round(as.matrix(P_ext[[6]]), 6) # The G matrix estimated for sample/formation 7
-P_ext_mod = round(as.matrix(P_ext[[7]]), 6) # The G matrix estimated for sample/formation 7
+P_ext_NKLS = round(as.matrix(P_ext[[1]]), 6) # The P matrix estimated for sample/formation 1
+P_ext_NKBS = round(as.matrix(P_ext[[2]]), 6) # The P matrix estimated for sample/formation 2
+P_ext_tewk = round(as.matrix(P_ext[[3]]), 6) # The P matrix estimated for sample/formation 3
+P_ext_uki = round(as.matrix(P_ext[[4]]), 6) # The P matrix estimated for sample/formation 5
+P_ext_tai = round(as.matrix(P_ext[[5]]), 6) # The P matrix estimated for sample/formation 6
+P_ext_SHCSBSB = round(as.matrix(P_ext[[6]]), 6) # The P matrix estimated for sample/formation 7
+P_ext_mod = round(as.matrix(P_ext[[7]]), 6) # The P matrix estimated for sample/formation 7
 
 is.symmetric.matrix(P_ext_NKLS)
 is.positive.definite(P_ext_NKLS)
@@ -1108,7 +1108,7 @@ p_observed_conditional_evolvability_in_direction_of_change_t5 <- 1/(t(evolved_di
 p_observed_conditional_evolvability_in_direction_of_change_t6 <- 1/(t(evolved_difference_unit_length_t6)%*%solve(as.matrix(P_ext_SHCSBSB))%*%evolved_difference_unit_length_t6)
 
 ### Generate 10,000 selection gradients in random directions in the n-dimensional space
-n_dimensions <- 8 # number of traits in G matrix
+n_dimensions <- 8 # number of traits in P matrix
 Beta <- randomBeta(10000, n_dimensions)
 
 #outputs e, r, c, a, i
@@ -1123,27 +1123,27 @@ Beta <- randomBeta(10000, n_dimensions)
 
 ###### ESTIMATED CONDITIONAL EVOLVABILITY & EVOLVABILITY ------
 
-# Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
+# Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a P matrix based on 10,000 random selection gradients
 p_X_t1 <- evolvabilityBeta(as.matrix(P_ext_NKLS), Beta)
-p_sumX_t1 <- summary(p_X_t1) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+p_sumX_t1 <- summary(p_X_t1) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 
 p_X_t2 <- evolvabilityBeta(as.matrix(P_ext_NKBS), Beta)
-p_sumX_t2 <- summary(p_X_t2) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+p_sumX_t2 <- summary(p_X_t2) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 
 p_X_t3 <- evolvabilityBeta(as.matrix(P_ext_tewk), Beta)
-p_sumX_t3 <- summary(p_X_t3) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+p_sumX_t3 <- summary(p_X_t3) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 
 p_X_t4 <- evolvabilityBeta(as.matrix(P_ext_uki), Beta)
-p_sumX_t4 <- summary(p_X_t4) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+p_sumX_t4 <- summary(p_X_t4) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 
 p_X_t5 <- evolvabilityBeta(as.matrix(P_ext_tai), Beta)
-p_sumX_t5 <- summary(p_X_t5) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+p_sumX_t5 <- summary(p_X_t5) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 
 p_X_t6 <- evolvabilityBeta(as.matrix(P_ext_SHCSBSB), Beta)
-p_sumX_t6 <- summary(p_X_t6) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+p_sumX_t6 <- summary(p_X_t6) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 
 p_X_t7 <- evolvabilityBeta(as.matrix(P_ext_mod), Beta)
-p_sumX_t7 <- summary(p_X_t7) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+p_sumX_t7 <- summary(p_X_t7) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 
 p_X_sum <- data.frame(p_c.mean = c(p_sumX_t1$Averages[[3]], p_sumX_t2$Averages[[3]], p_sumX_t3$Averages[[3]],
                                    p_sumX_t4$Averages[[3]], p_sumX_t5$Averages[[3]], p_sumX_t6$Averages[[3]], 
@@ -1997,7 +1997,7 @@ observed_conditional_evolvability_in_direction_of_change_glob.p_t5 <- 1/(t(evolv
 observed_conditional_evolvability_in_direction_of_change_glob.p_t6 <- 1/(t(evolved_difference_unit_length_t6)%*%solve(as.matrix(glob.P_ext))%*%evolved_difference_unit_length_t6)
 
 ### Generate 10,000 selection gradients in random directions in the n-dimensional space
-#n_dimensions <- 8 # number of traits in G matrix
+#n_dimensions <- 8 # number of traits in P matrix
 #Beta <- randomBeta(10000, n_dimensions)
 
 #outputs e, r, c, a, i
@@ -2012,9 +2012,9 @@ observed_conditional_evolvability_in_direction_of_change_glob.p_t6 <- 1/(t(evolv
 
 ###### ESTIMATED CONDITIONAL EVOLVABILITY & EVOLVABILITY ------
 
-# Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a G matrix based on 10,000 random selection gradients
+# Compute the mean, minimum and maximum evolvability (e_mean, e_min, e_max) for a P matrix based on 10,000 random selection gradients
 X_glob.p <- evolvabilityBeta(as.matrix(glob.P_ext), Beta)
-sumX_glob.p <- summary(X_glob.p) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
+sumX_glob.p <- summary(X_glob.p) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 sumX_glob.p
 
 X_sum_glob.p <- data.frame(c.mean = c(sumX_glob.p$Averages[[3]], rep("", 6)),
@@ -2130,7 +2130,7 @@ glob.P_ext_pos = round(as.matrix(glob.P_ext), 6)
 is.symmetric.matrix(glob.P_ext_pos)
 is.positive.definite(glob.P_ext_pos)
 
-#no differences in G matrices based on size
+#no differences in P matrices based on size
 #if not due to sample size, then expect results to be similar to using individual Gs
 
 ### How much is the direction of Gmax (i.e., the direction first ) varying between different G-matrices? 
