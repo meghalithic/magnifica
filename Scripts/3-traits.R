@@ -191,7 +191,7 @@ traits.df <- images.df %>%
                 formation, locality,
                 zl, mpw.b, 
                 cw.m, cw.d, c.side,
-                ow.m, ol, ow.b, o.side)
+                ow.m, ol, o.side)
 
 colnames(traits.df)[colnames(traits.df) == 'box_id'] <- 'boxID'
 

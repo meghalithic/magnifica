@@ -465,23 +465,54 @@ for(i in 1:(nrow(mean_by_formation)-1)){
 }
 
 ##overall change
+##overall change
 exp(mean_by_formation$avg.zl[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zl[mean_by_formation$formation == "NKLS"])
+mean_by_formation$avg.exp.zl[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.zl[mean_by_formation$formation == "NKLS"]
+
 exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"])
+mean_by_formation$avg.exp.mpw.b[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.mpw.b[mean_by_formation$formation == "NKLS"]
+
 exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"])
+mean_by_formation$avg.exp.cw.m[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.cw.m[mean_by_formation$formation == "NKLS"]
+
 exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"])
+mean_by_formation$avg.exp.cw.d[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.cw.d[mean_by_formation$formation == "NKLS"]
+
 exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"])
+mean_by_formation$avg.exp.c.side[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.c.side[mean_by_formation$formation == "NKLS"]
+
 exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"])
+mean_by_formation$avg.exp.ow.m[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.ow.m[mean_by_formation$formation == "NKLS"]
+
 exp(mean_by_formation$avg.ol[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ol[mean_by_formation$formation == "NKLS"])
+mean_by_formation$avg.exp.ol[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.ol[mean_by_formation$formation == "NKLS"]
+
 exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"])
+mean_by_formation$avg.exp.o.side[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.o.side[mean_by_formation$formation == "NKLS"]
 
 (abs(exp(mean_by_formation$avg.zl[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.zl[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.zl[mean_by_formation$formation == "NKLS"]))*100
+(abs(mean_by_formation$avg.exp.zl[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.zl[mean_by_formation$formation == "NKLS"])/mean_by_formation$avg.exp.zl[mean_by_formation$formation == "NKLS"])*100
+
 (abs(exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.mpw.b[mean_by_formation$formation == "NKLS"]))*100
+(abs(mean_by_formation$avg.exp.mpw.b[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.mpw.b[mean_by_formation$formation == "NKLS"])/mean_by_formation$avg.exp.mpw.b[mean_by_formation$formation == "NKLS"])*100
+
 (abs(exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.cw.m[mean_by_formation$formation == "NKLS"]))*100
+(abs(mean_by_formation$avg.exp.cw.m[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.cw.m[mean_by_formation$formation == "NKLS"])/mean_by_formation$avg.exp.cw.m[mean_by_formation$formation == "NKLS"])*100
+
 (abs(exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.cw.d[mean_by_formation$formation == "NKLS"]))*100
+(abs(mean_by_formation$avg.exp.cw.d[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.cw.d[mean_by_formation$formation == "NKLS"])/mean_by_formation$avg.exp.cw.d[mean_by_formation$formation == "NKLS"])*100
+
 (abs(exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.c.side[mean_by_formation$formation == "NKLS"]))*100
+(abs(mean_by_formation$avg.exp.c.side[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.c.side[mean_by_formation$formation == "NKLS"])/mean_by_formation$avg.exp.c.side[mean_by_formation$formation == "NKLS"])*100
+
 (abs(exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.ow.m[mean_by_formation$formation == "NKLS"]))*100
+(abs(mean_by_formation$avg.exp.ow.m[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.ow.m[mean_by_formation$formation == "NKLS"])/mean_by_formation$avg.exp.ow.m[mean_by_formation$formation == "NKLS"])*100
+
 (abs(exp(mean_by_formation$avg.ol[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.ol[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.ol[mean_by_formation$formation == "NKLS"]))*100
+(abs(mean_by_formation$avg.exp.ol[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.ol[mean_by_formation$formation == "NKLS"])/mean_by_formation$avg.exp.ol[mean_by_formation$formation == "NKLS"])*100
+
 (abs(exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "modern"]) - exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"]))/exp(mean_by_formation$avg.o.side[mean_by_formation$formation == "NKLS"]))*100
+(abs(mean_by_formation$avg.exp.o.side[mean_by_formation$formation == "modern"] - mean_by_formation$avg.exp.o.side[mean_by_formation$formation == "NKLS"])/mean_by_formation$avg.exp.o.side[mean_by_formation$formation == "NKLS"])*100
 
 
 diff.form <- c("NKLS to NKBS", "NKBS to Tewkesbury",
