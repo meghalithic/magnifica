@@ -78,6 +78,37 @@ The code also checks for discrepencies being the imaging metadata, "Imaged Stegi
 
 # Exploratory analysis
 
-The code, "[exploratoryAnalysis.R](https://github.com/megbalk/magnifica/blob/main/exploratoryAnalysis.R)", reads the file "[output.csv](https://github.com/megbalk/magnifica/blob/main/output.csv)", which is the output from the Steginator pipeline.
+The code, "[4-exploratoryAnalysis.R](https://github.com/megbalk/magnifica/blob/main/exploratoryAnalysis.R)", reads the file "[output.csv](https://github.com/megbalk/magnifica/blob/main/output.csv)", which is the output from the Steginator pipeline.
 
 It extracts linear measurements using the landmark coordinates.
+
+[metadata_check_BLEED.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/metadata_check_BLEED.R)  and [metadata_check_WABO_IV.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/metadata_check_WABO_IV.R) reconciles names and metadata of the images.
+
+[1-filtering.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/1-filtering.R) ensures that the scale for the images are set and that all metadata is added.
+
+# Scripts
+[0-env.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/0-env.R) sets up the environment for downstream analyses.
+
+[3-traits.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/3-traits.R) calculates linear measurements.
+
+[5-gpMatrix.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/5-gpMatrix.R) calculates the **G** and **P** matrices.
+
+[6-gpComparison.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/6-gpComparison.R) compares **G** and **P** and ∆z.
+
+[temp.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/temp.R) calculates zooid length and temperature relationships.
+
+[evo_analyses.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/evo_analyses.R) tests models of evolution.
+
+[7-beta.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/7-beta.R) calculates the selection gradient and its affect on **G**.
+
+[rarefaction_reimmanDistance.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/rarefaction_reimmanDistance.R) was an attempt to use Reimman Distances to test if **G** matrices were different or not based on sample size.
+
+[plasticity.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/plasticity.R) was an attempt to calculate **E** and assess its influence on phenotypic change.
+
+## Functions
+[norm.vector.funct.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/norm.vector.funct.R) a function to normalize vectors.
+
+[linearMeasurement.function.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/linearMeasurement.function.R) application of the Pythagorean Theorem to calculate linear distances.
+
+[magnitudeFunction.R](https://github.com/meghalithic/magnifica/blob/main/Scripts/magnitudeFunction.R) a function to calculate the magnitude of beta.
+
