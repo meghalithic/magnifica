@@ -43,18 +43,18 @@ There are a total of 23 landmarks, numbered 0 to 22.
 
 Linear measurements were extracted using the landmark coordinates.
 
-![linear](stegs_linear_26Jun2023.png)
+![linear](stegs_linear_measurements.png)
 
 *Traits*
 
-- zooid height (zh; points 4 to 12) {#F8766D}
-- operculum height (oh; calculated as hieght of triangle between points 4, 20, 21) {#CD9600}
-- operculum width at the midline (ow.m; points 19 to 0) {#B79F00}
-- operculum side length (o.side; calculated as average between 21 to 18 and 20 to 17) {#00BE67}
-- median process width (mpw.b; point 5 to 6) {#00C094}
-- cryptocyst width at distal end (cw.d; point 20 to 21) {#619CFF}
-- cryptocyst width at midline (cw.m; points 10 to 11) {#00BFC4}
-- cryptocyst side length (c.side; calculated as average between 1 to 7 and 9 to 8) {#C77CFF}
+- zooid length (zl; points 4 to 12)
+- median process width (mpw.b; point 5 to 6)
+- cryptocystal shelf width at midline (cw.m; points 10 to 11)
+- cryptocystal shelf width at distal end (cw.d; point 8 to 7)
+- cryptocystal side length (c.side; calculated as average between 1 to 7 and 9 to 8)
+- orifice width at the midline (ow.m; points 19 to 0)
+- orifice length (ol; calculated as hieght of triangle between points 4, 20, 21)
+- orifice side length (o.side; calculated as average between 21 to 18 and 20 to 17) 
 
 # Automation
 
