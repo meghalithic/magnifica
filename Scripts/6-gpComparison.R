@@ -1746,13 +1746,14 @@ observed_conditional_evolvability_in_direction_of_change_glob_t6 <- 1/(t(evolved
 X_glob <- evolvabilityBeta(as.matrix(Glob_ext), Beta)
 sumX_glob <- summary(X_glob) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given G matrix
 sumX_glob
+Gmax_glob_val <- eigen(Glob_ext)$values[1]
 
 X_sum_glob <- data.frame(c.mean = c(sumX_glob$Averages[[3]], rep("", 6)),
                          c.min = c(sumX_glob$Minimum[[3]], rep("", 6)),
                          c.max = c(sumX_glob$Maximum[[3]], rep("", 6)),
                          e.mean = c(sumX_glob$Averages[[1]], rep("", 6)),
                          e.min = c(sumX_glob$Minimum[[1]], rep("", 6)),
-                         e.max = c(sumX_glob$Maximum[[1]], rep("", 6)),
+                         gmax = c(Gmax_glob_val, rep("", 6)),
                          observed_e_glob = c(observed_evolvability_in_direction_of_change_glob_t1,
                                              observed_evolvability_in_direction_of_change_glob_t2,
                                              observed_evolvability_in_direction_of_change_glob_t3,
@@ -1797,7 +1798,7 @@ X_sum_glob.trim <- X_sum_glob[1:6,]
 ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.min[1]),
                color = "darkgray", linetype = "dashed") +
-    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.max[1]),
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$gmax[1]),
                color = "darkgray", linetype = "dashed") +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1])) +
     geom_point(aes(y = as.numeric(observed_e_glob)),
@@ -1807,14 +1808,14 @@ ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     scale_y_continuous(name = "Evolvability") +
     plot.theme
 
-X_sum_glob.trim$e.max <- as.numeric(X_sum_glob.trim$e.max)
+X_sum_glob.trim$gmax <- as.numeric(X_sum_glob.trim$gmax)
 X_sum_glob.trim$e.min <- as.numeric(X_sum_glob.trim$e.min)
 X_sum_glob.trim$e.mean <- as.numeric(X_sum_glob.trim$e.mean)
 
 p.evol_glob <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.min[1]),
                color = "black", size = .5) +
-    geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.max[1]),
+    geom_hline(yintercept = as.numeric(X_sum_glob.trim$gmax[1]),
                color = "black", size = .5) +
     geom_hline(yintercept = as.numeric(X_sum_glob.trim$e.mean[1]),
                color = "black", size = .5) +
@@ -1835,7 +1836,7 @@ p.evol_glob_combo <- ggplot(X_sum_glob.trim, aes(x = form.trans)) +
                      lower = e.min,
                      middle = e.mean,
                      ymax = e.max,
-                     upper = e.max,
+                     upper = gmax,
                      fill = "gray"),
                  stat = "identity", fill = "gray") +
     geom_point(aes(y = as.numeric(observed_e_glob),
@@ -2019,13 +2020,14 @@ observed_conditional_evolvability_in_direction_of_change_glob.p_t6 <- 1/(t(evolv
 X_glob.p <- evolvabilityBeta(as.matrix(glob.P_ext), Beta)
 sumX_glob.p <- summary(X_glob.p) #provides you with info on mean, minimum and maximum evolvability  (e_mean, e_min, e_max) and conditional evolvability  (c_mean, c_min, c_max) for a given P matrix
 sumX_glob.p
+Pmax_glob_val <- eigen(glob.P_ext)$values[1]
 
 X_sum_glob.p <- data.frame(c.mean = c(sumX_glob.p$Averages[[3]], rep("", 6)),
                          c.min = c(sumX_glob.p$Minimum[[3]], rep("", 6)),
                          c.max = c(sumX_glob.p$Maximum[[3]], rep("", 6)),
                          e.mean = c(sumX_glob.p$Averages[[1]], rep("", 6)),
                          e.min = c(sumX_glob.p$Minimum[[1]], rep("", 6)),
-                         e.max = c(sumX_glob.p$Maximum[[1]], rep("", 6)),
+                         pmax = c(Pmax_glob_val, rep("", 6)),
                          observed_e_glob.p = c(observed_evolvability_in_direction_of_change_glob.p_t1,
                                              observed_evolvability_in_direction_of_change_glob.p_t2,
                                              observed_evolvability_in_direction_of_change_glob.p_t3,
@@ -2070,7 +2072,7 @@ X_sum_glob.p.trim <- X_sum_glob.p[1:6,]
 ggplot(X_sum_glob.p.trim, aes(x = form.trans)) +
     geom_hline(yintercept = as.numeric(X_sum_glob.p.trim$e.min[1]),
                color = "darkgray", linetype = "dashed") +
-    geom_hline(yintercept = as.numeric(X_sum_glob.p.trim$e.max[1]),
+    geom_hline(yintercept = as.numeric(X_sum_glob.p.trim$pmax[1]),
                color = "darkgray", linetype = "dashed") +
     geom_hline(yintercept = as.numeric(X_sum_glob.p.trim$e.mean[1])) +
     geom_point(aes(y = as.numeric(observed_e_glob.p)),
@@ -2080,14 +2082,14 @@ ggplot(X_sum_glob.p.trim, aes(x = form.trans)) +
     scale_y_continuous(name = "Evolvability") +
     plot.theme
 
-X_sum_glob.p.trim$e.max <- as.numeric(X_sum_glob.p.trim$e.max)
+X_sum_glob.p.trim$pmax <- as.numeric(X_sum_glob.p.trim$pmax)
 X_sum_glob.p.trim$e.min <- as.numeric(X_sum_glob.p.trim$e.min)
 X_sum_glob.p.trim$e.mean <- as.numeric(X_sum_glob.p.trim$e.mean)
 
 p.evol_glob.p <- ggplot(X_sum_glob.p.trim, aes(x = form.trans)) +
     geom_hline(yintercept = as.numeric(X_sum_glob.p.trim$e.min[1]),
                color = "black", size = .5) +
-    geom_hline(yintercept = as.numeric(X_sum_glob.p.trim$e.max[1]),
+    geom_hline(yintercept = as.numeric(X_sum_glob.p.trim$pmax[1]),
                color = "black", size = .5) +
     geom_hline(yintercept = as.numeric(X_sum_glob.p.trim$e.mean[1]),
                color = "black", size = .5) +
@@ -2107,7 +2109,7 @@ p.evol_glob.p_combo <- ggplot(X_sum_glob.p.trim, aes(x = form.trans)) +
     geom_boxplot(aes(ymin = e.min, 
                      lower = e.min,
                      middle = e.mean,
-                     ymax = e.max,
+                     ymax = pmax,
                      upper = e.max,
                      fill = "gray"),
                  stat = "identity", fill = "gray") +
